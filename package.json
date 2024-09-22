@@ -1,0 +1,49 @@
+{
+    "name": "react-markdown-table",
+    "version": "1.0.0",
+    "description": "A reusable React component to generate tables in markdown syntax.",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "prepare": "npm run build"
+    },
+    "keywords": [
+        "markdown",
+        "md",
+        "table",
+        "tables",
+        "react",
+        "ts",
+        "typescript",
+        "types",
+        "typed",
+        "generate",
+        "generator",
+        "convert",
+        "converter"
+    ],
+    "author": "Keith Walsh",
+    "license": "EUPL-1.2",
+    "repository": "https://gitlab.com/keithwalsh/react-markdown-table.git",
+    "peerDependencies": {
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^26.0.1",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-typescript": "^11.1.6",
+        "@types/react": "^18.3.8",
+        "@types/react-dom": "^18.3.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "rollup": "^2.79.1",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "typescript": "^5.6.2"
+    }
+}
