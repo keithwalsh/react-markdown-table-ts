@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "ES5",
+        "target": "ES2023",
         "module": "ESNext",
         "jsx": "react-jsx",
         "declaration": true,
@@ -11,7 +11,8 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "skipLibCheck": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "lib": ["DOM", "DOM.Iterable", "ES2023"]
     },
     "include": ["src"],
     "exclude": ["node_modules", "dist", "**/*.test.tsx", "**/*.test.ts"]
