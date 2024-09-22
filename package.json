@@ -29,7 +29,7 @@
     ],
     "author": "Keith Walsh",
     "license": "EUPL-1.2",
-    "repository": "https://gitlab.com/keithwalsh/react-markdown-table.git",
+    "repository": "https://github.com/keithwalsh/react-markdown-table.git",
     "peerDependencies": {
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
