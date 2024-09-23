@@ -1,12 +1,16 @@
-# react-markdown-table
+# react-markdown-table-ts
+
+[![NPM Version](https://img.shields.io/npm/v/react-markdown-table-ts.svg)](https://www.npmjs.com/package/react-markdown-table-ts)
+[![codecov](https://codecov.io/gh/keithwalsh/react-markdown-table-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/keithwalsh/react-markdown-table-ts)
+[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
 A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.
 
 ## Features
 
--   **Type Safety:** Built with TypeScript to provide strong type guarantees.
--   **Easy Integration:** Simple API for converting data arrays into Markdown table strings.
--   **Customizable Alignments:** Specify column alignments (left, center, right, or none) with ease.
+- **Type Safety:** Built with TypeScript to provide strong type guarantees.
+- **Easy Integration:** Simple API for converting data arrays into Markdown table strings.
+- **Customizable Alignments:** Specify column alignments (left, center, right, or none) with ease.
 
 ## Installation
 

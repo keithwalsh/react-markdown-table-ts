@@ -1,49 +1,66 @@
 {
-    "name": "react-markdown-table-ts",
-    "version": "1.0.2",
-    "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/types/index.d.ts",
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "rollup -c",
-        "prepare": "npm run build"
-    },
-    "keywords": [
-        "markdown",
-        "md",
-        "table",
-        "tables",
-        "react",
-        "ts",
-        "typescript",
-        "types",
-        "typed",
-        "generate",
-        "generator",
-        "convert",
-        "converter"
-    ],
-    "author": "Keith Walsh",
-    "license": "EUPL-1.2",
-    "repository": "https://github.com/keithwalsh/react-markdown-table.git",
-    "peerDependencies": {
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1"
-    },
-    "devDependencies": {
-        "@rollup/plugin-commonjs": "^26.0.1",
-        "@rollup/plugin-node-resolve": "^15.2.3",
-        "@rollup/plugin-typescript": "^11.1.6",
-        "@types/react": "^18.3.8",
-        "@types/react-dom": "^18.3.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "rollup": "^2.79.1",
-        "rollup-plugin-typescript2": "^0.36.0",
-        "typescript": "^5.6.2"
-    }
+  "name": "react-markdown-table-ts",
+  "version": "1.0.3",
+  "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "npm.cmd run compile",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "pretest": "npm.cmd run compile",
+    "posttest": "npm.cmd run lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --coverageReporters=text-lcov > coverage/lcov.info"
+  },
+  "keywords": [
+    "markdown",
+    "md",
+    "table",
+    "tables",
+    "react",
+    "ts",
+    "typescript",
+    "types",
+    "typed",
+    "generate",
+    "generator",
+    "convert",
+    "converter"
+  ],
+  "author": "Keith Walsh",
+  "license": "EUPL-1.2",
+  "repository": "https://github.com/keithwalsh/react-markdown-table.git",
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@types/jest": "^29.5.13",
+    "@types/node": "20.12.7",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "gts": "^5.3.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^2.79.1",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.1.6"
+  }
 }
