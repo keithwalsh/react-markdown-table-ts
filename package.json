@@ -10,13 +10,13 @@
   ],
   "scripts": {
     "build": "rollup -c",
-    "prepare": "npm.cmd run compile",
+    "prepare": "npm run compile",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
-    "pretest": "npm.cmd run compile",
-    "posttest": "npm.cmd run lint",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --coverageReporters=text-lcov > coverage/lcov.info"
