@@ -1,101 +1,68 @@
 // src/validation.ts
 
-/**
- * @fileoverview Provides validation functions for inputs used in Markdown table syntax generation.
- */
-
-import { MarkdownTableData, CreateMarkdownTableOptions } from "./types";
+import { MarkdownTableProps } from "./types";
 import { MarkdownTableError } from "./errors";
 
 /**
- * Validates the structure of the table data.
+ * Validates the structure of the table data based on the `hasHeader` flag.
  * Throws an error if validation fails.
- * @param tableData - The table data to validate.
- * @throws {MarkdownTableError} if validation fails.
+ * @param props - The props to validate.
  */
-export function validateTableData(tableData: MarkdownTableData): void {
-    if (!tableData) {
-        throw new MarkdownTableError("missing 'tableData' property");
+export function validateMarkdownTableProps(props: MarkdownTableProps): void {
+    const { data, hasHeader = true, columnAlignments, adjustColumnWidths } = props;
+
+    if (!data || !Array.isArray(data)) {
+        throw new MarkdownTableError("The 'data' prop must be a non-empty two-dimensional array.");
     }
 
-    if (!Array.isArray(tableData.header)) {
-        throw new MarkdownTableError(
-            `expected tableData.header to be Array<string>, got ${typeof tableData.header}. Actual value: ${JSON.stringify(tableData.header)}`
-        );
+    if (data.length === 0) {
+        throw new MarkdownTableError("The 'data' array must contain at least one row.");
     }
 
-    if (tableData.header.length < 1) {
-        throw new MarkdownTableError(`expected table to have at least 1 header, got ${tableData.header.length}`);
+    // If hasHeader is true, ensure the first row exists and is valid
+    if (hasHeader) {
+        const header = data[0];
+        if (!Array.isArray(header) || header.length === 0) {
+            throw new MarkdownTableError("The first row of 'data' must be a non-empty array representing the header.");
+        }
+
+        // Validate each header cell is a string
+        header.forEach((cell, index) => {
+            if (typeof cell !== "string") {
+                throw new MarkdownTableError(`Header cell at index ${index} must be a string.`);
+            }
+        });
     }
 
-    if (!Array.isArray(tableData.rows)) {
-        throw new MarkdownTableError(
-            `expected tableData.rows to be Array<TableRow>, got ${typeof tableData.rows}. Actual value: ${JSON.stringify(tableData.rows)}`
-        );
-    }
-
-    const allRows = [tableData.header, ...tableData.rows];
-
-    allRows.forEach((row, rowIndex) => {
+    // Validate each row
+    data.forEach((row, rowIndex) => {
         if (!Array.isArray(row)) {
-            throw new MarkdownTableError(`expected row ${rowIndex} to be Array<string>, got ${typeof row}. Actual value: ${JSON.stringify(row)}`);
+            throw new MarkdownTableError(`Row ${rowIndex + 1} in 'data' must be an array of strings.`);
         }
 
         row.forEach((cell, cellIndex) => {
             if (typeof cell !== "string") {
-                throw new MarkdownTableError(
-                    `expected cell ${cellIndex} on row ${rowIndex} to be string, got ${typeof cell}. Actual value: ${JSON.stringify(cell)}`
-                );
+                throw new MarkdownTableError(`Cell at row ${rowIndex + 1}, column ${cellIndex + 1} must be a string.`);
             }
         });
     });
-}
 
-/**
- * Validates the column alignments array.
- * Throws an error if validation fails.
- * @param columnAlignments - The alignment settings to validate.
- * @throws {MarkdownTableError} if validation fails.
- */
-export function validateColumnAlignments(columnAlignments?: readonly ("left" | "right" | "center" | "none")[]): void {
-    if (!columnAlignments) {
-        return;
-    }
-
-    if (!Array.isArray(columnAlignments)) {
-        throw new MarkdownTableError(
-            `expected columnAlignments to be undefined or Array<'left' | 'right' | 'center' | 'none'>, got ${typeof columnAlignments}. Actual value: ${JSON.stringify(
-                columnAlignments
-            )}`
-        );
-    }
-
-    columnAlignments.forEach((alignment, index) => {
-        if (!["left", "right", "center", "none"].includes(alignment)) {
-            throw new MarkdownTableError(`invalid alignment for column ${index}. Actual value: ${JSON.stringify(alignment)}`);
+    // Validate columnAlignments if provided
+    if (columnAlignments) {
+        if (!Array.isArray(columnAlignments)) {
+            throw new MarkdownTableError("'columnAlignments' must be an array of alignment strings.");
         }
-    });
-}
 
-/**
- * Validates the input parameters for generating the Markdown table syntax.
- * Throws an error if validation fails.
- * @param options - The input parameters to validate.
- * @throws {MarkdownTableError} if validation fails.
- */
-export function validateCreateMarkdownTableOptions(options: CreateMarkdownTableOptions): void {
-    const { tableData, columnAlignments, adjustColumnWidths } = options;
-
-    if (!tableData) {
-        throw new MarkdownTableError("missing input parameters");
+        const validAlignments = ["left", "center", "right", "none"];
+        columnAlignments.forEach((alignment, index) => {
+            if (!validAlignments.includes(alignment)) {
+                throw new MarkdownTableError(`Invalid alignment '${alignment}' at index ${index}. Valid options are 'left', 'center', 'right', 'none'.`);
+            }
+        });
     }
 
-    validateTableData(tableData);
-    validateColumnAlignments(columnAlignments);
-
+    // Validate adjustColumnWidths if provided
     if (typeof adjustColumnWidths !== "undefined" && typeof adjustColumnWidths !== "boolean") {
-        throw new MarkdownTableError(
-            `'adjustColumnWidths' must be either undefined or boolean, got ${typeof adjustColumnWidths}. Actual value: ${JSON.stringify(adjustColumnWidths)}`
-        );
+        throw new MarkdownTableError("'adjustColumnWidths' must be a boolean if provided.");
     }
 }

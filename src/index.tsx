@@ -1,78 +1,43 @@
-// src/index.tsx
-
-/**
- * @fileoverview Provides functions to generate Markdown table syntax and a React component for displaying it.
- */
+// src/components/MarkdownTable.tsx
 
 import React from "react";
-import { CreateMarkdownTableOptions, MarkdownTableProps } from "./types";
+import { MarkdownTableProps } from "./types";
+import { generateMarkdownTableString } from "./utils";
 import { MarkdownTableError } from "./errors";
-import { validateCreateMarkdownTableOptions } from "./validation";
-import { calculateColumnWidths, formatMarkdownRow, formatAlignmentRow } from "./helpers";
-
-/**
- * Generates a Markdown-formatted table as a string.
- * @param options - The parameters for table generation.
- * @returns The Markdown string for the entire table.
- * @throws {MarkdownTableError} if input validation fails.
- */
-export function generateMarkdownTable({ tableData, columnAlignments, adjustColumnWidths = true }: CreateMarkdownTableOptions): string {
-    validateCreateMarkdownTableOptions({
-        tableData,
-        columnAlignments,
-        adjustColumnWidths,
-    });
-
-    const headerColumnCount = tableData.header.length;
-    const bodyColumnCounts = tableData.rows.map((row) => row.length);
-    const maxColumnCount = Math.max(headerColumnCount, ...bodyColumnCounts);
-
-    const columnWidths = adjustColumnWidths
-        ? calculateColumnWidths({
-              allRows: [tableData.header, ...tableData.rows],
-              maxColumnCount,
-          })
-        : undefined;
-
-    const markdownHeaderRow = formatMarkdownRow({
-        columnCount: maxColumnCount,
-        row: tableData.header,
-        columnAlignments,
-        columnWidths,
-    });
-
-    const markdownAlignmentRow = formatAlignmentRow({
-        columnCount: maxColumnCount,
-        columnAlignments,
-        columnWidths,
-    });
-
-    let markdownBodyRows = "";
-    tableData.rows.forEach((row) => {
-        const markdownRow = formatMarkdownRow({
-            columnCount: maxColumnCount,
-            row,
-            columnAlignments,
-            columnWidths,
-        });
-        markdownBodyRows += `${markdownRow}\n`;
-    });
-
-    return `${markdownHeaderRow}\n${markdownAlignmentRow}\n${markdownBodyRows}`.trimEnd();
-}
+import { validateMarkdownTableProps } from "./validation";
 
 /**
  * React component that generates and displays Markdown table syntax.
  * @param props - The input parameters for table generation.
  * @returns A <pre> element containing the Markdown table syntax or an error message.
  */
-export function MarkdownTable(props: MarkdownTableProps): JSX.Element {
-    const { className } = props;
+export const MarkdownTable: React.FC<MarkdownTableProps> = ({ data, hasHeader = true, columnAlignments = [], adjustColumnWidths = true, className }) => {
+    // Validate props
+    try {
+        validateMarkdownTableProps({ data, hasHeader, columnAlignments, adjustColumnWidths });
+    } catch (error) {
+        if (error instanceof MarkdownTableError) {
+            return <div className={className}>Error: {error.message}</div>;
+        } else {
+            throw error;
+        }
+    }
 
-    // Generate the Markdown table string
+    // Determine header and rows based on hasHeader
+    const tableData = hasHeader
+        ? {
+              header: data[0],
+              rows: data.slice(1),
+          }
+        : {
+              header: generateAlphabetHeaders(data[0].length),
+              rows: data,
+          };
+
+    // Generate Markdown table
     let markdownSyntax: string;
     try {
-        markdownSyntax = generateMarkdownTable(props);
+        markdownSyntax = generateMarkdownTableString(tableData, columnAlignments, adjustColumnWidths);
     } catch (error) {
         if (error instanceof MarkdownTableError) {
             return <div className={className}>Error: {error.message}</div>;
@@ -82,4 +47,33 @@ export function MarkdownTable(props: MarkdownTableProps): JSX.Element {
     }
 
     return <pre className={className}>{markdownSyntax}</pre>;
+};
+
+/**
+ * Generates alphabetical headers (A, B, C, ...) based on the number of columns.
+ * @param columnCount - The number of columns.
+ * @returns An array of alphabetical headers.
+ */
+function generateAlphabetHeaders(columnCount: number): string[] {
+    const headers: string[] = [];
+    for (let i = 0; i < columnCount; i++) {
+        headers.push(getColumnName(i));
+    }
+    return headers;
+}
+
+/**
+ * Converts a zero-based column index to its corresponding alphabetical representation.
+ * For example, 0 -> 'A', 1 -> 'B', ..., 25 -> 'Z', 26 -> 'AA', etc.
+ * @param index - The zero-based column index.
+ * @returns The alphabetical column name.
+ */
+function getColumnName(index: number): string {
+    let name = "";
+    let currentIndex = index;
+    while (currentIndex >= 0) {
+        name = String.fromCharCode((currentIndex % 26) + 65) + name;
+        currentIndex = Math.floor(currentIndex / 26) - 1;
+    }
+    return name;
 }
