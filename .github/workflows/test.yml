@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   build:
@@ -16,7 +17,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3 # Adjusted to v3 if v4 is not stable
+      - uses: actions/checkout@v3 # Checks out the repository code
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -27,19 +28,19 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3 # Adjusted to v3 if v4 is not stable
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci # Clean install dependencies based on package-lock.json
 
       - name: Build
-        run: npm run build
+        run: npm run build # Build the project
 
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: npm run test:coverage # Run tests and generate coverage report
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
