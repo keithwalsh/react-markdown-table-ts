@@ -1,11 +1,8 @@
+// src/types.ts
+
 /**
  * @fileoverview Defines types and interfaces for generating Markdown table syntax and displaying it in React components.
  */
-
-/**
- * Union type representing possible alignment options for table columns.
- */
-export type ColumnAlignment = "left" | "right" | "center" | "none";
 
 /**
  * Represents a single row in a table, consisting of cells.
@@ -27,7 +24,7 @@ export interface MarkdownTableData {
 }
 
 /**
- * Input parameters for creating a Markdown table.
+ * Input parameters for creating a Markdown table syntax.
  */
 export interface CreateMarkdownTableOptions {
     /**
@@ -35,14 +32,14 @@ export interface CreateMarkdownTableOptions {
      */
     readonly tableData: MarkdownTableData;
     /**
-     * Optional flag to align columns based on content width.
+     * Optional flag to adjust column widths based on content.
      * @default true
      */
     readonly adjustColumnWidths?: boolean;
     /**
      * Optional alignment settings for each column.
      */
-    readonly columnAlignments?: readonly ColumnAlignment[];
+    readonly columnAlignments?: readonly ("left" | "right" | "center" | "none")[];
 }
 
 /**

@@ -4,6 +4,7 @@
  * @fileoverview Provides functions to generate Markdown table syntax and a React component for displaying it.
  */
 
+import React from "react";
 import { CreateMarkdownTableOptions, MarkdownTableProps } from "./types";
 import { MarkdownTableError } from "./errors";
 import { validateCreateMarkdownTableOptions } from "./validation";
@@ -61,7 +62,7 @@ export function generateMarkdownTable({ tableData, columnAlignments, adjustColum
 }
 
 /**
- * React component that generates and displays a Markdown table syntax.
+ * React component that generates and displays Markdown table syntax.
  * @param props - The input parameters for table generation.
  * @returns A <pre> element containing the Markdown table syntax or an error message.
  */
@@ -69,9 +70,9 @@ export function MarkdownTable(props: MarkdownTableProps): JSX.Element {
     const { className } = props;
 
     // Generate the Markdown table string
-    let markdownTable: string;
+    let markdownSyntax: string;
     try {
-        markdownTable = generateMarkdownTable(props);
+        markdownSyntax = generateMarkdownTable(props);
     } catch (error) {
         if (error instanceof MarkdownTableError) {
             return <div className={className}>Error: {error.message}</div>;
@@ -80,5 +81,5 @@ export function MarkdownTable(props: MarkdownTableProps): JSX.Element {
         }
     }
 
-    return <pre className={className}>{markdownTable}</pre>;
+    return <pre className={className}>{markdownSyntax}</pre>;
 }

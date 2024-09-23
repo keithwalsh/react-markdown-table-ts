@@ -4,7 +4,7 @@
  * @fileoverview Provides validation functions for inputs used in Markdown table syntax generation.
  */
 
-import { ColumnAlignment, MarkdownTableData, CreateMarkdownTableOptions } from "./types";
+import { MarkdownTableData, CreateMarkdownTableOptions } from "./types";
 import { MarkdownTableError } from "./errors";
 
 /**
@@ -57,14 +57,14 @@ export function validateTableData(tableData: MarkdownTableData): void {
  * @param columnAlignments - The alignment settings to validate.
  * @throws {MarkdownTableError} if validation fails.
  */
-export function validateColumnAlignments(columnAlignments?: readonly ColumnAlignment[]): void {
+export function validateColumnAlignments(columnAlignments?: readonly ("left" | "right" | "center" | "none")[]): void {
     if (!columnAlignments) {
         return;
     }
 
     if (!Array.isArray(columnAlignments)) {
         throw new MarkdownTableError(
-            `expected columnAlignments to be undefined or Array<ColumnAlignment>, got ${typeof columnAlignments}. Actual value: ${JSON.stringify(
+            `expected columnAlignments to be undefined or Array<'left' | 'right' | 'center' | 'none'>, got ${typeof columnAlignments}. Actual value: ${JSON.stringify(
                 columnAlignments
             )}`
         );
@@ -78,7 +78,7 @@ export function validateColumnAlignments(columnAlignments?: readonly ColumnAlign
 }
 
 /**
- * Validates the input parameters for generating the Markdown table.
+ * Validates the input parameters for generating the Markdown table syntax.
  * Throws an error if validation fails.
  * @param options - The input parameters to validate.
  * @throws {MarkdownTableError} if validation fails.

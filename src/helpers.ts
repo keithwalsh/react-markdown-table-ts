@@ -4,7 +4,7 @@
  * @fileoverview Contains helper functions for formatting Markdown table syntax and calculating column widths.
  */
 
-import { ColumnAlignment, TableRow } from "./types";
+import { TableRow } from "./types";
 
 /**
  * Calculates the maximum width for each column based on the content.
@@ -34,10 +34,10 @@ export function formatMarkdownRow({
 }: {
     columnCount: number;
     row: TableRow;
-    columnAlignments?: readonly ColumnAlignment[];
+    columnAlignments?: readonly ("left" | "right" | "center" | "none")[];
     columnWidths?: readonly number[];
 }): string {
-    const defaultAlignment: ColumnAlignment = "left";
+    const defaultAlignment: "left" | "right" | "center" | "none" = "left";
     const adjustedAlignments =
         columnAlignments.length < columnCount
             ? [...columnAlignments, ...Array(columnCount - columnAlignments.length).fill(defaultAlignment)]
@@ -66,7 +66,7 @@ export function formatMarkdownRow({
 }
 
 /**
- * Generates the alignment row for the Markdown table.
+ * Generates the alignment row for the Markdown table syntax.
  * @param params - The parameters for alignment row generation.
  * @returns The Markdown string for the alignment row.
  */
@@ -76,10 +76,10 @@ export function formatAlignmentRow({
     columnWidths,
 }: {
     columnCount: number;
-    columnAlignments?: readonly ColumnAlignment[];
+    columnAlignments?: readonly ("left" | "right" | "center" | "none")[];
     columnWidths?: readonly number[];
 }): string {
-    const defaultAlignment: ColumnAlignment = "left";
+    const defaultAlignment: "left" | "right" | "center" | "none" = "left";
     const adjustedAlignments =
         columnAlignments.length < columnCount
             ? [...columnAlignments, ...Array(columnCount - columnAlignments.length).fill(defaultAlignment)]
