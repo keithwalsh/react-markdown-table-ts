@@ -9,10 +9,13 @@ import {MarkdownTableError} from './errors';
  * @param props - The props to validate.
  */
 export function validateMarkdownTableProps(props: MarkdownTableProps): void {
-  const {data, hasHeader = true, columnAlignments, compact = false} = props;
-
-  // Removed unused variable adjustColumnWidths
-  // const adjustColumnWidths = !compact;
+  const {
+    data,
+    hasHeader = true,
+    columnAlignments,
+    compact = false,
+    useTabs = false,
+  } = props;
 
   if (!data || !Array.isArray(data)) {
     throw new MarkdownTableError(
@@ -85,5 +88,8 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
     throw new MarkdownTableError("'compact' must be a boolean.");
   }
 
-  // Optionally, add any further validations based on compact here
+  // Validate useTabs
+  if (typeof useTabs !== 'boolean') {
+    throw new MarkdownTableError("'useTabs' must be a boolean.");
+  }
 }

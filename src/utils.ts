@@ -15,7 +15,6 @@ export function calculateColumnWidths(
   const widths: number[] = new Array(maxColumnCount).fill(3); // Minimum width of 3 for each column.
 
   allRows.forEach((row: TableRow) => {
-    // Explicitly type 'row'
     for (let i = 0; i < maxColumnCount; i++) {
       const cell = row[i] ?? '';
       widths[i] = Math.max(widths[i], cell.length);
@@ -31,13 +30,15 @@ export function calculateColumnWidths(
  * @param row - The data of the current row.
  * @param columnAlignments - Alignment settings for each column.
  * @param columnWidths - Widths of each column.
+ * @param useTabs - Flag to use tabs between columns.
  * @returns The Markdown string for the row.
  */
 export function formatMarkdownRow(
   columnCount: number,
   row: TableRow,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths?: readonly number[]
+  columnWidths?: readonly number[],
+  useTabs = false
 ): string {
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
   const adjustedAlignments =
@@ -57,15 +58,15 @@ export function formatMarkdownRow(
     const targetWidth = columnWidths ? columnWidths[i] : cell.length;
 
     if (alignment === 'right') {
-      markdownRow += ` ${cell.padStart(targetWidth)} |`;
+      markdownRow += `${useTabs ? '\t' : ' '}${cell.padStart(targetWidth)}${useTabs ? '\t' : ' '}|`;
     } else if (alignment === 'center') {
       const totalPadding = targetWidth - cell.length;
       const paddingLeft = Math.floor(totalPadding / 2);
       const paddingRight = totalPadding - paddingLeft;
-      markdownRow += ` ${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)} |`;
+      markdownRow += `${useTabs ? '\t' : ' '}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : ' '}|`;
     } else {
       // Left alignment or default
-      markdownRow += ` ${cell.padEnd(targetWidth)} |`;
+      markdownRow += `${useTabs ? '\t' : ' '}${cell.padEnd(targetWidth)}${useTabs ? '\t' : ' '}|`;
     }
   }
 
@@ -77,12 +78,14 @@ export function formatMarkdownRow(
  * @param columnCount - The number of columns in the table.
  * @param columnAlignments - Alignment settings for each column.
  * @param columnWidths - Widths of each column.
+ * @param useTabs - Flag to use tabs between columns.
  * @returns The Markdown string for the alignment row.
  */
 export function formatAlignmentRow(
   columnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths?: readonly number[]
+  columnWidths?: readonly number[],
+  useTabs = false
 ): string {
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
   const adjustedAlignments =
@@ -116,7 +119,7 @@ export function formatAlignmentRow(
         break;
     }
 
-    alignmentRow += ` ${alignIndicator} |`;
+    alignmentRow += `${useTabs ? '\t' : ' '}${alignIndicator}${useTabs ? '\t' : ' '}|`;
   }
 
   return alignmentRow;
@@ -127,12 +130,14 @@ export function formatAlignmentRow(
  * @param tableData - The table data including headers and rows.
  * @param columnAlignments - Alignment settings for each column.
  * @param adjustColumnWidths - Flag to adjust column widths based on content.
+ * @param useTabs - Flag to use tabs between columns.
  * @returns The complete Markdown table string.
  */
 export function generateMarkdownTableString(
   tableData: MarkdownTableData,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  adjustColumnWidths = true
+  adjustColumnWidths = true,
+  useTabs = false
 ): string {
   const headerColumnCount = tableData.header.length;
   const bodyColumnCounts = tableData.rows.map((row: TableRow) => row.length);
@@ -149,17 +154,25 @@ export function generateMarkdownTableString(
     maxColumnCount,
     tableData.header,
     columnAlignments,
-    columnWidths
+    columnWidths,
+    useTabs
   );
   const markdownAlignmentRow = formatAlignmentRow(
     maxColumnCount,
     columnAlignments,
-    columnWidths
+    columnWidths,
+    useTabs
   );
 
   const markdownBodyRows = tableData.rows
     .map((row: TableRow) =>
-      formatMarkdownRow(maxColumnCount, row, columnAlignments, columnWidths)
+      formatMarkdownRow(
+        maxColumnCount,
+        row,
+        columnAlignments,
+        columnWidths,
+        useTabs
+      )
     )
     .join('\n');
 

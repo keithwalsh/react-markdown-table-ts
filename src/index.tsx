@@ -1,5 +1,3 @@
-// src/index.tsx
-
 import React from 'react';
 import {MarkdownTableProps} from './types';
 import {generateMarkdownTableString} from './utils';
@@ -16,6 +14,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   hasHeader = true,
   columnAlignments = [],
   compact = false,
+  useTabs = false,
   className,
 }) => {
   // Invert compact to get adjustColumnWidths
@@ -23,8 +22,14 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
 
   // Validate props
   try {
-    // Pass the original compact prop to the validator
-    validateMarkdownTableProps({data, hasHeader, columnAlignments, compact});
+    // Pass the original compact prop and the new useTabs prop to the validator
+    validateMarkdownTableProps({
+      data,
+      hasHeader,
+      columnAlignments,
+      compact,
+      useTabs,
+    });
   } catch (error) {
     if (error instanceof MarkdownTableError) {
       return <div className={className}>Error: {error.message}</div>;
@@ -50,7 +55,8 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
     markdownSyntax = generateMarkdownTableString(
       tableData,
       columnAlignments,
-      adjustColumnWidths
+      adjustColumnWidths,
+      useTabs
     );
   } catch (error) {
     if (error instanceof MarkdownTableError) {

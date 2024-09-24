@@ -49,6 +49,12 @@ export interface MarkdownTableProps {
   compact?: boolean;
 
   /**
+   * Optional flag to add tabs between columns in the Markdown table.
+   * @default false
+   */
+  useTabs?: boolean;
+
+  /**
    * Optional CSS class for styling the rendered Markdown table.
    */
   className?: string;
