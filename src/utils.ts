@@ -25,12 +25,22 @@ export function calculateColumnWidths(
 }
 
 /**
+ * Replaces newline characters in a string with <br> tags.
+ * @param cell - The cell content to process.
+ * @returns The processed cell content with newlines replaced.
+ */
+export function replaceNewlinesInCell(cell: string): string {
+  return cell.replace(/\n/g, '<br>');
+}
+
+/**
  * Formats a single row into a Markdown-formatted string.
  * @param columnCount - The number of columns in the table.
  * @param row - The data of the current row.
  * @param columnAlignments - Alignment settings for each column.
  * @param columnWidths - Widths of each column.
  * @param useTabs - Flag to use tabs between columns.
+ * @param replaceNewlines - Flag to replace newlines with <br> tags.
  * @returns The Markdown string for the row.
  */
 export function formatMarkdownRow(
@@ -38,7 +48,8 @@ export function formatMarkdownRow(
   row: TableRow,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
   columnWidths?: readonly number[],
-  useTabs = false
+  useTabs = false,
+  replaceNewlines = false
 ): string {
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
   const adjustedAlignments =
@@ -53,7 +64,10 @@ export function formatMarkdownRow(
 
   let markdownRow = '|';
   for (let i = 0; i < columnCount; i++) {
-    const cell = row[i] ?? '';
+    let cell = row[i] ?? '';
+    if (replaceNewlines) {
+      cell = replaceNewlinesInCell(cell);
+    }
     const alignment = adjustedAlignments[i] ?? defaultAlignment;
     const targetWidth = columnWidths ? columnWidths[i] : cell.length;
 
@@ -131,13 +145,15 @@ export function formatAlignmentRow(
  * @param columnAlignments - Alignment settings for each column.
  * @param adjustColumnWidths - Flag to adjust column widths based on content.
  * @param useTabs - Flag to use tabs between columns.
+ * @param replaceNewlines - Flag to replace newlines with <br> tags.
  * @returns The complete Markdown table string.
  */
 export function generateMarkdownTableString(
   tableData: MarkdownTableData,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
   adjustColumnWidths = true,
-  useTabs = false
+  useTabs = false,
+  replaceNewlines = false
 ): string {
   const headerColumnCount = tableData.header.length;
   const bodyColumnCounts = tableData.rows.map((row: TableRow) => row.length);
@@ -155,7 +171,8 @@ export function generateMarkdownTableString(
     tableData.header,
     columnAlignments,
     columnWidths,
-    useTabs
+    useTabs,
+    replaceNewlines
   );
   const markdownAlignmentRow = formatAlignmentRow(
     maxColumnCount,
@@ -171,7 +188,8 @@ export function generateMarkdownTableString(
         row,
         columnAlignments,
         columnWidths,
-        useTabs
+        useTabs,
+        replaceNewlines
       )
     )
     .join('\n');

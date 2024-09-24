@@ -46,16 +46,27 @@ export interface MarkdownTableProps {
    * When `true`, column widths are not adjusted based on content.
    * @default false
    */
-  compact?: boolean;
+  isCompact?: boolean;
 
   /**
    * Optional flag to add tabs between columns in the Markdown table.
    * @default false
    */
-  useTabs?: boolean;
+  hasTabs?: boolean;
 
   /**
    * Optional CSS class for styling the rendered Markdown table.
    */
   className?: string;
+
+  /**
+   * Optional flag to replace newlines with <br> tags in table cells.
+   * @default false
+   */
+  canReplaceNewlines?: boolean;
+
+  /**
+   * Optional callback function to receive the generated Markdown table string.
+   */
+  onTableCreate?: (markdownString: string) => void;
 }

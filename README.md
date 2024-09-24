@@ -12,8 +12,10 @@ A React component that converts structured data into Markdown table syntax and d
 - **Easy Integration:** Simple API for converting data arrays into Markdown table strings.
 - **Customizable Alignments:** Specify column alignments (left, center, right, or none) with ease.
 - **Compact Mode:** Option to generate compact tables with minimal padding.
-- **Header Options:** Choose whether to include a header row or use default alphabetical headers.
 - **Tab-Separated Columns:** Option to add tabs between columns.
+- **Newline Handling: Option** to replace newlines in cells with HTML line breaks.
+- **Raw Markdown Access:** Retrieve the generated Markdown string for further processing or usage.
+- **Header Options:** Choose whether to include a header row or use default alphabetical headers.
 - **Flexible Styling:** Apply custom CSS classes for styling the rendered Markdown.
 
 ## 📦 Installation
@@ -30,14 +32,16 @@ npm install react-markdown-table-ts
 
 ### MarkdownTable Props
 
-|        Prop        |                     Type                      |   Default   |                 Description                 |
-| :----------------: | :-------------------------------------------: | :---------: | :-----------------------------------------: |
-|       `data`       |                 `string[][]`                  | (required)  |   The table data as a 2D array of strings   |
-|    `hasHeader`     |                   `boolean`                   |   `true`    | Whether the first row of `data` is a header |
-| `columnAlignments` | `('left' \| 'center' \| 'right' \| 'none')[]` |    `[]`     |          Alignment for each column          |
-|     `compact`      |                   `boolean`                   |   `false`   |          Use minimal column widths          |
-|    `className`     |                   `string`                    | `undefined` |      CSS class for the rendered table       |
-|     `useTabs`      |                   `boolean`                   |   `false`   |       Add tabs between table columns        |
+|         Prop         |                     Type                      |   Default   |                 Description                 |
+| :------------------: | :-------------------------------------------: | :---------: | :-----------------------------------------: |
+|        `data`        |                 `string[][]`                  | (required)  |   The table data as a 2D array of strings   |
+|  `columnAlignments`  | `('left' \| 'center' \| 'right' \| 'none')[]` |    `[]`     |          Alignment for each column          |
+|     `isCompact`      |                   `boolean`                   |   `false`   |          Use minimal column widths          |
+|     `className`      |                   `string`                    | `undefined` |      CSS class for the rendered table       |
+|      `hasTabs`       |                   `boolean`                   |   `false`   |       Add tabs between table columns        |
+| `canReplaceNewlines` |                   `boolean`                   |   `false`   | Replace newlines in cells with `<br>` tags  |
+|   `onTableCreate`    |      `(markdownString: string) => void`       | `undefined` |   Callback to receive the Markdown string   |
+|     `hasHeader`      |                   `boolean`                   |   `true`    | Whether the first row of `data` is a header |
 
 ## 🚀 Usage
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import {MarkdownTableProps} from './types';
+import React, {useEffect, useMemo} from 'react';
+import {MarkdownTableProps, TableRow} from './types';
 import {generateMarkdownTableString} from './utils';
 import {MarkdownTableError} from './errors';
 import {validateMarkdownTableProps} from './validation';
@@ -13,58 +13,66 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   data,
   hasHeader = true,
   columnAlignments = [],
-  compact = false,
-  useTabs = false,
+  isCompact = false,
+  hasTabs = false,
+  canReplaceNewlines = false,
   className,
+  onTableCreate,
 }) => {
-  // Invert compact to get adjustColumnWidths
-  const adjustColumnWidths = !compact;
-
-  // Validate props
-  try {
-    // Pass the original compact prop and the new useTabs prop to the validator
-    validateMarkdownTableProps({
-      data,
-      hasHeader,
-      columnAlignments,
-      compact,
-      useTabs,
-    });
-  } catch (error) {
-    if (error instanceof MarkdownTableError) {
-      return <div className={className}>Error: {error.message}</div>;
-    } else {
-      throw error;
-    }
-  }
-
-  // Determine header and rows based on hasHeader
-  const tableData = hasHeader
-    ? {
-        header: data[0],
-        rows: data.slice(1),
-      }
-    : {
-        header: generateAlphabetHeaders(data[0].length),
-        rows: data,
-      };
+  // Invert isCompact to get adjustColumnWidths
+  const adjustColumnWidths = !isCompact;
 
   // Generate Markdown table
-  let markdownSyntax: string;
-  try {
-    markdownSyntax = generateMarkdownTableString(
-      tableData,
-      columnAlignments,
-      adjustColumnWidths,
-      useTabs
-    );
-  } catch (error) {
-    if (error instanceof MarkdownTableError) {
-      return <div className={className}>Error: {error.message}</div>;
-    } else {
-      throw error;
+  const markdownSyntax = useMemo(() => {
+    try {
+      validateMarkdownTableProps({
+        data,
+        hasHeader,
+        columnAlignments,
+        isCompact,
+        hasTabs,
+        canReplaceNewlines,
+      });
+
+      // Determine header and rows based on hasHeader
+      const tableData = hasHeader
+        ? {
+            header: data[0],
+            rows: data.slice(1),
+          }
+        : {
+            header: generateAlphabetHeaders(data[0].length),
+            rows: data,
+          };
+
+      return generateMarkdownTableString(
+        tableData,
+        columnAlignments,
+        adjustColumnWidths,
+        hasTabs,
+        canReplaceNewlines
+      );
+    } catch (error) {
+      if (error instanceof MarkdownTableError) {
+        return `Error: ${error.message}`;
+      } else {
+        throw error;
+      }
     }
-  }
+  }, [
+    data,
+    hasHeader,
+    columnAlignments,
+    isCompact,
+    hasTabs,
+    canReplaceNewlines,
+  ]);
+
+  useEffect(() => {
+    if (onTableCreate) {
+      onTableCreate(markdownSyntax);
+    }
+  }, [markdownSyntax, onTableCreate]);
 
   return <pre className={className}>{markdownSyntax}</pre>;
 };
@@ -97,3 +105,6 @@ function getColumnName(index: number): string {
   }
   return name;
 }
+
+export type {MarkdownTableProps, TableRow};
+export {MarkdownTableError};

@@ -13,8 +13,9 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
     data,
     hasHeader = true,
     columnAlignments,
-    compact = false,
-    useTabs = false,
+    isCompact = false,
+    hasTabs = false,
+    canReplaceNewlines = false,
   } = props;
 
   if (!data || !Array.isArray(data)) {
@@ -83,13 +84,18 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
     });
   }
 
-  // Validate compact
-  if (typeof compact !== 'boolean') {
-    throw new MarkdownTableError("'compact' must be a boolean.");
+  // Validate isCompact
+  if (typeof isCompact !== 'boolean') {
+    throw new MarkdownTableError("'isCompact' must be a boolean.");
   }
 
-  // Validate useTabs
-  if (typeof useTabs !== 'boolean') {
-    throw new MarkdownTableError("'useTabs' must be a boolean.");
+  // Validate hasTabs
+  if (typeof hasTabs !== 'boolean') {
+    throw new MarkdownTableError("'hasTabs' must be a boolean.");
+  }
+
+  // Validate canReplaceNewlines
+  if (typeof canReplaceNewlines !== 'boolean') {
+    throw new MarkdownTableError("'canReplaceNewlines' must be a boolean.");
   }
 }

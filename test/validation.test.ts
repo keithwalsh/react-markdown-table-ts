@@ -65,11 +65,29 @@ describe('validateMarkdownTableProps', () => {
     expect(() => validateMarkdownTableProps(props)).toThrow(MarkdownTableError);
   });
 
-  it('throws error for invalid compact prop', () => {
+  it('throws error for invalid isCompact prop', () => {
     expect(() =>
       validateMarkdownTableProps({
         data: validData,
-        compact: 'true' as unknown as boolean,
+        isCompact: 'true' as unknown as boolean,
+      })
+    ).toThrow(MarkdownTableError);
+  });
+
+  it('throws error for invalid hasTabs prop', () => {
+    expect(() =>
+      validateMarkdownTableProps({
+        data: validData,
+        hasTabs: 'true' as unknown as boolean,
+      })
+    ).toThrow(MarkdownTableError);
+  });
+
+  it('throws error for invalid canReplaceNewlines prop', () => {
+    expect(() =>
+      validateMarkdownTableProps({
+        data: validData,
+        canReplaceNewlines: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);
   });
