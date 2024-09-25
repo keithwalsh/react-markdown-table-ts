@@ -10,7 +10,7 @@ import {validateMarkdownTableProps} from './validation';
  * @returns A <pre> element containing the Markdown table syntax or an error message.
  */
 export const MarkdownTable: React.FC<MarkdownTableProps> = ({
-  data,
+  data = null,
   hasHeader = true,
   columnAlignments = [],
   isCompact = false,
@@ -24,6 +24,9 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
 
   // Generate Markdown table
   const markdownSyntax = useMemo(() => {
+    if (data === null) {
+      return 'Error: No data provided for the table.';
+    }
     try {
       validateMarkdownTableProps({
         data,

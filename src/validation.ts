@@ -18,9 +18,9 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
     canReplaceNewlines = false,
   } = props;
 
-  if (!data || !Array.isArray(data)) {
+  if (!Array.isArray(data)) {
     throw new MarkdownTableError(
-      "The 'data' prop must be a non-empty two-dimensional array."
+      "The 'data' prop must be a two-dimensional array."
     );
   }
 

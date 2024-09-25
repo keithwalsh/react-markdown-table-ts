@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -38,7 +38,7 @@
     "converter"
   ],
   "author": "Keith Walsh",
-  "license": "EUPL-1.2",
+  "license": "MIT",
   "repository": "https://github.com/keithwalsh/react-markdown-table-ts.git",
   "peerDependencies": {
     "react": "^18.2.0",

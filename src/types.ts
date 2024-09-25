@@ -26,8 +26,9 @@ export interface MarkdownTableProps {
   /**
    * The entire table data as a two-dimensional array.
    * If `hasHeader` is true, the first row is treated as the header.
+   * @default null
    */
-  data: string[][];
+  data?: string[][] | null;
 
   /**
    * Indicates whether the first row of `data` is a header.
