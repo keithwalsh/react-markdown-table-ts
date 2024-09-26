@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import {MarkdownTableProps, TableRow} from './types';
+import {MarkdownTableProps} from './types';
 import {generateMarkdownTableString} from './utils';
 import {MarkdownTableError} from './errors';
 import {validateMarkdownTableProps} from './validation';
@@ -109,5 +109,5 @@ function getColumnName(index: number): string {
   return name;
 }
 
-export type {MarkdownTableProps, TableRow};
+export type {MarkdownTableProps, TableRow, MarkdownTableData} from './types';
 export {MarkdownTableError};

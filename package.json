@@ -1,10 +1,10 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
