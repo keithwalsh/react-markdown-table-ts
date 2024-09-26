@@ -21,6 +21,7 @@
     "posttest": "npm run lint",
     "test": "jest --config jest.config.js",
     "test:watch": "jest --config jest.config.js --watch",
+    "test:coverage": "jest --coverage --coverageReporters=text-lcov",
     "release": "standard-version"
   },
   "keywords": [
