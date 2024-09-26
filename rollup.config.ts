@@ -1,6 +1,5 @@
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
-import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -20,13 +19,15 @@ export default {
   ],
   external: ['react', 'react-dom'],
   plugins: [
-    nodeResolve({
+    resolve({
       browser: true,
     }),
-    resolve(),
     commonjs(),
     typescript({
-      useTsconfigDeclarationDir: true,
+      tsconfig: './tsconfig.json',
+      declaration: true,
+      declarationDir: './dist',
+      rootDir: './src',
     }),
   ],
 };

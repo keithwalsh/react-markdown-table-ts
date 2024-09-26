@@ -11,7 +11,7 @@ describe('MarkdownTable', () => {
   ];
 
   it('renders a compact table', () => {
-    render(<MarkdownTable data={sampleData} isCompact={true} />);
+    render(<MarkdownTable inputData={sampleData} isCompact={true} />);
     const preElement = screen.getByText(/\| Header 1/);
     expect(preElement).toBeInTheDocument();
     expect(preElement.textContent).toContain(
@@ -33,7 +33,9 @@ describe('MarkdownTable', () => {
       ['Single line', 'Line 1\nLine 2\nLine 3'],
     ];
 
-    render(<MarkdownTable data={dataWithNewlines} canReplaceNewlines={true} />);
+    render(
+      <MarkdownTable inputData={dataWithNewlines} canReplaceNewlines={true} />
+    );
 
     const preElement = screen.getByRole('code');
     expect(preElement).toBeInTheDocument();
@@ -53,7 +55,7 @@ describe('MarkdownTable', () => {
     const mockOnTableCreate = jest.fn();
 
     render(
-      <MarkdownTable data={sampleData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={sampleData} onTableCreate={mockOnTableCreate} />
     );
 
     const codeElement = screen.getByRole('code');
@@ -88,7 +90,7 @@ describe('MarkdownTable', () => {
     const mockOnTableCreate = jest.fn();
 
     const {rerender} = render(
-      <MarkdownTable data={sampleData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={sampleData} onTableCreate={mockOnTableCreate} />
     );
 
     expect(mockOnTableCreate).toHaveBeenCalledTimes(1);
@@ -100,7 +102,7 @@ describe('MarkdownTable', () => {
     ];
 
     rerender(
-      <MarkdownTable data={newData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={newData} onTableCreate={mockOnTableCreate} />
     );
 
     // Check if onTableCreate was called again
@@ -115,7 +117,7 @@ describe('MarkdownTable', () => {
   });
 
   it('renders the table with correct markdown syntax', () => {
-    render(<MarkdownTable data={sampleData} />);
+    render(<MarkdownTable inputData={sampleData} />);
 
     const codeElement = screen.getByRole('code');
 

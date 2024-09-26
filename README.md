@@ -34,10 +34,10 @@ npm install react-markdown-table-ts
 
 |         Prop         |                     Type                      |   Default   |                 Description                 |
 | :------------------: | :-------------------------------------------: | :---------: | :-----------------------------------------: |
-|        `data`        |                 `string[][]`                  | (required)  |   The table data as a 2D array of strings   |
+|        `data`        |                 `string[][]`                  |   `null`    |   The table data as a 2D array of strings   |
 |  `columnAlignments`  | `('left' \| 'center' \| 'right' \| 'none')[]` |    `[]`     |          Alignment for each column          |
 |     `isCompact`      |                   `boolean`                   |   `false`   |          Use minimal column widths          |
-|     `className`      |                   `string`                    | `undefined` |      CSS class for the rendered table       |
+|     `className`      |                   `string`                    | `undefined` |        CSS class for the `<pre>` tag        |
 |      `hasTabs`       |                   `boolean`                   |   `false`   |       Add tabs between table columns        |
 | `canReplaceNewlines` |                   `boolean`                   |   `false`   | Replace newlines in cells with `<br>` tags  |
 |   `onTableCreate`    |      `(markdownString: string) => void`       | `undefined` |   Callback to receive the Markdown string   |

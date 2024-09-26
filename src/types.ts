@@ -8,15 +8,9 @@ export type TableRow = readonly string[];
 /**
  * Represents the structure of a Markdown table.
  */
-export interface MarkdownTableData {
-  /**
-   * The header row of the table.
-   */
-  header: string[];
-  /**
-   * The body rows of the table.
-   */
-  rows: readonly string[][];
+export interface InputData {
+  inputDataHeader: string[]; // The header row of the table.
+  inputDataBody: readonly string[][]; // The body rows of the table.
 }
 
 /**
@@ -28,7 +22,7 @@ export interface MarkdownTableProps {
    * If `hasHeader` is true, the first row is treated as the header.
    * @default null
    */
-  data?: string[][] | null;
+  inputData?: string[][] | null;
 
   /**
    * Indicates whether the first row of `data` is a header.
@@ -69,5 +63,5 @@ export interface MarkdownTableProps {
   /**
    * Optional callback function to receive the generated Markdown table string.
    */
-  onTableCreate?: (markdownString: string) => void;
+  onTableCreate?: (markdownTableString: string) => void;
 }

@@ -1,5 +1,7 @@
-import {validateMarkdownTableProps} from '../src/validation';
-import {MarkdownTableError} from '../src/errors';
+import {
+  MarkdownTableError,
+  validateMarkdownTableProps,
+} from '../src/validation';
 import {MarkdownTableProps} from '../src/types';
 
 describe('validateMarkdownTableProps', () => {
@@ -10,11 +12,13 @@ describe('validateMarkdownTableProps', () => {
   ];
 
   it('validates correct props without throwing', () => {
-    expect(() => validateMarkdownTableProps({data: validData})).not.toThrow();
+    expect(() =>
+      validateMarkdownTableProps({inputData: validData})
+    ).not.toThrow();
   });
 
   it('throws error for empty data', () => {
-    expect(() => validateMarkdownTableProps({data: []})).toThrow(
+    expect(() => validateMarkdownTableProps({inputData: []})).toThrow(
       MarkdownTableError
     );
   });
@@ -22,7 +26,7 @@ describe('validateMarkdownTableProps', () => {
   it('throws error for invalid data type', () => {
     expect(() =>
       validateMarkdownTableProps({
-        data: 'not an array' as unknown as string[][],
+        inputData: 'not an array' as unknown as string[][],
       })
     ).toThrow(MarkdownTableError);
   });
@@ -30,7 +34,7 @@ describe('validateMarkdownTableProps', () => {
   it('throws error for invalid header when hasHeader is true', () => {
     const invalidData: string[][] = [[], ['Row 1']];
     expect(() =>
-      validateMarkdownTableProps({data: invalidData, hasHeader: true})
+      validateMarkdownTableProps({inputData: invalidData, hasHeader: true})
     ).toThrow(MarkdownTableError);
   });
 
@@ -40,7 +44,9 @@ describe('validateMarkdownTableProps', () => {
       ['Row 1'],
     ];
     expect(() =>
-      validateMarkdownTableProps({data: invalidData as unknown as string[][]})
+      validateMarkdownTableProps({
+        inputData: invalidData as unknown as string[][],
+      })
     ).toThrow(MarkdownTableError);
   });
 
@@ -50,13 +56,15 @@ describe('validateMarkdownTableProps', () => {
       ['Row 1', 2],
     ];
     expect(() =>
-      validateMarkdownTableProps({data: invalidData as unknown as string[][]})
+      validateMarkdownTableProps({
+        inputData: invalidData as unknown as string[][],
+      })
     ).toThrow(MarkdownTableError);
   });
 
   it('throws error for invalid column alignment', () => {
     const props: MarkdownTableProps = {
-      data: validData,
+      inputData: validData,
       columnAlignments: [
         'left',
         'invalid' as 'left' | 'center' | 'right' | 'none',
@@ -68,7 +76,7 @@ describe('validateMarkdownTableProps', () => {
   it('throws error for invalid isCompact prop', () => {
     expect(() =>
       validateMarkdownTableProps({
-        data: validData,
+        inputData: validData,
         isCompact: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);
@@ -77,7 +85,7 @@ describe('validateMarkdownTableProps', () => {
   it('throws error for invalid hasTabs prop', () => {
     expect(() =>
       validateMarkdownTableProps({
-        data: validData,
+        inputData: validData,
         hasTabs: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);
@@ -86,7 +94,7 @@ describe('validateMarkdownTableProps', () => {
   it('throws error for invalid canReplaceNewlines prop', () => {
     expect(() =>
       validateMarkdownTableProps({
-        data: validData,
+        inputData: validData,
         canReplaceNewlines: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);

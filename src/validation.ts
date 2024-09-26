@@ -1,30 +1,41 @@
 // src/validation.ts
 
 import {MarkdownTableProps} from './types';
-import {MarkdownTableError} from './errors';
 
+/**
+ * Custom error class for handling Markdown table generation errors.
+ */
+export class MarkdownTableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MarkdownTableError';
+    Object.setPrototypeOf(this, MarkdownTableError.prototype);
+  }
+}
 /**
  * Validates the structure of the table data based on the `hasHeader` flag.
  * Throws an error if validation fails.
- * @param props - The props to validate.
+ * @param markdownTableProps - The props to validate.
  */
-export function validateMarkdownTableProps(props: MarkdownTableProps): void {
+export function validateMarkdownTableProps(
+  markdownTableProps: MarkdownTableProps
+): void {
   const {
-    data,
+    inputData,
     hasHeader = true,
     columnAlignments,
     isCompact = false,
     hasTabs = false,
     canReplaceNewlines = false,
-  } = props;
+  } = markdownTableProps;
 
-  if (!Array.isArray(data)) {
+  if (!Array.isArray(inputData)) {
     throw new MarkdownTableError(
       "The 'data' prop must be a two-dimensional array."
     );
   }
 
-  if (data.length === 0) {
+  if (inputData.length === 0) {
     throw new MarkdownTableError(
       "The 'data' array must contain at least one row."
     );
@@ -32,7 +43,7 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
 
   // If hasHeader is true, ensure the first row exists and is valid
   if (hasHeader) {
-    const header = data[0];
+    const header = inputData[0];
     if (!Array.isArray(header) || header.length === 0) {
       throw new MarkdownTableError(
         "The first row of 'data' must be a non-empty array representing the header."
@@ -50,7 +61,7 @@ export function validateMarkdownTableProps(props: MarkdownTableProps): void {
   }
 
   // Validate each row
-  data.forEach((row, rowIndex) => {
+  inputData.forEach((row, rowIndex) => {
     if (!Array.isArray(row)) {
       throw new MarkdownTableError(
         `Row ${rowIndex + 1} in 'data' must be an array of strings.`
