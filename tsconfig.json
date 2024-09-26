@@ -1,7 +1,7 @@
 {
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": "./",
     "declarationDir": "./dist",
     "outDir": "./dist",
     "target": "es5",
@@ -19,6 +19,6 @@
     "isolatedModules": true,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.tsx", "**/*.test.ts"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist"]
 }

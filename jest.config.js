@@ -1,21 +1,22 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/test/jest.setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  modulePaths: ['<rootDir>/src'],
   roots: ['<rootDir>/src', '<rootDir>/test'],
   testRegex: '(/test/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
   transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.json',
-        // You can add more ts-jest config options here if needed
-      },
-    ],
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  transformIgnorePatterns: [
+    '/node_modules/', // Ignore transforming files in node_modules
+    // Add other patterns here if needed
+  ],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', 'jest.setup.ts'],
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -31,5 +32,4 @@ module.exports = {
       statements: 80,
     },
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };

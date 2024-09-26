@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -45,16 +45,18 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-commonjs": "^26.0.3",
+    "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^11.1.6",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@types/jest": "^29.5.13",
     "@types/node": "20.12.7",
+    "@types/prismjs": "^1.26.4",
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
     "gts": "^5.3.1",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "react": "^18.2.0",
@@ -64,5 +66,8 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "prismjs": "^1.29.0"
   }
 }

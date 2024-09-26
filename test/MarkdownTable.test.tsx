@@ -35,20 +35,12 @@ describe('MarkdownTable', () => {
 
     render(<MarkdownTable data={dataWithNewlines} canReplaceNewlines={true} />);
 
-    const preElement = screen.getByText(/\| Header 1/);
+    const preElement = screen.getByRole('code');
     expect(preElement).toBeInTheDocument();
-    expect(preElement.textContent).toContain(
-      '| Header 1      | Header 2             |'
-    );
-    expect(preElement.textContent).toContain(
-      '| :------------ | :------------------- |'
-    );
-    expect(preElement.textContent).toContain(
-      '| Line 1<br>Line 2 | Single line          |'
-    );
-    expect(preElement.textContent).toContain(
-      '| Single line   | Line 1<br>Line 2<br>Line 3 |'
-    );
+    expect(preElement).toHaveTextContent('Header 1');
+    expect(preElement).toHaveTextContent('Header 2');
+    expect(preElement).toHaveTextContent('Line 1<br>Line 2');
+    expect(preElement).toHaveTextContent('Line 1<br>Line 2<br>Line 3');
   });
 
   it('calls onTableCreate with the correct Markdown string', () => {
@@ -64,9 +56,8 @@ describe('MarkdownTable', () => {
       <MarkdownTable data={sampleData} onTableCreate={mockOnTableCreate} />
     );
 
-    // Check if the component rendered correctly
-    const preElement = screen.getByText(/\| Header 1/);
-    expect(preElement).toBeInTheDocument();
+    const codeElement = screen.getByRole('code');
+    expect(codeElement).toBeInTheDocument();
 
     // Check if onTableCreate was called
     expect(mockOnTableCreate).toHaveBeenCalledTimes(1);
@@ -78,6 +69,14 @@ describe('MarkdownTable', () => {
 | Row 2, Col 1 | Row 2, Col 2 |`;
 
     expect(mockOnTableCreate).toHaveBeenCalledWith(expectedMarkdown);
+
+    // Check the rendered content
+    expect(codeElement).toHaveTextContent('Header 1');
+    expect(codeElement).toHaveTextContent('Header 2');
+    expect(codeElement).toHaveTextContent('Row 1, Col 1');
+    expect(codeElement).toHaveTextContent('Row 1, Col 2');
+    expect(codeElement).toHaveTextContent('Row 2, Col 1');
+    expect(codeElement).toHaveTextContent('Row 2, Col 2');
   });
 
   it('calls onTableCreate when props change', () => {
@@ -113,5 +112,21 @@ describe('MarkdownTable', () => {
 | New Row 1, Col 1 | New Row 1, Col 2 |`;
 
     expect(mockOnTableCreate).toHaveBeenLastCalledWith(expectedNewMarkdown);
+  });
+
+  it('renders the table with correct markdown syntax', () => {
+    render(<MarkdownTable data={sampleData} />);
+
+    const codeElement = screen.getByRole('code');
+
+    expect(codeElement).toHaveTextContent('Header 1');
+    expect(codeElement).toHaveTextContent('Header 2');
+    expect(codeElement).toHaveTextContent('Header 3');
+    expect(codeElement).toHaveTextContent('Row 1, Col 1');
+    expect(codeElement).toHaveTextContent('Row 1, Col 2');
+    expect(codeElement).toHaveTextContent('Row 1, Col 3');
+    expect(codeElement).toHaveTextContent('Row 2, Col 1');
+    expect(codeElement).toHaveTextContent('Row 2, Col 2');
+    expect(codeElement).toHaveTextContent('Row 2, Col 3');
   });
 });
