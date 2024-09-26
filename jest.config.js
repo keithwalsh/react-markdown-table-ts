@@ -22,4 +22,13 @@ module.exports = {
       babelConfig: true,
     },
   },
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['lcov', 'text-summary'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/index.tsx',
+    '!**/node_modules/**',
+  ],
 };
