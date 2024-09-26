@@ -1,7 +1,7 @@
 {
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
@@ -21,6 +21,6 @@
     "jsx": "react-jsx",
     "emitDeclarationOnly": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "test"]
+  "include": ["src", "test", "jest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
 }

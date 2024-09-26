@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -19,9 +19,8 @@
     "fix": "gts fix",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage --coverageReporters=text-lcov",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --config jest.config.js --watch",
     "release": "standard-version"
   },
   "keywords": [
