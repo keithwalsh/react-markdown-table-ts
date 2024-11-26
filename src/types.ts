@@ -64,4 +64,10 @@ export interface MarkdownTableProps {
    * Optional callback function to receive the generated Markdown table string.
    */
   onTableCreate?: (markdownTableString: string) => void;
+
+  /**
+   * Optional theme for the Markdown table.
+   * Acceptable values are 'light' or 'dark'.
+   */
+  theme?: 'light' | 'dark'
 }
