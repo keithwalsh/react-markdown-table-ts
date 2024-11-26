@@ -4,3 +4,6 @@ build/
 ref/
 coverage/
 *.npmignore
+tree.py
+.cursorrules
+.treeignore
