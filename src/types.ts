@@ -76,4 +76,6 @@ export interface MarkdownTableProps {
    * @default true
    */
   hasPadding?: boolean;
+
+  preStyle?: React.CSSProperties;
 }
