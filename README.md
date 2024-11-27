@@ -3,6 +3,8 @@
 [![NPM Version](https://img.shields.io/npm/v/react-markdown-table-ts.svg)](https://www.npmjs.com/package/react-markdown-table-ts)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 [![codecov](https://codecov.io/gh/keithwalsh/react-markdown-table-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/keithwalsh/react-markdown-table-ts)
+[![Package Quality](https://packagequality.com/shield/react-markdown-table-ts.svg)](https://packagequality.com/#?package=react-markdown-table-ts)
+[![Code Climate](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts/badges/gpa.svg)](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts)
 
 A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.
 

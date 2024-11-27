@@ -3,6 +3,25 @@
 import {TableRow, InputData} from './types';
 
 /**
+ * Adjusts column alignments array to match the required column count
+ * @param columnAlignments - Original alignment settings
+ * @param columnCount - Required number of columns
+ * @returns Adjusted array of column alignments
+ */
+function getAdjustedAlignments(
+  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnCount: number
+): ('left' | 'right' | 'center' | 'none')[] {
+  const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left'
+  return columnAlignments.length < columnCount
+    ? [
+        ...columnAlignments,
+        ...Array(columnCount - columnAlignments.length).fill(defaultAlignment),
+      ]
+    : columnAlignments
+}
+
+/**
  * Calculates the maximum width for each column based on the content.
  * @param tableRows - All rows (header and body) of the table.
  * @param maxColumnCount - The maximum number of columns in the table.
@@ -44,16 +63,7 @@ export function formatMarkdownRow(
   canReplaceNewlines = false,
   hasPadding = true
 ): string {
-  const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
-  const adjustedAlignments =
-    columnAlignments.length < columnCount
-      ? [
-          ...columnAlignments,
-          ...Array(columnCount - columnAlignments.length).fill(
-            defaultAlignment
-          ),
-        ]
-      : columnAlignments;
+  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount)
 
   let markdownRow = '|';
   for (let i = 0; i < columnCount; i++) {
@@ -61,7 +71,7 @@ export function formatMarkdownRow(
     if (canReplaceNewlines) {
       cell = replaceNewlinesInCell(cell);
     }
-    const alignment = adjustedAlignments[i] ?? defaultAlignment;
+    const alignment = adjustedAlignments[i] ?? 'left';
     const targetWidth = columnWidths ? columnWidths[i] : cell.length;
     const padding = hasPadding ? ' ' : '';
 
@@ -97,20 +107,11 @@ export function formatAlignmentRow(
   useTabs = false,
   hasPadding = true
 ): string {
-  const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
-  const adjustedAlignments =
-    columnAlignments.length < columnCount
-      ? [
-          ...columnAlignments,
-          ...Array(columnCount - columnAlignments.length).fill(
-            defaultAlignment
-          ),
-        ]
-      : columnAlignments;
+  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount)
 
   let alignmentRow = '|';
   for (let i = 0; i < columnCount; i++) {
-    const alignment = adjustedAlignments[i] ?? defaultAlignment;
+    const alignment = adjustedAlignments[i] ?? 'left';
     const targetWidth = columnWidths ? columnWidths[i] : 3;
     let alignIndicator = '';
     const padding = hasPadding ? ' ' : '';
