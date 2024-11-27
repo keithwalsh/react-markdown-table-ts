@@ -1,41 +1,99 @@
-// src/utils.ts
+import { TableRow, InputData, Alignment, TableConfig, AlignmentIndicator } from './types';
 
-import {TableRow, InputData} from './types';
+class CellFormatter {
+  private readonly padding: string;
 
-/**
- * Adjusts column alignments array to match the required column count
- * @param columnAlignments - Original alignment settings
- * @param columnCount - Required number of columns
- * @returns Adjusted array of column alignments
- */
-function getAdjustedAlignments(
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnCount: number
-): ('left' | 'right' | 'center' | 'none')[] {
-  const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left'
-  return columnAlignments.length < columnCount
-    ? [
-        ...Array.from(columnAlignments),
-        ...Array(columnCount - columnAlignments.length).fill(defaultAlignment),
-      ]
-    : Array.from(columnAlignments)
+  constructor(private config: TableConfig) {
+    this.padding = this.config.useTabs ? '\t' : (this.config.hasPadding ? ' ' : '');
+  }
+
+  formatCell(content: string, alignment: Alignment, width: number): string {
+    const totalWidth = width;
+
+    switch (alignment) {
+      case 'right':
+        return `${this.padding}${content.padStart(totalWidth)}${this.padding}`;
+      case 'center': {
+        const totalPadding = totalWidth - content.length;
+        const paddingLeft = Math.floor(totalPadding / 2);
+        const paddingRight = totalPadding - paddingLeft;
+        return `${this.padding}${' '.repeat(paddingLeft)}${content}${' '.repeat(paddingRight)}${this.padding}`;
+      }
+      default: // left or none
+        return `${this.padding}${content.padEnd(totalWidth)}${this.padding}`;
+    }
+  }
 }
 
-/**
- * Calculates the maximum width for each column based on the content.
- * @param tableRows - All rows (header and body) of the table.
- * @param maxColumnCount - The maximum number of columns in the table.
- * @returns An array of maximum widths for each column.
- */
+class AlignmentFormatter {
+  private static readonly indicators: AlignmentIndicator = {
+    left: (width: number) => `:${'-'.repeat(width - 1)}`,
+    right: (width: number) => `${'-'.repeat(width - 1)}:`,
+    center: (width: number) => `:${'-'.repeat(width - 2)}:`,
+    none: (width: number) => '-'.repeat(width),
+  };
+
+  static formatIndicator(alignment: Alignment, width: number): string {
+    return this.indicators[alignment](width);
+  }
+}
+
+class TableFormatter {
+  private readonly cellFormatter: CellFormatter;
+  private readonly adjustedAlignments: Alignment[];
+
+  constructor(private config: TableConfig) {
+    this.cellFormatter = new CellFormatter(config);
+    this.adjustedAlignments = this.getAdjustedAlignments();
+  }
+
+  private getAdjustedAlignments(): Alignment[] {
+    const defaultAlignment: Alignment = 'left';
+    return this.config.columnAlignments.length < this.config.columnCount
+      ? [
+          ...Array.from(this.config.columnAlignments),
+          ...Array(this.config.columnCount - this.config.columnAlignments.length).fill(defaultAlignment),
+        ]
+      : Array.from(this.config.columnAlignments);
+  }
+
+  formatRow(row: TableRow): string {
+    const formattedCells = Array.from({ length: this.config.columnCount }, (_, i) => {
+      let cell = row[i] ?? '';
+      if (this.config.replaceNewlines) {
+        cell = replaceNewlinesInCell(cell);
+      }
+      const alignment = this.adjustedAlignments[i];
+      const width = this.config.columnWidths ? this.config.columnWidths[i] : cell.length;
+
+      return this.cellFormatter.formatCell(cell, alignment, width);
+    });
+
+    return `|${formattedCells.join('|')}|`;
+  }
+
+  formatAlignmentRow(): string {
+    const padding = this.config.useTabs ? '\t' : (this.config.hasPadding ? ' ' : '');
+    const formattedColumns = Array.from({ length: this.config.columnCount }, (_, i) => {
+      const alignment = this.adjustedAlignments[i];
+      const width = this.config.columnWidths ? this.config.columnWidths[i] : 3;
+      const indicator = AlignmentFormatter.formatIndicator(alignment, width);
+      return `${padding}${indicator}${padding}`;
+    });
+
+    return `|${formattedColumns.join('|')}|`;
+  }
+}
+
 export function calculateColumnWidths(
   tableRows: readonly TableRow[],
   maxColumnCount: number
 ): number[] {
-  const widths: number[] = new Array(maxColumnCount).fill(3); // Minimum width of 3 for each column.
+  const widths: number[] = new Array(maxColumnCount).fill(3);
 
-  tableRows.forEach((currentRow: TableRow) => {
+  tableRows.forEach((row: TableRow) => {
     for (let i = 0; i < maxColumnCount; i++) {
-      const cell = currentRow[i] ?? '';
+      const cell = row[i] ?? '';
       widths[i] = Math.max(widths[i], cell.length);
     }
   });
@@ -43,119 +101,9 @@ export function calculateColumnWidths(
   return widths;
 }
 
-type Alignment = 'left' | 'right' | 'center' | 'none';
-
-function formatCell(
-  cell: string,
-  alignment: Alignment,
-  targetWidth: number,
-  useTabs: boolean,
-  padding: string
-): string {
-  const pad = useTabs ? '\t' : padding;
-
-  switch (alignment) {
-    case 'right':
-      return formatRightAlignedCell(cell, targetWidth, pad);
-    case 'center':
-      return formatCenterAlignedCell(cell, targetWidth, useTabs, padding);
-    default:
-      return formatLeftAlignedCell(cell, targetWidth, pad);
-  }
-}
-
-function formatRightAlignedCell(cell: string, targetWidth: number, pad: string): string {
-  return `${pad}${cell.padStart(targetWidth)}${pad}`;
-}
-
-function formatLeftAlignedCell(cell: string, targetWidth: number, pad: string): string {
-  return `${pad}${cell.padEnd(targetWidth)}${pad}`;
-}
-
-function formatCenterAlignedCell(
-  cell: string,
-  targetWidth: number,
-  useTabs: boolean,
-  padding: string
-): string {
-  const totalPadding = targetWidth - cell.length;
-  const paddingLeft = Math.floor(totalPadding / 2);
-  const paddingRight = totalPadding - paddingLeft;
-  return `${useTabs ? '\t' : padding}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : padding}`;
-}
-
-export function formatMarkdownRow(
-  columnCount: number,
-  currentRow: TableRow,
-  columnAlignments: readonly Alignment[],
-  columnWidths?: readonly number[],
-  useTabs = false,
-  canReplaceNewlines = false,
-  hasPadding = true
-): string {
-  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount);
-  const padding = hasPadding ? ' ' : '';
-
-  const formattedCells = Array.from({length: columnCount}, (_, i) => {
-    let cell = currentRow[i] ?? '';
-    if (canReplaceNewlines) {
-      cell = replaceNewlinesInCell(cell);
-    }
-    const alignment = adjustedAlignments[i] ?? 'left';
-    const targetWidth = columnWidths ? columnWidths[i] : cell.length;
-
-    return formatCell(cell, alignment, targetWidth, useTabs, padding);
-  });
-
-  return `|${formattedCells.join('|')}|`;
-}
-
-type AlignmentIndicator = {
-  left: (width: number) => string;
-  right: (width: number) => string;
-  center: (width: number) => string;
-  none: (width: number) => string;
-};
-
-const alignmentIndicators: AlignmentIndicator = {
-  left: (width: number) => `:${'-'.repeat(width - 1)}`,
-  right: (width: number) => `${'-'.repeat(width - 1)}:`,
-  center: (width: number) => `:${'-'.repeat(width - 2)}:`,
-  none: (width: number) => '-'.repeat(width),
-};
-
-function getAlignmentIndicator(
-  alignment: 'left' | 'right' | 'center' | 'none',
-  width: number
-): string {
-  return alignmentIndicators[alignment](width);
-}
-
-export function formatAlignmentRow(
-  columnCount: number,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths?: readonly number[],
-  useTabs = false,
-  hasPadding = true
-): string {
-  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount);
-  const padding = hasPadding ? ' ' : '';
-
-  const formattedColumns = Array.from({length: columnCount}, (_, i) => {
-    const alignment = adjustedAlignments[i] ?? 'left';
-    const targetWidth = columnWidths ? columnWidths[i] : 3;
-    const alignIndicator = getAlignmentIndicator(alignment, targetWidth);
-    return `${useTabs ? '\t' : padding}${alignIndicator}${useTabs ? '\t' : padding}`;
-  });
-
-  return `|${formattedColumns.join('|')}|`;
-}
-
 function calculateMaxColumnCount(inputData: InputData): number {
   const headerColumnCount = inputData.inputDataHeader.length;
-  const bodyColumnCounts = inputData.inputDataBody.map(
-    (currentRow: TableRow) => currentRow.length
-  );
+  const bodyColumnCounts = inputData.inputDataBody.map(row => row.length);
   return Math.max(headerColumnCount, ...bodyColumnCounts);
 }
 
@@ -172,95 +120,9 @@ function getColumnWidths(
     : undefined;
 }
 
-export function formatHeaderAndAlignment(
-  inputData: InputData,
-  maxColumnCount: number,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths: number[] | undefined,
-  useTabs: boolean,
-  replaceNewlines: boolean,
-  hasPadding: boolean
-): string {
-  const headerRow = formatMarkdownRow(
-    maxColumnCount,
-    inputData.inputDataHeader,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    replaceNewlines,
-    hasPadding
-  );
-
-  const alignmentRow = formatAlignmentRow(
-    maxColumnCount,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    hasPadding
-  );
-
-  return `${headerRow}\n${alignmentRow}`;
-}
-
-export function formatBodyRows(
-  inputData: InputData,
-  maxColumnCount: number,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths: number[] | undefined,
-  useTabs: boolean,
-  replaceNewlines: boolean,
-  hasPadding: boolean
-): string {
-  return inputData.inputDataBody
-    .map((currentRow: TableRow) =>
-      formatMarkdownRow(
-        maxColumnCount,
-        currentRow,
-        columnAlignments,
-        columnWidths,
-        useTabs,
-        replaceNewlines,
-        hasPadding
-      )
-    )
-    .join('\n');
-}
-
-export function formatTableRows(
-  inputData: InputData,
-  maxColumnCount: number,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  columnWidths: number[] | undefined,
-  useTabs: boolean,
-  replaceNewlines: boolean,
-  hasPadding: boolean
-): string {
-  const headerAndAlignment = formatHeaderAndAlignment(
-    inputData,
-    maxColumnCount,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    replaceNewlines,
-    hasPadding
-  );
-
-  const bodyRows = formatBodyRows(
-    inputData,
-    maxColumnCount,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    replaceNewlines,
-    hasPadding
-  );
-
-  return `${headerAndAlignment}\n${bodyRows}`;
-}
-
 export function generateMarkdownTableString(
   inputData: InputData,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnAlignments: readonly Alignment[],
   canAdjustColumnWidths = true,
   useTabs = false,
   replaceNewlines = false,
@@ -269,32 +131,30 @@ export function generateMarkdownTableString(
   const maxColumnCount = calculateMaxColumnCount(inputData);
   const columnWidths = getColumnWidths(inputData, maxColumnCount, canAdjustColumnWidths);
 
-  return formatTableRows(
-    inputData,
-    maxColumnCount,
+  const config: TableConfig = {
+    columnCount: maxColumnCount,
     columnAlignments,
     columnWidths,
     useTabs,
     replaceNewlines,
     hasPadding
-  ).trimEnd();
+  };
+
+  const tableFormatter = new TableFormatter(config);
+
+  const headerRow = tableFormatter.formatRow(inputData.inputDataHeader);
+  const alignmentRow = tableFormatter.formatAlignmentRow();
+  const bodyRows = inputData.inputDataBody
+    .map(row => tableFormatter.formatRow(row))
+    .join('\n');
+
+  return `${headerRow}\n${alignmentRow}\n${bodyRows}`.trimEnd();
 }
 
-/**
- * Replaces newline characters in a string with <br> tags.
- * @param cell - The cell content to process.
- * @returns The processed cell content with newlines replaced.
- */
 export function replaceNewlinesInCell(cell: string): string {
   return cell.replace(/\n/g, '<br>');
 }
 
-/**
- * Converts a zero-based column index to its corresponding Excel-style column name.
- * For example, 0 -> 'A', 1 -> 'B', ..., 25 -> 'Z', 26 -> 'AA', etc.
- * @param index - The zero-based column index.
- * @returns The corresponding column name.
- */
 export function getColumnName(index: number): string {
   let columnName = '';
   let currentIndex = index;
@@ -305,15 +165,6 @@ export function getColumnName(index: number): string {
   return columnName;
 }
 
-/**
- * Generates an array of alphabetic headers based on the specified column count.
- * @param columnCount - The number of columns.
- * @returns An array of column header names.
- */
 export function generateAlphabetHeaders(columnCount: number): string[] {
-  const alphabetHeaders: string[] = [];
-  for (let i = 0; i < columnCount; i++) {
-    alphabetHeaders.push(getColumnName(i));
-  }
-  return alphabetHeaders;
+  return Array.from({ length: columnCount }, (_, i) => getColumnName(i));
 }

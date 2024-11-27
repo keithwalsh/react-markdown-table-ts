@@ -88,3 +88,30 @@ export interface MarkdownTableProps {
    */
   showCopyButton?: boolean;
 }
+
+/**
+ * Represents the alignment options for table columns.
+ */
+export type Alignment = 'left' | 'right' | 'center' | 'none';
+
+/**
+ * Configuration for table formatting.
+ */
+export interface TableConfig {
+  columnCount: number;
+  columnAlignments: readonly Alignment[];
+  columnWidths?: readonly number[];
+  useTabs: boolean;
+  replaceNewlines: boolean;
+  hasPadding: boolean;
+}
+
+/**
+ * Functions to generate alignment indicators for table columns.
+ */
+export interface AlignmentIndicator {
+  left: (width: number) => string;
+  right: (width: number) => string;
+  center: (width: number) => string;
+  none: (width: number) => string;
+}
