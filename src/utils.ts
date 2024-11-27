@@ -168,3 +168,45 @@ export function getColumnName(index: number): string {
 export function generateAlphabetHeaders(columnCount: number): string[] {
   return Array.from({ length: columnCount }, (_, i) => getColumnName(i));
 }
+
+export function formatMarkdownRow(
+  columnCount: number,
+  currentRow: TableRow,
+  columnAlignments: readonly Alignment[],
+  columnWidths?: readonly number[],
+  useTabs = false,
+  canReplaceNewlines = false,
+  hasPadding = true
+): string {
+  const config: TableConfig = {
+    columnCount,
+    columnAlignments,
+    columnWidths,
+    useTabs,
+    replaceNewlines: canReplaceNewlines,
+    hasPadding
+  };
+
+  const tableFormatter = new TableFormatter(config);
+  return tableFormatter.formatRow(currentRow);
+}
+
+export function formatAlignmentRow(
+  columnCount: number,
+  columnAlignments: readonly Alignment[],
+  columnWidths?: readonly number[],
+  useTabs = false,
+  hasPadding = true
+): string {
+  const config: TableConfig = {
+    columnCount,
+    columnAlignments,
+    columnWidths,
+    useTabs,
+    replaceNewlines: false,
+    hasPadding
+  };
+
+  const tableFormatter = new TableFormatter(config);
+  return tableFormatter.formatAlignmentRow();
+}
