@@ -77,5 +77,14 @@ export interface MarkdownTableProps {
    */
   hasPadding?: boolean;
 
+  /**
+   * Optional CSS properties to apply to the pre element containing the Markdown table.
+   */
   preStyle?: React.CSSProperties;
+
+  /**
+   * Optional flag to show the copy button.
+   * @default false
+   */
+  showCopyButton?: boolean;
 }

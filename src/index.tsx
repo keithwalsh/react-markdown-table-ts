@@ -31,6 +31,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   onTableCreate,
   theme = 'light',
   preStyle,
+  showCopyButton = false,
 }) => {
   const adjustColumnWidths = !isCompact;
   const preElementRef = useRef<HTMLPreElement>(null);
@@ -110,25 +111,27 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         position: 'relative',
         isolation: 'isolate'
       }}>
-        <Tooltip
-          title={isCopied ? 'Copied!' : 'Copy markdown table syntax'}
-          placement="left-end"
-          arrow
-        >
-          <IconButton
-            onClick={handleCopy}
-            sx={{
-              position: 'absolute',
-              top: '12px',
-              right: '8px',
-              zIndex: 1
-            }}
-            aria-label="Copy to clipboard"
-            size="small"
+        {showCopyButton && (
+          <Tooltip
+            title={isCopied ? 'Copied!' : 'Copy markdown table syntax'}
+            placement="left-end"
+            arrow
           >
-            <ContentCopyIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              onClick={handleCopy}
+              sx={{
+                position: 'absolute',
+                top: '12px',
+                right: '8px',
+                zIndex: 1
+              }}
+              aria-label="Copy to clipboard"
+              size="small"
+            >
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
         <pre
           ref={preElementRef}
           className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}
