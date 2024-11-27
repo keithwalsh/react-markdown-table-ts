@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/keithwalsh/react-markdown-table-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/keithwalsh/react-markdown-table-ts)
 ![Build](https://github.com/keithwalsh/react-markdown-table-ts/actions/workflows/release.yaml/badge.svg)
 [![Code Climate](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts/badges/gpa.svg)](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts)
+[![GitHub branch status](https://img.shields.io/github/checks-status/keithwalsh/react-markdown-table-ts/HEAD)](https://github.com/keithwalsh/react-markdown-table-ts/commits/HEAD/)
 
 ## Overview
 This library provides a React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax.
@@ -63,7 +64,7 @@ interface MarkdownTableProps {
 />
 ```
 
-## Key Behaviors to Remember
+## Behaviors
 
 1. **Input Validation**:
 - Input must be non-null 2D string array
