@@ -1,13 +1,11 @@
 // src/index.tsx
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef} from 'react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import { MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { IconButton, Tooltip } from '@mui/material'
 import { validateInputData, MarkdownTableError } from './validation';
 
 // CSS styles
@@ -68,15 +66,6 @@ const applySyntaxHighlighting = (
   }, [markdownTableSyntax]);
 };
 
-const handleCopyAction = (
-  markdownTableSyntax: string,
-  setIsCopied: React.Dispatch<React.SetStateAction<boolean>>
-): void => {
-  navigator.clipboard.writeText(markdownTableSyntax);
-  setIsCopied(true);
-  setTimeout(() => setIsCopied(false), 2000);
-};
-
 export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   inputData = null,
   hasHeader = true,
@@ -84,16 +73,14 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   isCompact = false,
   hasTabs = false,
   hasPadding = true,
-  canReplaceNewlines = false,
+  convertLineBreaks = false,
   className,
-  onTableCreate,
+  onGenerate,
   theme = 'light',
   preStyle,
-  showCopyButton = false,
 }) => {
   const adjustColumnWidths = !isCompact;
   const preElementRef = useRef<HTMLPreElement>(null);
-  const [isCopied, setIsCopied] = useState(false);
 
   const markdownTableSyntax = useMemo(() => generateTableSyntax(
     inputData,
@@ -101,7 +88,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
     [...columnAlignments],
     adjustColumnWidths,
     hasTabs,
-    canReplaceNewlines,
+    convertLineBreaks,
     hasPadding
   ), [
     inputData,
@@ -109,15 +96,15 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
     columnAlignments,
     isCompact,
     hasTabs,
-    canReplaceNewlines,
+    convertLineBreaks,
     hasPadding,
   ]);
 
   useEffect(() => {
-    if (onTableCreate) {
-      onTableCreate(markdownTableSyntax);
+    if (onGenerate) {
+      onGenerate(markdownTableSyntax);
     }
-  }, [markdownTableSyntax, onTableCreate]);
+  }, [markdownTableSyntax, onGenerate]);
 
   applySyntaxHighlighting(preElementRef, markdownTableSyntax);
 
@@ -128,27 +115,6 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         position: 'relative',
         isolation: 'isolate'
       }}>
-        {showCopyButton && (
-          <Tooltip
-            title={isCopied ? 'Copied!' : 'Copy markdown table syntax'}
-            placement="left-end"
-            arrow
-          >
-            <IconButton
-              onClick={() => handleCopyAction(markdownTableSyntax, setIsCopied)}
-              sx={{
-                position: 'absolute',
-                top: '12px',
-                right: '8px',
-                zIndex: 1
-              }}
-              aria-label="Copy to clipboard"
-              size="small"
-            >
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
         <pre
           ref={preElementRef}
           className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}

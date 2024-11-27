@@ -92,7 +92,7 @@ export function validateMarkdownTableProps(markdownTableProps: MarkdownTableProp
     columnAlignments,
     isCompact = false,
     hasTabs = false,
-    canReplaceNewlines = false,
+    convertLineBreaks = false,
   } = markdownTableProps;
 
   if (!inputData) {
@@ -103,5 +103,5 @@ export function validateMarkdownTableProps(markdownTableProps: MarkdownTableProp
   validateHeader(inputData, hasHeader);
   validateRows(inputData);
   validateColumnAlignments(columnAlignments);
-  validateBooleanProps({ isCompact, hasTabs, canReplaceNewlines });
+  validateBooleanProps({ isCompact, hasTabs, convertLineBreaks });
 }

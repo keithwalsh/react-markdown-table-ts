@@ -95,7 +95,7 @@ describe('validateMarkdownTableProps', () => {
     expect(() =>
       validateMarkdownTableProps({
         inputData: validData,
-        canReplaceNewlines: 'true' as unknown as boolean,
+        convertLineBreaks: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);
   });

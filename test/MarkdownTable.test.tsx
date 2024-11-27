@@ -34,7 +34,7 @@ describe('MarkdownTable', () => {
     ];
 
     render(
-      <MarkdownTable inputData={dataWithNewlines} canReplaceNewlines={true} />
+      <MarkdownTable inputData={dataWithNewlines} convertLineBreaks={true} />
     );
 
     const preElement = screen.getByRole('code');
@@ -55,7 +55,7 @@ describe('MarkdownTable', () => {
     const mockOnTableCreate = jest.fn();
 
     render(
-      <MarkdownTable inputData={sampleData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={sampleData} onGenerate={mockOnTableCreate} />
     );
 
     const codeElement = screen.getByRole('code');
@@ -90,7 +90,7 @@ describe('MarkdownTable', () => {
     const mockOnTableCreate = jest.fn();
 
     const {rerender} = render(
-      <MarkdownTable inputData={sampleData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={sampleData} onGenerate={mockOnTableCreate} />
     );
 
     expect(mockOnTableCreate).toHaveBeenCalledTimes(1);
@@ -102,7 +102,7 @@ describe('MarkdownTable', () => {
     ];
 
     rerender(
-      <MarkdownTable inputData={newData} onTableCreate={mockOnTableCreate} />
+      <MarkdownTable inputData={newData} onGenerate={mockOnTableCreate} />
     );
 
     // Check if onTableCreate was called again

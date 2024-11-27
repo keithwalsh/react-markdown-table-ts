@@ -5,60 +5,94 @@
 ![Build](https://github.com/keithwalsh/react-markdown-table-ts/actions/workflows/release.yaml/badge.svg)
 [![Code Climate](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts/badges/gpa.svg)](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts)
 
-A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.
+## Overview
+This library provides a React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax.
 
-## ✨ Features
+## API
+```typescript
+interface MarkdownTableProps {
+    inputData?: string[][] | null;
+    columnAlignments?: readonly Alignment[];
+    isCompact?: boolean;
+    hasPadding?: boolean;
+    hasTabs?: boolean;
+    hasHeader?: boolean;
+    convertLineBreaks?: boolean;
+    theme?: 'light' | 'dark';
+    className?: string;
+    preStyle?: React.CSSProperties;
+    onGenerate?: (markdownTableString: string) => void;
+}
+```
+| Prop                 | Type                                    | Default     | Description                                                                        |
+|----------------------|-----------------------------------------|-------------|------------------------------------------------------------------------------------|
+| `inputData`          | `string[][] \| null`                    | `null`      | The outer array represents rows. The inner arrays represent cells within each row. |
+| `columnAlignments`   | `readonly Alignment[]`                  | `[]`	       | Acceptable values are 'left', 'center', 'right', or 'none'.                        |
+| `isCompact`          | `boolean`                               | `false`     | Disables column width alignment to provide a more compact markdown table string.   |
+| `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
+| `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
+| `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `data` is a header.                             |
+| `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells.                                    |
+| `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the color scheme of the <pre> element display.                            |
+| `className`          | `string`                                | `undefined` | Class will be applied to the <pre> element display.                                |
+| `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
+| `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
+## Usage Patterns
 
-- **Type Safety:** Built with TypeScript to provide strong type guarantees.
-- **Easy Integration:** Simple API for converting data arrays into Markdown table strings.
-- **Customizable Alignments:** Specify column alignments (left, center, right, or none) with ease.
-- **Compact Mode:** Option to generate compact tables with minimal padding.
-- **Tab-Separated Columns:** Option to add tabs between columns.
-- **Newline Handling: Option** to replace newlines in cells with HTML line breaks.
-- **Raw Markdown Access:** Retrieve the generated Markdown string for further processing or usage.
-- **Header Options:** Choose whether to include a header row or use default alphabetical headers.
-- **Flexible Styling:** Apply custom CSS classes for styling the rendered Markdown.
-
-## 📦 Installation
-
-Install the package via npm:
-
+1. **Basic Table Generation**:
+```typescript
+<MarkdownTable
+    inputData={[
+        ["Header 1", "Header 2"],
+        ["Row 1 Col 1", "Row 1 Col 2"]
+    ]}
+/>
+```
+2. **Column Alignment**:
+```typescript
+<MarkdownTable
+    inputData={data}
+    columnAlignments={['left', 'center', 'right']}
+/>
+```
+3. **Auto-Generated Headers**:
+```typescript
+<MarkdownTable
+    inputData={data}
+    hasHeader={false} // Will generate A, B, C... headers
+/>
 ```
 
-npm install react-markdown-table-ts
+## Key Behaviors to Remember
 
-```
+1. **Input Validation**:
+- Input must be non-null 2D string array
+- All rows should contain string values
+- Empty arrays are not allowed
+- Column alignments must be valid ('left', 'center', 'right', 'none')
 
-## 🔧 API
+2. **Column Width Handling**:
+- Default: Adjusts columns to fit content
+- `isCompact={true}`: Minimizes column widths
+- Maintains minimum width of 3 characters for alignment indicators
 
-### MarkdownTable Props
+3. **Error Handling**:
+- Returns error message string if validation fails
+- Wraps errors in `MarkdownTableError` class
+- Preserves stack traces for debugging
 
-|         Prop         |                     Type                      |   Default   |                 Description                 |
-| :------------------: | :-------------------------------------------: | :---------: | :-----------------------------------------: |
-|        `data`        |                 `string[][]`                  |   `null`    |   The table data as a 2D array of strings   |
-|  `columnAlignments`  | `('left' \| 'center' \| 'right' \| 'none')[]` |    `[]`     |          Alignment for each column          |
-|     `isCompact`      |                   `boolean`                   |   `false`   |          Use minimal column widths          |
-|     `className`      |                   `string`                    | `undefined` |        CSS class for the `<pre>` tag        |
-|      `hasTabs`       |                   `boolean`                   |   `false`   |       Add tabs between table columns        |
-| `canReplaceNewlines` |                   `boolean`                   |   `false`   | Replace newlines in cells with `<br>` tags  |
-|   `onTableCreate`    |      `(markdownString: string) => void`       | `undefined` |   Callback to receive the Markdown string   |
-|     `hasHeader`      |                   `boolean`                   |   `true`    | Whether the first row of `data` is a header |
+4. **Styling**:
+- Uses Prism.js for syntax highlighting
+- Supports light/dark themes
+- Custom styles via `className` and `preStyle` props
 
-## 🚀 Usage
+## Common Transformations
 
-```jsx
-import React from 'react';
-import {MarkdownTable} from 'markdown-table-component';
+1. **Data Formatting**:
+- Newlines can be converted to `<br>` tags with `canReplaceNewlines`
+- Padding can be controlled with `hasPadding`
+- Tab spacing available with `hasTabs`
 
-const App = () => {
-  const data = [
-    ['Header 1', 'Header 2', 'Header 3'],
-    ['Row 1, Col 1', 'Row 1, Col 2', 'Row 1, Col 3'],
-    ['Row 2, Col 1', 'Row 2, Col 2', 'Row 2, Col 3'],
-  ];
-
-  return <MarkdownTable data={data} />;
-};
-
-export default App;
-```
+2. **Header Generation**:
+- Auto-generates A, B, C... headers when `hasHeader={false}`
+- Supports custom headers via first row when `hasHeader={true}`
