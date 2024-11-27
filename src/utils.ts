@@ -32,6 +32,7 @@ export function calculateColumnWidths(
  * @param columnWidths - Widths of each column.
  * @param useTabs - Flag to use tabs between columns.
  * @param canReplaceNewlines - Flag to replace newlines with <br> tags.
+ * @param hasPadding - Flag to add padding spaces around cell content.
  * @returns The Markdown string for the row.
  */
 export function formatMarkdownRow(
@@ -40,7 +41,8 @@ export function formatMarkdownRow(
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
   columnWidths?: readonly number[],
   useTabs = false,
-  canReplaceNewlines = false
+  canReplaceNewlines = false,
+  hasPadding = true
 ): string {
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
   const adjustedAlignments =
@@ -61,17 +63,18 @@ export function formatMarkdownRow(
     }
     const alignment = adjustedAlignments[i] ?? defaultAlignment;
     const targetWidth = columnWidths ? columnWidths[i] : cell.length;
+    const padding = hasPadding ? ' ' : '';
 
     if (alignment === 'right') {
-      markdownRow += `${useTabs ? '\t' : ' '}${cell.padStart(targetWidth)}${useTabs ? '\t' : ' '}|`;
+      markdownRow += `${useTabs ? '\t' : padding}${cell.padStart(targetWidth)}${useTabs ? '\t' : padding}|`;
     } else if (alignment === 'center') {
       const totalPadding = targetWidth - cell.length;
       const paddingLeft = Math.floor(totalPadding / 2);
       const paddingRight = totalPadding - paddingLeft;
-      markdownRow += `${useTabs ? '\t' : ' '}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : ' '}|`;
+      markdownRow += `${useTabs ? '\t' : padding}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : padding}|`;
     } else {
       // Left alignment or default
-      markdownRow += `${useTabs ? '\t' : ' '}${cell.padEnd(targetWidth)}${useTabs ? '\t' : ' '}|`;
+      markdownRow += `${useTabs ? '\t' : padding}${cell.padEnd(targetWidth)}${useTabs ? '\t' : padding}|`;
     }
   }
 
@@ -84,13 +87,15 @@ export function formatMarkdownRow(
  * @param columnAlignments - Alignment settings for each column.
  * @param columnWidths - Widths of each column.
  * @param useTabs - Flag to use tabs between columns.
+ * @param hasPadding - Flag to add padding spaces around cell content.
  * @returns The Markdown string for the alignment row.
  */
 export function formatAlignmentRow(
   columnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
   columnWidths?: readonly number[],
-  useTabs = false
+  useTabs = false,
+  hasPadding = true
 ): string {
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left';
   const adjustedAlignments =
@@ -108,6 +113,7 @@ export function formatAlignmentRow(
     const alignment = adjustedAlignments[i] ?? defaultAlignment;
     const targetWidth = columnWidths ? columnWidths[i] : 3;
     let alignIndicator = '';
+    const padding = hasPadding ? ' ' : '';
 
     switch (alignment) {
       case 'left':
@@ -124,7 +130,7 @@ export function formatAlignmentRow(
         break;
     }
 
-    alignmentRow += `${useTabs ? '\t' : ' '}${alignIndicator}${useTabs ? '\t' : ' '}|`;
+    alignmentRow += `${useTabs ? '\t' : padding}${alignIndicator}${useTabs ? '\t' : padding}|`;
   }
 
   return alignmentRow;
@@ -137,6 +143,7 @@ export function formatAlignmentRow(
  * @param canAdjustColumnWidths - Flag to adjust column widths based on content.
  * @param useTabs - Flag to use tabs between columns.
  * @param replaceNewlines - Flag to replace newlines with <br> tags.
+ * @param hasPadding - Flag to add padding spaces around cell content.
  * @returns The complete Markdown table string.
  */
 export function generateMarkdownTableString(
@@ -144,7 +151,8 @@ export function generateMarkdownTableString(
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
   canAdjustColumnWidths = true,
   useTabs = false,
-  replaceNewlines = false
+  replaceNewlines = false,
+  hasPadding = true
 ): string {
   const headerColumnCount = inputData.inputDataHeader.length;
   const bodyColumnCounts = inputData.inputDataBody.map(
@@ -165,13 +173,15 @@ export function generateMarkdownTableString(
     columnAlignments,
     columnWidths,
     useTabs,
-    replaceNewlines
+    replaceNewlines,
+    hasPadding
   );
   const markdownAlignmentRow = formatAlignmentRow(
     maxColumnCount,
     columnAlignments,
     columnWidths,
-    useTabs
+    useTabs,
+    hasPadding
   );
 
   const markdownBodyRows = inputData.inputDataBody
@@ -182,7 +192,8 @@ export function generateMarkdownTableString(
         columnAlignments,
         columnWidths,
         useTabs,
-        replaceNewlines
+        replaceNewlines,
+        hasPadding
       )
     )
     .join('\n');

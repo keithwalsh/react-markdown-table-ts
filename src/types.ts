@@ -70,4 +70,10 @@ export interface MarkdownTableProps {
    * Acceptable values are 'light' or 'dark'.
    */
   theme?: 'light' | 'dark'
+
+  /**
+   * Optional flag to add padding spaces around cell content.
+   * @default true
+   */
+  hasPadding?: boolean;
 }
