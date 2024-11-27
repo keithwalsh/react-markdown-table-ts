@@ -146,38 +146,37 @@ export function formatAlignmentRow(
   return alignmentRow;
 }
 
-/**
- * Generates a complete Markdown table string from the provided data.
- * @param inputData - The table data including headers and rows.
- * @param columnAlignments - Alignment settings for each column.
- * @param canAdjustColumnWidths - Flag to adjust column widths based on content.
- * @param useTabs - Flag to use tabs between columns.
- * @param replaceNewlines - Flag to replace newlines with <br> tags.
- * @param hasPadding - Flag to add padding spaces around cell content.
- * @returns The complete Markdown table string.
- */
-export function generateMarkdownTableString(
-  inputData: InputData,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
-  canAdjustColumnWidths = true,
-  useTabs = false,
-  replaceNewlines = false,
-  hasPadding = true
-): string {
+function calculateMaxColumnCount(inputData: InputData): number {
   const headerColumnCount = inputData.inputDataHeader.length;
   const bodyColumnCounts = inputData.inputDataBody.map(
     (currentRow: TableRow) => currentRow.length
   );
-  const maxColumnCount = Math.max(headerColumnCount, ...bodyColumnCounts);
+  return Math.max(headerColumnCount, ...bodyColumnCounts);
+}
 
-  const columnWidths = canAdjustColumnWidths
+function getColumnWidths(
+  inputData: InputData,
+  maxColumnCount: number,
+  canAdjustColumnWidths: boolean
+): number[] | undefined {
+  return canAdjustColumnWidths
     ? calculateColumnWidths(
         [inputData.inputDataHeader, ...inputData.inputDataBody],
         maxColumnCount
       )
     : undefined;
+}
 
-  const markdownHeaderRow = formatMarkdownRow(
+function formatTableRows(
+  inputData: InputData,
+  maxColumnCount: number,
+  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnWidths: number[] | undefined,
+  useTabs: boolean,
+  replaceNewlines: boolean,
+  hasPadding: boolean
+): string {
+  const headerRow = formatMarkdownRow(
     maxColumnCount,
     inputData.inputDataHeader,
     columnAlignments,
@@ -186,7 +185,8 @@ export function generateMarkdownTableString(
     replaceNewlines,
     hasPadding
   );
-  const markdownAlignmentRow = formatAlignmentRow(
+
+  const alignmentRow = formatAlignmentRow(
     maxColumnCount,
     columnAlignments,
     columnWidths,
@@ -194,7 +194,7 @@ export function generateMarkdownTableString(
     hasPadding
   );
 
-  const markdownBodyRows = inputData.inputDataBody
+  const bodyRows = inputData.inputDataBody
     .map((currentRow: TableRow) =>
       formatMarkdownRow(
         maxColumnCount,
@@ -208,7 +208,29 @@ export function generateMarkdownTableString(
     )
     .join('\n');
 
-  return `${markdownHeaderRow}\n${markdownAlignmentRow}\n${markdownBodyRows}`.trimEnd();
+  return `${headerRow}\n${alignmentRow}\n${bodyRows}`;
+}
+
+export function generateMarkdownTableString(
+  inputData: InputData,
+  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  canAdjustColumnWidths = true,
+  useTabs = false,
+  replaceNewlines = false,
+  hasPadding = true
+): string {
+  const maxColumnCount = calculateMaxColumnCount(inputData);
+  const columnWidths = getColumnWidths(inputData, maxColumnCount, canAdjustColumnWidths);
+
+  return formatTableRows(
+    inputData,
+    maxColumnCount,
+    columnAlignments,
+    columnWidths,
+    useTabs,
+    replaceNewlines,
+    hasPadding
+  ).trimEnd();
 }
 
 /**
