@@ -48,18 +48,12 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         );
       }
 
-      const tableData = hasHeader
-        ? {
-            inputDataHeader: inputData[0],
-            inputDataBody: inputData.slice(1),
-          }
-        : {
-            inputDataHeader: generateAlphabetHeaders(inputData[0].length),
-            inputDataBody: inputData,
-          };
+      const { inputDataHeader, inputDataBody } = hasHeader
+        ? { inputDataHeader: inputData[0], inputDataBody: inputData.slice(1) }
+        : { inputDataHeader: generateAlphabetHeaders(inputData[0].length), inputDataBody: inputData };
 
       return generateMarkdownTableString(
-        tableData,
+        { inputDataHeader, inputDataBody },
         columnAlignments,
         adjustColumnWidths,
         hasTabs,
@@ -67,11 +61,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         hasPadding,
       );
     } catch (error) {
-      if (error instanceof MarkdownTableError) {
-        return `Error: ${error.message}`;
-      } else {
-        throw error;
-      }
+      return error instanceof MarkdownTableError ? `Error: ${error.message}` : (() => { throw error })();
     }
   }, [
     inputData,

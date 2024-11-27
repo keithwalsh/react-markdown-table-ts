@@ -15,10 +15,10 @@ function getAdjustedAlignments(
   const defaultAlignment: 'left' | 'right' | 'center' | 'none' = 'left'
   return columnAlignments.length < columnCount
     ? [
-        ...columnAlignments,
+        ...Array.from(columnAlignments),
         ...Array(columnCount - columnAlignments.length).fill(defaultAlignment),
       ]
-    : columnAlignments
+    : Array.from(columnAlignments)
 }
 
 /**
