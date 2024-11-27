@@ -43,52 +43,61 @@ export function calculateColumnWidths(
   return widths;
 }
 
-/**
- * Formats a single row into a Markdown-formatted string.
- * @param columnCount - The number of columns in the table.
- * @param currentRow - The data of the current row.
- * @param columnAlignments - Alignment settings for each column.
- * @param columnWidths - Widths of each column.
- * @param useTabs - Flag to use tabs between columns.
- * @param canReplaceNewlines - Flag to replace newlines with <br> tags.
- * @param hasPadding - Flag to add padding spaces around cell content.
- * @returns The Markdown string for the row.
- */
+type Alignment = 'left' | 'right' | 'center' | 'none';
+
+function formatCell(
+  cell: string,
+  alignment: Alignment,
+  targetWidth: number,
+  useTabs: boolean,
+  padding: string
+): string {
+  switch (alignment) {
+    case 'right':
+      return `${useTabs ? '\t' : padding}${cell.padStart(targetWidth)}${useTabs ? '\t' : padding}`;
+    case 'center':
+      return formatCenterAlignedCell(cell, targetWidth, useTabs, padding);
+    default:
+      return `${useTabs ? '\t' : padding}${cell.padEnd(targetWidth)}${useTabs ? '\t' : padding}`;
+  }
+}
+
+function formatCenterAlignedCell(
+  cell: string,
+  targetWidth: number,
+  useTabs: boolean,
+  padding: string
+): string {
+  const totalPadding = targetWidth - cell.length;
+  const paddingLeft = Math.floor(totalPadding / 2);
+  const paddingRight = totalPadding - paddingLeft;
+  return `${useTabs ? '\t' : padding}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : padding}`;
+}
+
 export function formatMarkdownRow(
   columnCount: number,
   currentRow: TableRow,
-  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnAlignments: readonly Alignment[],
   columnWidths?: readonly number[],
   useTabs = false,
   canReplaceNewlines = false,
   hasPadding = true
 ): string {
-  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount)
+  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount);
+  const padding = hasPadding ? ' ' : '';
 
-  let markdownRow = '|';
-  for (let i = 0; i < columnCount; i++) {
+  const formattedCells = Array.from({length: columnCount}, (_, i) => {
     let cell = currentRow[i] ?? '';
     if (canReplaceNewlines) {
       cell = replaceNewlinesInCell(cell);
     }
     const alignment = adjustedAlignments[i] ?? 'left';
     const targetWidth = columnWidths ? columnWidths[i] : cell.length;
-    const padding = hasPadding ? ' ' : '';
 
-    if (alignment === 'right') {
-      markdownRow += `${useTabs ? '\t' : padding}${cell.padStart(targetWidth)}${useTabs ? '\t' : padding}|`;
-    } else if (alignment === 'center') {
-      const totalPadding = targetWidth - cell.length;
-      const paddingLeft = Math.floor(totalPadding / 2);
-      const paddingRight = totalPadding - paddingLeft;
-      markdownRow += `${useTabs ? '\t' : padding}${' '.repeat(paddingLeft)}${cell}${' '.repeat(paddingRight)}${useTabs ? '\t' : padding}|`;
-    } else {
-      // Left alignment or default
-      markdownRow += `${useTabs ? '\t' : padding}${cell.padEnd(targetWidth)}${useTabs ? '\t' : padding}|`;
-    }
-  }
+    return formatCell(cell, alignment, targetWidth, useTabs, padding);
+  });
 
-  return markdownRow;
+  return `|${formattedCells.join('|')}|`;
 }
 
 /**
