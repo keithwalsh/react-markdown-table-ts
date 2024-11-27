@@ -5,10 +5,10 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import { MarkdownTableProps } from './types';
-import { MarkdownTableError } from './validation';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { IconButton, Tooltip } from '@mui/material'
+import { validateInputData, MarkdownTableError } from './validation';
 
 // CSS styles
 const LIGHT_THEME_CSS = `
@@ -18,12 +18,6 @@ code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shad
 const DARK_THEME_CSS = `
 code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#282a36}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:2.4em;counter-reset:linenumber}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block;counter-increment:linenumber}.line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.5em;text-align:right}
 `;
-
-const validateInputData = (inputData: string[][] | null): void => {
-  if (inputData === null || !Array.isArray(inputData) || inputData.length === 0) {
-    throw new MarkdownTableError("The 'data' prop must be a non-empty two-dimensional array.");
-  }
-};
 
 const getTableData = (inputData: string[][], hasHeader: boolean) => {
   return hasHeader
@@ -42,8 +36,7 @@ const generateTableSyntax = (
 ): string => {
   try {
     validateInputData(inputData);
-    const nonNullInputData = inputData as string[][];
-    const { inputDataHeader, inputDataBody } = getTableData(nonNullInputData, hasHeader);
+    const { inputDataHeader, inputDataBody } = getTableData(inputData as string[][], hasHeader);
 
     return generateMarkdownTableString(
       { inputDataHeader, inputDataBody },

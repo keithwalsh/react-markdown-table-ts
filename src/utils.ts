@@ -52,14 +52,24 @@ function formatCell(
   useTabs: boolean,
   padding: string
 ): string {
+  const pad = useTabs ? '\t' : padding;
+
   switch (alignment) {
     case 'right':
-      return `${useTabs ? '\t' : padding}${cell.padStart(targetWidth)}${useTabs ? '\t' : padding}`;
+      return formatRightAlignedCell(cell, targetWidth, pad);
     case 'center':
       return formatCenterAlignedCell(cell, targetWidth, useTabs, padding);
     default:
-      return `${useTabs ? '\t' : padding}${cell.padEnd(targetWidth)}${useTabs ? '\t' : padding}`;
+      return formatLeftAlignedCell(cell, targetWidth, pad);
   }
+}
+
+function formatRightAlignedCell(cell: string, targetWidth: number, pad: string): string {
+  return `${pad}${cell.padStart(targetWidth)}${pad}`;
+}
+
+function formatLeftAlignedCell(cell: string, targetWidth: number, pad: string): string {
+  return `${pad}${cell.padEnd(targetWidth)}${pad}`;
 }
 
 function formatCenterAlignedCell(
@@ -162,7 +172,7 @@ function getColumnWidths(
     : undefined;
 }
 
-function formatHeaderAndAlignment(
+export function formatHeaderAndAlignment(
   inputData: InputData,
   maxColumnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
@@ -192,7 +202,7 @@ function formatHeaderAndAlignment(
   return `${headerRow}\n${alignmentRow}`;
 }
 
-function formatBodyRows(
+export function formatBodyRows(
   inputData: InputData,
   maxColumnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
@@ -216,7 +226,7 @@ function formatBodyRows(
     .join('\n');
 }
 
-function formatTableRows(
+export function formatTableRows(
   inputData: InputData,
   maxColumnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],

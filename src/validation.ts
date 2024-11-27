@@ -13,8 +13,13 @@ export class MarkdownTableError extends Error {
   }
 }
 
-function validateInputData(inputData: unknown): void {
-  if (!Array.isArray(inputData)) {
+/**
+ * Validates that the input data is a non-empty two-dimensional array.
+ * @param inputData - The data to validate
+ * @throws {MarkdownTableError} If validation fails
+ */
+export function validateInputData(inputData: unknown): void {
+  if (inputData === null || !Array.isArray(inputData)) {
     throw new MarkdownTableError("The 'data' prop must be a two-dimensional array.");
   }
 
