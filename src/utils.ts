@@ -100,15 +100,27 @@ export function formatMarkdownRow(
   return `|${formattedCells.join('|')}|`;
 }
 
-/**
- * Generates the alignment row for the Markdown table syntax.
- * @param columnCount - The number of columns in the table.
- * @param columnAlignments - Alignment settings for each column.
- * @param columnWidths - Widths of each column.
- * @param useTabs - Flag to use tabs between columns.
- * @param hasPadding - Flag to add padding spaces around cell content.
- * @returns The Markdown string for the alignment row.
- */
+type AlignmentIndicator = {
+  left: (width: number) => string;
+  right: (width: number) => string;
+  center: (width: number) => string;
+  none: (width: number) => string;
+};
+
+const alignmentIndicators: AlignmentIndicator = {
+  left: (width: number) => `:${'-'.repeat(width - 1)}`,
+  right: (width: number) => `${'-'.repeat(width - 1)}:`,
+  center: (width: number) => `:${'-'.repeat(width - 2)}:`,
+  none: (width: number) => '-'.repeat(width),
+};
+
+function getAlignmentIndicator(
+  alignment: 'left' | 'right' | 'center' | 'none',
+  width: number
+): string {
+  return alignmentIndicators[alignment](width);
+}
+
 export function formatAlignmentRow(
   columnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
@@ -116,34 +128,17 @@ export function formatAlignmentRow(
   useTabs = false,
   hasPadding = true
 ): string {
-  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount)
+  const adjustedAlignments = getAdjustedAlignments(columnAlignments, columnCount);
+  const padding = hasPadding ? ' ' : '';
 
-  let alignmentRow = '|';
-  for (let i = 0; i < columnCount; i++) {
+  const formattedColumns = Array.from({length: columnCount}, (_, i) => {
     const alignment = adjustedAlignments[i] ?? 'left';
     const targetWidth = columnWidths ? columnWidths[i] : 3;
-    let alignIndicator = '';
-    const padding = hasPadding ? ' ' : '';
+    const alignIndicator = getAlignmentIndicator(alignment, targetWidth);
+    return `${useTabs ? '\t' : padding}${alignIndicator}${useTabs ? '\t' : padding}`;
+  });
 
-    switch (alignment) {
-      case 'left':
-        alignIndicator = `:${'-'.repeat(targetWidth - 1)}`;
-        break;
-      case 'center':
-        alignIndicator = `:${'-'.repeat(targetWidth - 2)}:`;
-        break;
-      case 'right':
-        alignIndicator = `${'-'.repeat(targetWidth - 1)}:`;
-        break;
-      default:
-        alignIndicator = `${'-'.repeat(targetWidth)}`;
-        break;
-    }
-
-    alignmentRow += `${useTabs ? '\t' : padding}${alignIndicator}${useTabs ? '\t' : padding}|`;
-  }
-
-  return alignmentRow;
+  return `|${formattedColumns.join('|')}|`;
 }
 
 function calculateMaxColumnCount(inputData: InputData): number {
@@ -167,7 +162,7 @@ function getColumnWidths(
     : undefined;
 }
 
-function formatTableRows(
+function formatHeaderAndAlignment(
   inputData: InputData,
   maxColumnCount: number,
   columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
@@ -194,7 +189,19 @@ function formatTableRows(
     hasPadding
   );
 
-  const bodyRows = inputData.inputDataBody
+  return `${headerRow}\n${alignmentRow}`;
+}
+
+function formatBodyRows(
+  inputData: InputData,
+  maxColumnCount: number,
+  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnWidths: number[] | undefined,
+  useTabs: boolean,
+  replaceNewlines: boolean,
+  hasPadding: boolean
+): string {
+  return inputData.inputDataBody
     .map((currentRow: TableRow) =>
       formatMarkdownRow(
         maxColumnCount,
@@ -207,8 +214,38 @@ function formatTableRows(
       )
     )
     .join('\n');
+}
 
-  return `${headerRow}\n${alignmentRow}\n${bodyRows}`;
+function formatTableRows(
+  inputData: InputData,
+  maxColumnCount: number,
+  columnAlignments: readonly ('left' | 'right' | 'center' | 'none')[],
+  columnWidths: number[] | undefined,
+  useTabs: boolean,
+  replaceNewlines: boolean,
+  hasPadding: boolean
+): string {
+  const headerAndAlignment = formatHeaderAndAlignment(
+    inputData,
+    maxColumnCount,
+    columnAlignments,
+    columnWidths,
+    useTabs,
+    replaceNewlines,
+    hasPadding
+  );
+
+  const bodyRows = formatBodyRows(
+    inputData,
+    maxColumnCount,
+    columnAlignments,
+    columnWidths,
+    useTabs,
+    replaceNewlines,
+    hasPadding
+  );
+
+  return `${headerAndAlignment}\n${bodyRows}`;
 }
 
 export function generateMarkdownTableString(
