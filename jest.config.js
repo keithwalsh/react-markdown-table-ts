@@ -29,6 +29,11 @@ module.exports = {
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
     '!src/index.tsx',
+    '!src/**/*.stories.tsx',
     '!**/node_modules/**',
   ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '.*\\.stories\\.tsx$'
+  ]
 };
