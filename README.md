@@ -11,7 +11,7 @@
 | `'light'` theme                          | `'dark'` theme                          |
 
 ## Overview 
-This library provides a React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. For syntax highlighting and line numbering, Prism.js is utilized within the `<pre>` HTML element, which is used to display preformatted text.
+This library provides a React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. For syntax highlighting and line numbering, Prism.js is used within a `<pre>` HTML element.
 
 ## API
 ```typescript
