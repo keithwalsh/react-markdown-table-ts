@@ -81,9 +81,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
-    "@storybook/react": "^8.4.5",
     "prismjs": "^1.29.0"
   }
 }
