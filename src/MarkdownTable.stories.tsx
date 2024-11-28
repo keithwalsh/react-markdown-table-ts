@@ -3,22 +3,8 @@
  * various configurations and use cases for markdown table generation and display.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react';
 import { MarkdownTable } from './index'
-
-// Define the props interface for your component
-interface MarkdownTableProps {
-  inputData: string[][] | null
-  columnAlignments: Array<'left' | 'right' | 'center' | 'none'>
-  isCompact: boolean
-  hasPadding: boolean
-  hasTabs: boolean
-  hasHeader: boolean
-  convertLineBreaks: boolean
-  theme?: 'light' | 'dark'
-  className?: string
-  preStyle?: React.CSSProperties
-}
 
 const meta = {
   title: 'Components/MarkdownTable',
@@ -28,7 +14,6 @@ const meta = {
   },
   tags: ['autodocs'],
   args: {
-    // Define default args here
     inputData: null,
     columnAlignments: [],
     isCompact: false,
