@@ -4,6 +4,17 @@
     "plugin:storybook/recommended"
   ],
   "rules": {
-    "prettier/prettier": "off"
-  }
+    "prettier/prettier": "off",
+    "n/no-extraneous-import": ["error", {
+      "allowModules": ["@storybook/react"]
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["*.stories.tsx"],
+      "rules": {
+        "n/no-extraneous-import": "off"
+      }
+    }
+  ]
 }
