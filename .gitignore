@@ -7,3 +7,5 @@ coverage/
 tree.py
 .cursorrules
 .treeignore
+
+*storybook.log
