@@ -31,6 +31,7 @@ class AlignmentFormatter {
     right: (width: number) => `${'-'.repeat(width - 1)}:`,
     center: (width: number) => `:${'-'.repeat(width - 2)}:`,
     none: (width: number) => '-'.repeat(width),
+    justify: (width: number) => '-'.repeat(width)
   };
 
   static formatIndicator(alignment: Alignment, width: number): string {
@@ -48,7 +49,7 @@ class TableFormatter {
   }
 
   private getAdjustedAlignments(): Alignment[] {
-    const defaultAlignment: Alignment = 'left';
+    const defaultAlignment: Alignment = 'none';
     return this.config.columnAlignments.length < this.config.columnCount
       ? [
           ...Array.from(this.config.columnAlignments),
