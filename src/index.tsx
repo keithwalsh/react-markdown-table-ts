@@ -131,8 +131,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
       <div style={{
         position: 'relative',
         isolation: 'isolate',
-        display: 'flex',
-        justifyContent: 'center'
+        width: 'fit-content'
       }}>
         <pre
           ref={preElementRef}
