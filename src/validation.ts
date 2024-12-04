@@ -63,10 +63,10 @@ function validateColumnAlignments(columnAlignments: unknown): void {
       throw new MarkdownTableError("'columnAlignments' must be an array of alignment strings.");
     }
 
-    const validAlignments = ['left', 'center', 'right', 'none'];
+    const validAlignments = ['left', 'center', 'right', 'none', 'justify'];
     columnAlignments.forEach((alignment, index) => {
       if (!validAlignments.includes(alignment)) {
-        throw new MarkdownTableError(`Invalid alignment '${alignment}' at index ${index}. Valid options are 'left', 'center', 'right', 'none'.`);
+        throw new MarkdownTableError(`Invalid alignment '${alignment}' at index ${index}. Valid options are 'left', 'center', 'right', 'none', 'justify'.`);
       }
     });
   }
