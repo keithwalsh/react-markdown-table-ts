@@ -4,7 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { MarkdownTable } from './index'
+import { MarkdownTable } from '../src/index'
 
 const meta = {
   title: 'Components/MarkdownTable',
@@ -145,6 +145,18 @@ const meta = {
           summary: 'React.CSSProperties'
         }
       }
+    },
+    minWidth: {
+      control: {
+        type: 'number'
+      },
+      description: 'Optional minimum width in pixels for the table container.',
+      table: {
+        category: 'Visual/UI Props',
+        type: {
+          summary: 'number'
+        }
+      }
     }
   }
 } satisfies Meta<typeof MarkdownTable>
@@ -173,7 +185,7 @@ export const Default: Story = {
     topPadding: 16,
     theme: 'light',
     className: undefined,
-    preStyle: undefined
+    preStyle: undefined,
+    minWidth: 450
   }
 }
-

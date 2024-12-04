@@ -109,6 +109,17 @@ export interface MarkdownTableProps {
    */
   topPadding?: number;
 
+  /**
+   * Optional minimum width in pixels for the pre element containing the Markdown table.
+   * @default undefined
+   * @example
+   * <MarkdownTable
+   *   inputData={data}
+   *   minWidth={300}
+   * />
+   */
+  minWidth?: number;
+
 }
 
 /**

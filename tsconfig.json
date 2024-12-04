@@ -21,6 +21,6 @@
     "jsx": "react-jsx",
     "emitDeclarationOnly": false
   },
-  "include": ["src", "test", "jest.setup.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "test", "jest.setup.ts", "stories/MarkdownTable.stories.tsx"],
+  "exclude": ["node_modules", "dist", "stories"]
 }

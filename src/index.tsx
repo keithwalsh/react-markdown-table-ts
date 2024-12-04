@@ -79,6 +79,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   theme = 'light',
   preStyle,
   topPadding = 16,
+  minWidth,
 }) => {
   const adjustColumnWidths = !isCompact;
   const preElementRef = useRef<HTMLPreElement>(null);
@@ -141,7 +142,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
           className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}
           style={{
             width: 'fit-content',
-            minWidth: 'min-content',
+            minWidth: minWidth ? `${minWidth}px` : 'min-content',
             margin: 0,
             ...preStyle
           }}
