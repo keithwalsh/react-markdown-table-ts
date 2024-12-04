@@ -103,6 +103,12 @@ export interface MarkdownTableProps {
    */
   onGenerate?: (markdownTableString: string) => void;
 
+  /**
+   * Optional top padding for the pre element.
+   * @default 0
+   */
+  topPadding?: number;
+
 }
 
 /**

@@ -78,6 +78,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   onGenerate,
   theme = 'light',
   preStyle,
+  topPadding = 16,
 }) => {
   const adjustColumnWidths = !isCompact;
   const preElementRef = useRef<HTMLPreElement>(null);
@@ -110,7 +111,23 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
 
   return (
     <>
-      <style>{theme === 'light' ? LIGHT_THEME_CSS : DARK_THEME_CSS}</style>
+      <style>
+        {theme === 'light' ? LIGHT_THEME_CSS : DARK_THEME_CSS}
+        {`
+          pre {
+            position: relative;
+            padding-top: ${topPadding}px !important;
+          }
+          pre::before {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: ${theme === 'light' ? '#666' : '#999'};
+            letter-spacing: 2px;
+            font-size: 12px;
+          }
+        `}
+      </style>
       <div style={{
         position: 'relative',
         isolation: 'isolate',

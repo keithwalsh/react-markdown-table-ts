@@ -26,6 +26,7 @@ interface MarkdownTableProps {
     theme?: 'light' | 'dark';
     className?: string;
     preStyle?: React.CSSProperties;
+    topPadding?: number;
     onGenerate?: (markdownTableString: string) => void;
 }
 ```
@@ -41,6 +42,7 @@ interface MarkdownTableProps {
 | `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the color scheme of the \<pre\> element display.                            |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
+| `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
 | `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
 ## Usage Patterns
 

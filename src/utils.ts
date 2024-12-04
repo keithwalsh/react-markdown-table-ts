@@ -50,7 +50,7 @@ class TableFormatter {
 
   private getAdjustedAlignments(): Alignment[] {
     const defaultAlignment: Alignment = 'none';
-    const sanitizeAlignment = (alignment: Alignment): Alignment => 
+    const sanitizeAlignment = (alignment: Alignment): Alignment =>
       alignment === 'justify' ? 'none' : alignment;
 
     return this.config.columnAlignments.length < this.config.columnCount

@@ -21,6 +21,7 @@ const meta = {
     hasTabs: false,
     hasHeader: true,
     convertLineBreaks: false,
+    topPadding: 16,
     theme: 'light' as const
   },
   argTypes: {
@@ -99,6 +100,18 @@ const meta = {
         }
       }
     },
+    topPadding: {
+      control: {
+        type: 'number'
+      },
+      description: 'Controls the padding-top (in pixels) of the pre element display.',
+      table: {
+        category: 'Visual/UI Props',
+        type: {
+          summary: 'number'
+        }
+      }
+    },
     theme: {
       options: ['light', 'dark'],
       control: { type: 'select' },
@@ -157,6 +170,7 @@ export const Default: Story = {
     hasTabs: false,
     hasHeader: true,
     convertLineBreaks: false,
+    topPadding: 16,
     theme: 'light',
     className: undefined,
     preStyle: undefined
