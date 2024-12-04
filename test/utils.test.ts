@@ -118,7 +118,7 @@ describe('formatMarkdownRow', () => {
 describe('formatAlignmentRow', () => {
   it('generates default left alignment for all columns with default widths', () => {
     const result = formatAlignmentRow(3, []);
-    expect(result).toBe('| :-- | :-- | :-- |');
+    expect(result).toBe('| --- | --- | --- |');
   });
 
   it('applies custom alignments correctly', () => {
@@ -138,7 +138,7 @@ describe('formatAlignmentRow', () => {
   it('uses default alignment when not enough alignments are provided', () => {
     const columnAlignments: ColumnAlignment[] = ['center'];
     const result = formatAlignmentRow(3, columnAlignments);
-    expect(result).toBe('| :-: | :-- | :-- |');
+    expect(result).toBe('| :-: | --- | --- |');
   });
 
   it('uses "none" alignment correctly', () => {

@@ -17,7 +17,7 @@ describe('MarkdownTable', () => {
     expect(preElement.textContent).toContain(
       '| Header 1 | Header 2 | Header 3 |'
     );
-    expect(preElement.textContent).toContain('| :-- | :-- | :-- |');
+    expect(preElement.textContent).toContain('| --- | --- | --- |');
     expect(preElement.textContent).toContain(
       '| Row 1, Col 1 | Row 1, Col 2 | Row 1, Col 3 |'
     );
@@ -66,7 +66,7 @@ describe('MarkdownTable', () => {
 
     // Check if onTableCreate was called with the correct Markdown string
     const expectedMarkdown = `| Header 1     | Header 2     |
-| :----------- | :----------- |
+| ------------ | ------------ |
 | Row 1, Col 1 | Row 1, Col 2 |
 | Row 2, Col 1 | Row 2, Col 2 |`;
 
@@ -110,7 +110,7 @@ describe('MarkdownTable', () => {
 
     // Check if onTableCreate was called with the new Markdown string
     const expectedNewMarkdown = `| New Header 1     | New Header 2     |
-| :--------------- | :--------------- |
+| ---------------- | ---------------- |
 | New Row 1, Col 1 | New Row 1, Col 2 |`;
 
     expect(mockOnTableCreate).toHaveBeenLastCalledWith(expectedNewMarkdown);
