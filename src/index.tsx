@@ -128,11 +128,14 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
           }
         `}
       </style>
-      <div style={{
-        position: 'relative',
-        isolation: 'isolate',
-        width: 'fit-content'
-      }}>
+      <div
+        id="MarkdownTable"
+        style={{
+          position: 'relative',
+          isolation: 'isolate',
+          width: 'fit-content !important'
+        }}
+      >
         <pre
           ref={preElementRef}
           className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}
