@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef} from 'react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import { MarkdownTableProps } from './types';
+import { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
 import { validateInputData, MarkdownTableError } from './validation';
 
@@ -26,7 +26,7 @@ const getTableData = (inputData: string[][], hasHeader: boolean) => {
 const generateTableSyntax = (
   inputData: string[][] | null,
   hasHeader: boolean,
-  columnAlignments: ('left' | 'center' | 'right' | 'none')[],
+  columnAlignments: readonly Alignment[],
   adjustColumnWidths: boolean,
   hasTabs: boolean,
   canReplaceNewlines: boolean,
@@ -85,7 +85,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
   const markdownTableSyntax = useMemo(() => generateTableSyntax(
     inputData,
     hasHeader,
-    [...columnAlignments],
+    columnAlignments,
     adjustColumnWidths,
     hasTabs,
     convertLineBreaks,
@@ -113,12 +113,19 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
       <style>{theme === 'light' ? LIGHT_THEME_CSS : DARK_THEME_CSS}</style>
       <div style={{
         position: 'relative',
-        isolation: 'isolate'
+        isolation: 'isolate',
+        display: 'flex',
+        justifyContent: 'center'
       }}>
         <pre
           ref={preElementRef}
           className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}
-          style={preStyle}
+          style={{
+            width: 'fit-content',
+            minWidth: 'min-content',
+            margin: 0,
+            ...preStyle
+          }}
         >
           <code className="language-markdown" role="code">
             {markdownTableSyntax}

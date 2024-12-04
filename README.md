@@ -32,7 +32,7 @@ interface MarkdownTableProps {
 | Prop                 | Type                                    | Default     | Description                                                                        |
 |----------------------|-----------------------------------------|-------------|------------------------------------------------------------------------------------|
 | `inputData`          | `string[][] \| null`                    | `null`      | The outer array represents rows. The inner array represent cells within each row. |
-| `columnAlignments`   | `readonly Alignment[]`                  | `[]`	       | Acceptable values are 'left', 'center', 'right', or 'none'.                        |
+| `columnAlignments`   | `readonly Alignment[]`                  | `[]`	       | Acceptable values are 'left', 'center', 'right', 'justify', or 'none'. Defaults to 'none' when unspecified. |
 | `isCompact`          | `boolean`                               | `false`     | Disables column width alignment to provide a more compact markdown table string.   |
 | `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
 | `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
@@ -57,7 +57,7 @@ interface MarkdownTableProps {
 ```typescript
 <MarkdownTable
     inputData={data}
-    columnAlignments={['left', 'center', 'right']}
+    columnAlignments={['left', 'center', 'right', 'justify']}
 />
 ```
 3. **Auto-Generated Headers**:
@@ -74,12 +74,13 @@ interface MarkdownTableProps {
 - Input must be non-null 2D string array
 - All rows should contain string values
 - Empty arrays are not allowed
-- Column alignments must be valid ('left', 'center', 'right', 'none')
+- Column alignments must be valid ('left', 'center', 'right', 'justify', 'none')
 
 2. **Column Width Handling**:
-- Default: Adjusts columns to fit content
+- Default: Adjusts columns to fit content with 'none' alignment
 - `isCompact={true}`: Minimizes column widths
 - Maintains minimum width of 3 characters for alignment indicators
+- 'justify' alignment behaves same as 'none' for markdown compatibility
 
 3. **Error Handling**:
 - Returns error message string if validation fails
