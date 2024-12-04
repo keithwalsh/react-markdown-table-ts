@@ -133,7 +133,7 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         style={{
           position: 'relative',
           isolation: 'isolate',
-          width: 'fit-content !important'
+          display: 'inline-block'
         }}
       >
         <pre
