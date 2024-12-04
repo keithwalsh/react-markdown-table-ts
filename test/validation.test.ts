@@ -67,7 +67,7 @@ describe('validateMarkdownTableProps', () => {
       inputData: validData,
       columnAlignments: [
         'left',
-        'invalid' as 'left' | 'center' | 'right' | 'none' | 'justify',
+        'invalid' as 'left' | 'center' | 'right' | 'none',
       ],
     };
     expect(() => validateMarkdownTableProps(props)).toThrow(MarkdownTableError);
@@ -98,13 +98,5 @@ describe('validateMarkdownTableProps', () => {
         convertLineBreaks: 'true' as unknown as boolean,
       })
     ).toThrow(MarkdownTableError);
-  });
-
-  it('accepts justify as a valid column alignment', () => {
-    const props: MarkdownTableProps = {
-      inputData: validData,
-      columnAlignments: ['left', 'justify', 'right'],
-    };
-    expect(() => validateMarkdownTableProps(props)).not.toThrow();
   });
 });

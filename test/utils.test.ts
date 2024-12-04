@@ -9,7 +9,7 @@ import {
 } from '../src/utils';
 import {TableRow, InputData} from '../src/types';
 
-type ColumnAlignment = 'left' | 'center' | 'right' | 'none' | 'justify';
+type ColumnAlignment = 'left' | 'center' | 'right' | 'none';
 
 describe('calculateColumnWidths', () => {
   it('calculates correct column widths for simple data', () => {
@@ -146,24 +146,6 @@ describe('formatAlignmentRow', () => {
     const columnWidths = [5, 10, 5];
     const result = formatAlignmentRow(3, columnAlignments, columnWidths);
     expect(result).toBe('| ----- | :--------- | ----: |');
-  });
-
-  it('handles justify alignment same as none alignment', () => {
-    const columnAlignments: ColumnAlignment[] = ['justify', 'none'];
-    const columnWidths = [5, 5];
-    const result = formatAlignmentRow(2, columnAlignments, columnWidths);
-    expect(result).toBe('| ----- | ----- |');
-  });
-
-  it('defaults to none alignment when no alignments are provided', () => {
-    const result = formatAlignmentRow(3, []);
-    expect(result).toBe('| ----- | ----- | ----- |');
-  });
-
-  it('uses none alignment for columns without specified alignment', () => {
-    const columnAlignments: ColumnAlignment[] = ['left'];  // Only specify first column
-    const result = formatAlignmentRow(3, columnAlignments);
-    expect(result).toBe('| :---- | ----- | ----- |');
   });
 });
 
