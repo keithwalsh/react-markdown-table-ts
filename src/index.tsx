@@ -117,7 +117,6 @@ export const MarkdownTable: React.FC<MarkdownTableProps> = ({
         {`
           pre {
             position: relative;
-            padding-top: ${topPadding}px !important;
           }
           pre::before {
             position: absolute;

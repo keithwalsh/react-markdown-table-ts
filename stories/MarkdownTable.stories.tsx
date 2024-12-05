@@ -157,6 +157,15 @@ const meta = {
           summary: 'number'
         }
       }
+    },
+    onGenerate: {
+      description: 'Callback function that receives the generated Markdown table string.',
+      table: {
+        category: 'Callbacks',
+        type: {
+          summary: '(markdownTableString: string) => void'
+        }
+      }
     }
   }
 } satisfies Meta<typeof MarkdownTable>
@@ -184,8 +193,8 @@ export const Default: Story = {
     convertLineBreaks: false,
     topPadding: 16,
     theme: 'light',
-    className: undefined,
-    preStyle: undefined,
+    className: 'markdown-table-pre',
+    preStyle: {borderRadius: '8px'},
     minWidth: 450
   }
 }

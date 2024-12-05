@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -24,7 +24,8 @@
     "test:ci": "jest --config jest.config.js --coverage --ci",
     "release": "standard-version",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --project-token=chpt_f61460f108c0eb8"
   },
   "keywords": [
     "markdown",
@@ -66,6 +67,7 @@
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
+    "chromatic": "^11.20.0",
     "eslint-plugin-storybook": "^0.11.1",
     "gts": "^5.3.1",
     "identity-obj-proxy": "^3.0.0",

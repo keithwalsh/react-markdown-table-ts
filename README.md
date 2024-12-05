@@ -23,10 +23,11 @@ interface MarkdownTableProps {
     hasTabs?: boolean;
     hasHeader?: boolean;
     convertLineBreaks?: boolean;
+    topPadding?: number;
     theme?: 'light' | 'dark';
     className?: string;
     preStyle?: React.CSSProperties;
-    topPadding?: number;
+    minWidth?: number;
     onGenerate?: (markdownTableString: string) => void;
 }
 ```
@@ -39,10 +40,11 @@ interface MarkdownTableProps {
 | `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `data` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells.                                    |
+| `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
 | `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the color scheme of the \<pre\> element display.                            |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
-| `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
+| `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
 | `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
 ## Usage Patterns
 
@@ -67,6 +69,13 @@ interface MarkdownTableProps {
 <MarkdownTable
     inputData={data}
     hasHeader={false} // Will generate A, B, C... headers
+/>
+```
+4. **Setting Minimum Width**:
+```typescript
+<MarkdownTable
+    inputData={data}
+    minWidth={500} // Sets the minimum width of the table container to 500 pixels
 />
 ```
 
