@@ -83,6 +83,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "prismjs": "^1.29.0"
+    "prismjs": "^1.30.0"
   }
 }
