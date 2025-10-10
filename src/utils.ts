@@ -1,9 +1,18 @@
-import { TableRow, InputData, Alignment, TableConfig, AlignmentIndicator } from './types';
+/**
+ * @fileoverview Utility functions and classes for generating formatted markdown
+ * table strings with alignment, padding, and column width adjustments.
+ */
+
+import type { InputData, Alignment, TableConfig } from './types';
+
+type TableRow = readonly string[];
 
 class CellFormatter {
+  private readonly config: TableConfig;
   private readonly padding: string;
 
-  constructor(private config: TableConfig) {
+  constructor(config: TableConfig) {
+    this.config = config;
     this.padding = this.config.useTabs ? '\t' : (this.config.hasPadding ? ' ' : '');
   }
 
@@ -26,12 +35,11 @@ class CellFormatter {
 }
 
 class AlignmentFormatter {
-  private static readonly indicators: AlignmentIndicator = {
+  private static readonly indicators = {
     left: (width: number) => `:${'-'.repeat(width - 1)}`,
     right: (width: number) => `${'-'.repeat(width - 1)}:`,
     center: (width: number) => `:${'-'.repeat(width - 2)}:`,
-    none: (width: number) => '-'.repeat(width),
-    justify: (width: number) => '-'.repeat(width)
+    none: (width: number) => '-'.repeat(width)
   };
 
   static formatIndicator(alignment: Alignment, width: number): string {
@@ -40,32 +48,32 @@ class AlignmentFormatter {
 }
 
 class TableFormatter {
+  private readonly config: TableConfig;
   private readonly cellFormatter: CellFormatter;
   private readonly adjustedAlignments: Alignment[];
 
-  constructor(private config: TableConfig) {
+  constructor(config: TableConfig) {
+    this.config = config;
     this.cellFormatter = new CellFormatter(config);
     this.adjustedAlignments = this.getAdjustedAlignments();
   }
 
   private getAdjustedAlignments(): Alignment[] {
     const defaultAlignment: Alignment = 'none';
-    const sanitizeAlignment = (alignment: Alignment): Alignment =>
-      alignment === 'justify' ? 'none' : alignment;
 
     return this.config.columnAlignments.length < this.config.columnCount
       ? [
-          ...Array.from(this.config.columnAlignments).map(sanitizeAlignment),
+          ...Array.from(this.config.columnAlignments),
           ...Array(this.config.columnCount - this.config.columnAlignments.length).fill(defaultAlignment),
         ]
-      : Array.from(this.config.columnAlignments).map(sanitizeAlignment);
+      : Array.from(this.config.columnAlignments);
   }
 
   formatRow(row: TableRow): string {
     const formattedCells = Array.from({ length: this.config.columnCount }, (_, i) => {
       let cell = row[i] ?? '';
       if (this.config.replaceNewlines) {
-        cell = replaceNewlinesInCell(cell);
+        cell = cell.replace(/\n/g, '<br>');
       }
       const alignment = this.adjustedAlignments[i];
       const width = this.config.columnWidths ? this.config.columnWidths[i] : cell.length;
@@ -89,7 +97,7 @@ class TableFormatter {
   }
 }
 
-export function calculateColumnWidths(
+function calculateColumnWidths(
   tableRows: readonly TableRow[],
   maxColumnCount: number
 ): number[] {
@@ -155,11 +163,7 @@ export function generateMarkdownTableString(
   return `${headerRow}\n${alignmentRow}\n${bodyRows}`.trimEnd();
 }
 
-export function replaceNewlinesInCell(cell: string): string {
-  return cell.replace(/\n/g, '<br>');
-}
-
-export function getColumnName(index: number): string {
+function getColumnName(index: number): string {
   let columnName = '';
   let currentIndex = index;
   while (currentIndex >= 0) {
@@ -171,46 +175,4 @@ export function getColumnName(index: number): string {
 
 export function generateAlphabetHeaders(columnCount: number): string[] {
   return Array.from({ length: columnCount }, (_, i) => getColumnName(i));
-}
-
-export function formatMarkdownRow(
-  columnCount: number,
-  currentRow: TableRow,
-  columnAlignments: readonly Alignment[],
-  columnWidths?: readonly number[],
-  useTabs = false,
-  canReplaceNewlines = false,
-  hasPadding = true
-): string {
-  const config: TableConfig = {
-    columnCount,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    replaceNewlines: canReplaceNewlines,
-    hasPadding
-  };
-
-  const tableFormatter = new TableFormatter(config);
-  return tableFormatter.formatRow(currentRow);
-}
-
-export function formatAlignmentRow(
-  columnCount: number,
-  columnAlignments: readonly Alignment[],
-  columnWidths?: readonly number[],
-  useTabs = false,
-  hasPadding = true
-): string {
-  const config: TableConfig = {
-    columnCount,
-    columnAlignments,
-    columnWidths,
-    useTabs,
-    replaceNewlines: false,
-    hasPadding
-  };
-
-  const tableFormatter = new TableFormatter(config);
-  return tableFormatter.formatAlignmentRow();
 }

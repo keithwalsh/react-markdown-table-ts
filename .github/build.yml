@@ -1,9 +1,10 @@
-name: Build
+name: build
 
 on:
   push:
-    tags:
-      - 'v*' # Trigger the workflow on version tags (e.g., v1.0.0)
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write # Ensure write access to the repository
@@ -23,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       # Install dependencies
       - name: Install dependencies
@@ -32,6 +33,13 @@ jobs:
       # Build the project (replace this with your actual build command)
       - name: Build project
         run: npm run build
+
+      # Publish to Chromatic
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_TOKEN }}
+          buildScriptName: build-storybook
 
       # Create a .zip file of the build artifacts
       - name: Create asset.zip

@@ -4,7 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { MarkdownTable } from '../src/index'
+import { MarkdownTable } from '../index'
 
 const meta = {
   title: 'Components/MarkdownTable',

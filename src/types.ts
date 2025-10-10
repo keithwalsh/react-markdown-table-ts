@@ -1,21 +1,13 @@
-// src/types.ts
-
 /**
- * Represents a single row in a table, consisting of cells.
+ * @fileoverview Type definitions for the MarkdownTable component including props,
+ * alignment options, and table configuration.
  */
-export type TableRow = readonly string[];
 
-/**
- * Represents the structure of a Markdown table.
- */
 export interface InputData {
-  inputDataHeader: string[]; // The header row of the table.
-  inputDataBody: readonly string[][]; // The body rows of the table.
+  inputDataHeader: string[];
+  inputDataBody: readonly string[][];
 }
 
-/**
- * Props for the MarkdownTable component.
- */
 export interface MarkdownTableProps {
   /**
    * The entire table data as a two-dimensional array.
@@ -122,14 +114,8 @@ export interface MarkdownTableProps {
 
 }
 
-/**
- * Represents the alignment options for table columns.
- */
-export type Alignment = 'left' | 'right' | 'center' | 'none' | 'justify';
+export type Alignment = 'left' | 'right' | 'center' | 'none';
 
-/**
- * Configuration for table formatting.
- */
 export interface TableConfig {
   columnCount: number;
   columnAlignments: readonly Alignment[];
@@ -137,15 +123,4 @@ export interface TableConfig {
   useTabs: boolean;
   replaceNewlines: boolean;
   hasPadding: boolean;
-}
-
-/**
- * Functions to generate alignment indicators for table columns.
- */
-export interface AlignmentIndicator {
-  left: (width: number) => string;
-  right: (width: number) => string;
-  center: (width: number) => string;
-  none: (width: number) => string;
-  justify: (width: number) => string;
 }

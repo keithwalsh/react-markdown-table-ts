@@ -1,11 +1,12 @@
-node_modules/
-dist/
-build/
-ref/
-coverage/
-*.npmignore
-tree.py
-.cursorrules
-.treeignore
 
+node_modules
+dist
+dist-ssr
+package-lock.json
+.*
+!.github
+!.storybook
+!.gitignore
+coverage/
 *storybook.log
+storybook-static
