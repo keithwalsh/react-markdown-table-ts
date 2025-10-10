@@ -69,6 +69,7 @@ export function MarkdownTable({
   preStyle,
   topPadding = 16,
   minWidth,
+  showLineNumbers = true,
 }: MarkdownTableProps) {
   const preElementRef = useRef<HTMLPreElement>(null);
   const id = useId();
@@ -139,7 +140,7 @@ export function MarkdownTable({
       >
         <pre
           ref={preElementRef}
-          className={`${className} language-markdown line-numbers ${theme === 'dark' ? 'dark-theme' : ''}`}
+          className={`${className} language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${theme === 'dark' ? 'dark-theme' : ''}`}
           style={{
             width: 'fit-content',
             minWidth: minWidth ? `${minWidth}px` : 'min-content',

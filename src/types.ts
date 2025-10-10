@@ -112,6 +112,18 @@ export interface MarkdownTableProps {
    */
   minWidth?: number;
 
+  /**
+   * Optional flag to show or hide line numbers in the Prism syntax highlighting.
+   * When true, line numbers are displayed on the left side of the code block.
+   * @default true
+   * @example
+   * <MarkdownTable
+   *   inputData={data}
+   *   showLineNumbers={false}
+   * />
+   */
+  showLineNumbers?: boolean;
+
 }
 
 export type Alignment = 'left' | 'right' | 'center' | 'none';

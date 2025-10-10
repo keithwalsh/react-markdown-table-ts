@@ -22,7 +22,8 @@ const meta = {
     hasHeader: true,
     convertLineBreaks: false,
     topPadding: 16,
-    theme: 'light' as const
+    theme: 'light' as const,
+    showLineNumbers: true
   },
   argTypes: {
     inputData: {
@@ -156,6 +157,17 @@ const meta = {
         type: {
           summary: 'number'
         }
+      }
+    },
+    showLineNumbers: {
+      control: 'boolean',
+      description: 'Optional flag to show or hide line numbers in the Prism syntax highlighting.',
+      table: {
+        category: 'Visual/UI Props',
+        type: {
+          summary: 'boolean'
+        },
+        defaultValue: { summary: 'true' }
       }
     },
     onGenerate: {

@@ -29,6 +29,7 @@ interface MarkdownTableProps {
     className?: string;
     preStyle?: React.CSSProperties;
     minWidth?: number;
+    showLineNumbers?: boolean;
     onGenerate?: (markdownTableString: string) => void;
 }
 ```
@@ -46,6 +47,7 @@ interface MarkdownTableProps {
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
 | `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
+| `showLineNumbers`    | `boolean`                               | `true`      | Show or hide line numbers in the Prism syntax highlighting.                        |
 | `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
 ## Usage Patterns
 
@@ -77,6 +79,13 @@ interface MarkdownTableProps {
 <MarkdownTable
     inputData={data}
     minWidth={500} // Sets the minimum width of the table container to 500 pixels
+/>
+```
+5. **Hiding Line Numbers**:
+```typescript
+<MarkdownTable
+    inputData={data}
+    showLineNumbers={false} // Hides line numbers in the code block
 />
 ```
 
