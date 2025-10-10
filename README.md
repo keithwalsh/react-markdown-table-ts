@@ -43,7 +43,7 @@ interface MarkdownTableProps {
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `data` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells.                                    |
 | `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
-| `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the color scheme of the \<pre\> element display.                            |
+| `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the colour scheme of the \<pre\> element display.                            |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
 | `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
@@ -89,7 +89,7 @@ interface MarkdownTableProps {
 />
 ```
 
-## Behaviors
+## Behaviours
 
 1. **Input Validation**:
 - Input must be non-null 2D string array

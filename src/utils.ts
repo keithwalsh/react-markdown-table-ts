@@ -7,13 +7,15 @@ import type { InputData, Alignment, TableConfig } from './types';
 
 type TableRow = readonly string[];
 
+function calculatePadding(config: TableConfig): string {
+  return config.useTabs ? '\t' : (config.hasPadding ? ' ' : '');
+}
+
 class CellFormatter {
-  private readonly config: TableConfig;
   private readonly padding: string;
 
   constructor(config: TableConfig) {
-    this.config = config;
-    this.padding = this.config.useTabs ? '\t' : (this.config.hasPadding ? ' ' : '');
+    this.padding = calculatePadding(config);
   }
 
   formatCell(content: string, alignment: Alignment, width: number): string {
@@ -85,7 +87,7 @@ class TableFormatter {
   }
 
   formatAlignmentRow(): string {
-    const padding = this.config.useTabs ? '\t' : (this.config.hasPadding ? ' ' : '');
+    const padding = calculatePadding(this.config);
     const formattedColumns = Array.from({ length: this.config.columnCount }, (_, i) => {
       const alignment = this.adjustedAlignments[i];
       const width = this.config.columnWidths ? this.config.columnWidths[i] : 3;

@@ -3,7 +3,6 @@
  * table syntax with Prism.js syntax highlighting.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useMemo, useRef, useDeferredValue, useTransition, useId } from 'react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markdown';

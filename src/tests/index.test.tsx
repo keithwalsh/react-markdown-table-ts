@@ -469,7 +469,7 @@ describe('MarkdownTable', () => {
     });
   });
 
-  describe('useDeferredValue optimization', () => {
+  describe('useDeferredValue optimisation', () => {
     it('should render with deferred input data', () => {
       const data = [['A', 'B'], ['1', '2']];
 
@@ -616,7 +616,7 @@ describe('MarkdownTable', () => {
       expect(codeElement).toBeInTheDocument();
     });
 
-    it('should handle maximum customization', () => {
+    it('should handle maximum customisation', () => {
       const onGenerate = jest.fn();
 
       render(
