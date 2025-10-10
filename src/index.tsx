@@ -106,10 +106,18 @@ export function MarkdownTable({
       startTransition(() => {
         requestAnimationFrame(() => {
           Prism.highlightElement(codeElement as HTMLElement);
+          
+          // Remove line numbers if showLineNumbers is false
+          if (!showLineNumbers && preElementRef.current) {
+            const lineNumbersRows = preElementRef.current.querySelector('.line-numbers-rows');
+            if (lineNumbersRows) {
+              lineNumbersRows.remove();
+            }
+          }
         });
       });
     }
-  }, [markdownTableSyntax, startTransition]);
+  }, [markdownTableSyntax, startTransition, showLineNumbers]);
 
   return (
     <>
@@ -127,6 +135,17 @@ export function MarkdownTable({
             color: ${theme === 'light' ? '#666' : '#999'};
             letter-spacing: 2px;
             font-size: 12px;
+          }
+          /* Hide line numbers when showLineNumbers is false */
+          pre:not(.line-numbers) .line-numbers-rows {
+            display: none !important;
+          }
+          /* Remove left padding when line numbers are hidden */
+          pre:not(.line-numbers) {
+            padding-left: 1em !important;
+          }
+          pre:not(.line-numbers) > code {
+            padding-left: 0 !important;
           }
         `}
       </style>

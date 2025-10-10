@@ -278,6 +278,35 @@ describe('MarkdownTable', () => {
     });
   });
 
+  describe('showLineNumbers prop', () => {
+    const data = [['A'], ['1']];
+
+    it('should include line-numbers class by default', () => {
+      const { container } = render(<MarkdownTable inputData={data} />);
+      
+      const preElement = container.querySelector('pre');
+      expect(preElement?.className).toContain('line-numbers');
+    });
+
+    it('should include line-numbers class when showLineNumbers is true', () => {
+      const { container } = render(
+        <MarkdownTable inputData={data} showLineNumbers={true} />
+      );
+      
+      const preElement = container.querySelector('pre');
+      expect(preElement?.className).toContain('line-numbers');
+    });
+
+    it('should not include line-numbers class when showLineNumbers is false', () => {
+      const { container } = render(
+        <MarkdownTable inputData={data} showLineNumbers={false} />
+      );
+      
+      const preElement = container.querySelector('pre');
+      expect(preElement?.className).not.toContain('line-numbers');
+    });
+  });
+
   describe('preStyle prop', () => {
     const data = [['A'], ['1']];
 
