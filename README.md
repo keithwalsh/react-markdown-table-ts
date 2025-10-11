@@ -14,6 +14,14 @@
 ## Overview 
 A React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. For syntax highlighting and line numbering, Prism.js is used within a `<pre>` HTML element.
 
+## Installation
+
+```bash
+npm install react-markdown-table-ts
+```
+
+The component includes all necessary Prism.js dependencies and CSS is embedded inline, so no additional setup is required.
+
 ## API
 ```typescript
 interface MarkdownTableProps {
@@ -122,3 +130,34 @@ interface MarkdownTableProps {
 2. **Header Generation**:
 - Auto-generates A, B, C... headers when `hasHeader={false}`
 - Supports custom headers via first row when `hasHeader={true}`
+
+## Troubleshooting
+
+### Styling Issues (Missing Line Numbers or Wrong Colors)
+
+If you experience styling issues when importing this component into your project (e.g., missing line numbers, incorrect header colors), this may be due to your bundler's tree-shaking configuration.
+
+**Solution 1 - Module Side Effects (Recommended)**
+
+Ensure your bundler preserves module side effects from this package. If using Webpack, add to your config:
+
+```javascript
+module.exports = {
+  // ... other config
+  optimization: {
+    sideEffects: true,
+  },
+};
+```
+
+**Solution 2 - Force Import**
+
+If issues persist, you can manually import the Prism.js plugins in your app entry file:
+
+```javascript
+import 'prismjs/components/prism-markdown';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
+```
+
+Note: You may need to install `@types/prismjs` as a dev dependency for TypeScript projects.

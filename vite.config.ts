@@ -13,12 +13,11 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'prismjs'],
+      external: ['react', 'react-dom'],
       output: {
         globals: {
           react: 'React',
-          'react-dom': 'ReactDOM',
-          prismjs: 'Prism'
+          'react-dom': 'ReactDOM'
         }
       }
     },

@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "description": "A React component that converts structured data into Markdown table syntax and displays it within a `<pre>` tag.",
   "keywords": [
     "markdown",
@@ -32,7 +32,10 @@
   "files": [
     "dist"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "src/index.tsx",
+    "**/*.css"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/keithwalsh/react-markdown-table-ts.git"
