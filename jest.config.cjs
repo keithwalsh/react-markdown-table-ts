@@ -32,7 +32,7 @@ module.exports = {
     }],
   },
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': '<rootDir>/src/tests/__mocks__/styleMock.js',
+    '\\.(css|less|scss|sass)$': '<rootDir>/src/tests/__mocks__/styleMock.cjs',
   },
 };
 
