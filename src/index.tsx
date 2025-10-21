@@ -1,12 +1,10 @@
 /**
  * @fileoverview Main MarkdownTable component that generates and displays markdown
- * table syntax with Prism.js syntax highlighting.
+ * table syntax with line numbers.
  */
 
-import { useEffect, useMemo, useRef, useDeferredValue, useTransition, useId } from 'react';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-markdown';
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
+import { useEffect, useMemo, useDeferredValue, useId } from 'react';
+import { CodeBlock } from './prism';
 import type { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
 import { validateInputData, MarkdownTableError } from './validation';
@@ -15,11 +13,11 @@ export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './ty
 export { MarkdownTableError } from './validation';
 
 const LIGHT_THEME_CSS = `
-code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:2.4em;counter-reset:linenumber}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block;counter-increment:linenumber}.line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.5em;text-align:right}
+code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:visible}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:3.8em}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block}
 `;
 
 const DARK_THEME_CSS = `
-code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#282a36}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:2.4em;counter-reset:linenumber}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block;counter-increment:linenumber}.line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.5em;text-align:right}
+code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:visible;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#282a36}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:3.8em}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block}
 `;
 
 function getTableData(inputData: string[][], hasHeader: boolean) {
@@ -73,10 +71,8 @@ export function MarkdownTable({
   minWidth,
   showLineNumbers = true,
 }: MarkdownTableProps) {
-  const preElementRef = useRef<HTMLPreElement>(null);
   const id = useId();
   const deferredInputData = useDeferredValue(inputData);
-  const [, startTransition] = useTransition();
 
   const markdownTableSyntax = useMemo(() => generateTableSyntax(
     deferredInputData,
@@ -102,52 +98,27 @@ export function MarkdownTable({
     }
   }, [markdownTableSyntax, onGenerate]);
 
-  useEffect(() => {
-    const codeElement = preElementRef.current?.querySelector('code');
-    if (codeElement && markdownTableSyntax) {
-      startTransition(() => {
-        requestAnimationFrame(() => {
-          Prism.highlightElement(codeElement as HTMLElement);
-          
-          // Remove line numbers if showLineNumbers is false
-          if (!showLineNumbers && preElementRef.current) {
-            const lineNumbersRows = preElementRef.current.querySelector('.line-numbers-rows');
-            if (lineNumbersRows) {
-              lineNumbersRows.remove();
-            }
-          }
-        });
-      });
-    }
-  }, [markdownTableSyntax, startTransition, showLineNumbers]);
-
   return (
     <>
       <style>
         {theme === 'light' ? LIGHT_THEME_CSS : DARK_THEME_CSS}
         {`
-          pre {
-            position: relative;
+          /* Add top spacing for the table content */
+          pre > code {
+            display: block;
             padding-top: ${topPadding}px !important;
+            padding-left: 3em !important;
           }
-          pre::before {
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            color: ${theme === 'light' ? '#666' : '#999'};
-            letter-spacing: 2px;
-            font-size: 12px;
-          }
-          /* Hide line numbers when showLineNumbers is false */
+          /* Hide line numbers when disabled */
           pre:not(.line-numbers) .line-numbers-rows {
             display: none !important;
           }
-          /* Remove left padding when line numbers are hidden */
-          pre:not(.line-numbers) {
-            padding-left: 1em !important;
-          }
           pre:not(.line-numbers) > code {
-            padding-left: 0 !important;
+            padding-left: 0.3em !important;
+          }
+          /* Ensure line numbers are visible */
+          .line-numbers .line-numbers-rows {
+            display: block !important;
           }
         `}
       </style>
@@ -159,20 +130,21 @@ export function MarkdownTable({
           display: 'inline-block'
         }}
       >
-        <pre
-          ref={preElementRef}
-          className={`${className} language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${theme === 'dark' ? 'dark-theme' : ''}`}
-          style={{
-            width: 'fit-content',
-            minWidth: minWidth ? `${minWidth}px` : 'min-content',
-            margin: 0,
-            ...preStyle
-          }}
+        <CodeBlock
+          showLineNumbers={showLineNumbers}
+          className={className}
+          topPadding={topPadding}
+          {...({
+            style: {
+              width: 'fit-content',
+              minWidth: minWidth ? `${minWidth}px` : 'min-content',
+              margin: 0,
+              ...preStyle
+            }
+          } as any)}
         >
-          <code className="language-markdown" role="code">
-            {markdownTableSyntax}
-          </code>
-        </pre>
+          {markdownTableSyntax}
+        </CodeBlock>
       </div>
     </>
   );

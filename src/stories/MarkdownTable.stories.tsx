@@ -204,7 +204,7 @@ export const Default: Story = {
     hasHeader: true,
     convertLineBreaks: false,
     topPadding: 16,
-    theme: 'light',
+    theme: "dark",
     className: 'markdown-table-pre',
     preStyle: {borderRadius: '8px'},
     minWidth: 450

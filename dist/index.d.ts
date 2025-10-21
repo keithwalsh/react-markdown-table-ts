@@ -1,9 +1,7 @@
 /**
  * @fileoverview Main MarkdownTable component that generates and displays markdown
- * table syntax with Prism.js syntax highlighting.
+ * table syntax with line numbers.
  */
-import 'prismjs/components/prism-markdown';
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
 import type { MarkdownTableProps } from './types';
 export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './types';
 export { MarkdownTableError } from './validation';

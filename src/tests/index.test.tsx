@@ -3,13 +3,9 @@
  * including rendering, props handling, and callback functionality.
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MarkdownTable } from '../index';
-import Prism from 'prismjs';
 import * as utils from '../utils';
-
-// Get the mocked highlightElement function
-const mockHighlightElement = Prism.highlightElement as jest.Mock;
 
 describe('MarkdownTable', () => {
   beforeEach(() => {
@@ -265,16 +261,19 @@ describe('MarkdownTable', () => {
       );
       
       const preElement = container.querySelector('pre');
+      const codeElement = container.querySelector('code');
       expect(preElement?.className).toContain('custom-class');
-      expect(preElement?.className).toContain('language-markdown');
       expect(preElement?.className).toContain('line-numbers');
+      expect(codeElement?.className).toContain('language-markdown');
     });
 
     it('should work without custom className', () => {
       const { container } = render(<MarkdownTable inputData={data} />);
       
       const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('language-markdown');
+      const codeElement = container.querySelector('code');
+      expect(preElement?.className).toContain('line-numbers');
+      expect(codeElement?.className).toContain('language-markdown');
     });
   });
 
@@ -429,43 +428,35 @@ describe('MarkdownTable', () => {
     });
   });
 
-  describe('Prism.js integration', () => {
-    it('should call Prism.highlightElement on mount', async () => {
-      const data = [['A'], ['1']];
-
-      render(<MarkdownTable inputData={data} />);
-      
-      await waitFor(() => {
-        expect(mockHighlightElement).toHaveBeenCalled();
-      });
-    });
-
-    it('should call Prism.highlightElement when data changes', async () => {
-      const data1 = [['A'], ['1']];
-      const data2 = [['B'], ['2']];
-
-      const { rerender } = render(<MarkdownTable inputData={data1} />);
-      
-      await waitFor(() => {
-        expect(mockHighlightElement).toHaveBeenCalled();
-      });
-
-      const callCount = mockHighlightElement.mock.calls.length;
-
-      rerender(<MarkdownTable inputData={data2} />);
-      
-      await waitFor(() => {
-        expect(mockHighlightElement.mock.calls.length).toBeGreaterThan(callCount);
-      });
-    });
-
-    it('should highlight code element with correct classes', () => {
+  describe('React component integration', () => {
+    it('should render CodeBlock component with correct props', () => {
       const data = [['A'], ['1']];
 
       const { container } = render(<MarkdownTable inputData={data} />);
       
+      const preElement = container.querySelector('pre');
       const codeElement = container.querySelector('code');
+      
+      expect(preElement).toBeInTheDocument();
       expect(codeElement?.className).toContain('language-markdown');
+    });
+
+    it('should render with line numbers when showLineNumbers is true', () => {
+      const data = [['A'], ['1']];
+
+      const { container } = render(<MarkdownTable inputData={data} showLineNumbers={true} />);
+      
+      const preElement = container.querySelector('pre');
+      expect(preElement?.className).toContain('line-numbers');
+    });
+
+    it('should render without line numbers when showLineNumbers is false', () => {
+      const data = [['A'], ['1']];
+
+      const { container } = render(<MarkdownTable inputData={data} showLineNumbers={false} />);
+      
+      const preElement = container.querySelector('pre');
+      expect(preElement?.className).not.toContain('line-numbers');
     });
   });
 
