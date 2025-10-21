@@ -1,17 +1,9 @@
 /**
- * @fileoverview Line numbers functionality with hooks and components.
- * Provides line numbers for code blocks using React patterns.
+ * @fileoverview Component for displaying line numbers in a
+ * styled pre/code block.
  */
 
-import React, { useRef, useLayoutEffect, useEffect, useState } from 'react';
-
-/**
- * Line number options
- */
-export interface LineNumberOptions {
-  startLine?: number;
-  showLineNumbers?: boolean;
-}
+import React from 'react';
 
 /**
  * Line numbers component props with style support
@@ -25,135 +17,8 @@ export interface LineNumbersComponentProps {
   topPadding?: number;
 }
 
-
 /**
- * Line numbers props
- */
-export interface LineNumbersProps {
-  lines: string[];
-  startLine?: number;
-  lineHeights?: number[];
-  className?: string;
-}
-
-/**
- * Custom hook for resize observer functionality
- */
-export function useResizeObserver(callback: () => void, deps: React.DependencyList = []): void {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
-
-  useEffect(() => {
-    const handleResize = () => callbackRef.current();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, deps);
-}
-
-/**
- * Custom hook for line numbers functionality
- */
-export function useLineNumbers(code: string, options: LineNumberOptions = {}) {
-  const { startLine = 1, showLineNumbers = true } = options;
-  const [lineHeights, setLineHeights] = useState<number[]>([]);
-  const sizerRef = useRef<HTMLElement>(null);
-  const lastCalculatedRef = useRef<string>('');
-
-  const lines = code.split(/\n(?!$)/g);
-  const lineNumbers = lines.map((_, index) => startLine + index);
-  
-  // Create a stable reference for the lines array
-  const linesKey = lines.join('\n') + showLineNumbers.toString();
-
-  function calculateLineHeights() {
-    if (!sizerRef.current || !showLineNumbers) return;
-
-    const sizer = sizerRef.current;
-    const oneLinerHeight = sizer.getBoundingClientRect().height;
-    const heights: number[] = [];
-
-    lines.forEach((line, index) => {
-        if (line && line.length > 1) {
-        const span = document.createElement('span');
-        span.style.display = 'block';
-        span.textContent = line;
-        sizer.appendChild(span);
-        heights[index] = span.getBoundingClientRect().height;
-        sizer.removeChild(span);
-        } else {
-        heights[index] = oneLinerHeight;
-      }
-    });
-
-    setLineHeights(heights);
-    lastCalculatedRef.current = linesKey;
-  }
-
-  useLayoutEffect(() => {
-    if (!showLineNumbers) {
-      setLineHeights([]);
-      return;
-    }
-    
-    // Only calculate if the content has actually changed
-    if (lastCalculatedRef.current !== linesKey) {
-      calculateLineHeights();
-    }
-  }, [linesKey, showLineNumbers]);
-
-  useResizeObserver(() => {
-    if (!showLineNumbers) return;
-    calculateLineHeights();
-  }, [linesKey, showLineNumbers]);
-
-  return {
-    lines,
-    lineNumbers,
-    lineHeights,
-    sizerRef,
-    calculateLineHeights
-  };
-}
-
-/**
- * Line Number component
- */
-export function LineNumber({ 
-  number, 
-  height, 
-  className = '' 
-}: { number: number; height?: number; className?: string }) {
-  return React.createElement('span', {
-    className,
-    style: { height: height ? `${height}px` : undefined }
-  }, number);
-}
-
-/**
- * Line Numbers Rows component - renders the line number spans
- */
-export function LineNumbersRows({ 
-  lines, 
-  startLine = 1, 
-  lineHeights = [], 
-  className = 'line-numbers-rows' 
-}: LineNumbersProps) {
-  const lineNumbers = lines.map((_, index) => startLine + index);
-
-  return React.createElement('span', {
-    className,
-    'aria-hidden': 'true'
-  }, lineNumbers.map((number, index) => 
-    React.createElement(LineNumber, {
-      key: index,
-      number,
-      height: lineHeights[index]
-    })
-  ));
-}
-
-/**
- * Main component that displays code with optional line numbers.
+ * Main component that displays line numbers.
  * Creates a styled pre/code block with line numbers on the left side.
  */
 export function LineNumbers(props: LineNumbersComponentProps) {

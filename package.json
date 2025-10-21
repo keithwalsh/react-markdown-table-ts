@@ -33,7 +33,7 @@
     "dist"
   ],
   "sideEffects": [
-    "src/index.tsx",
+    "src/index.ts",
     "**/*.css"
   ],
   "repository": {

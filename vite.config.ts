@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.tsx'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'ReactMarkdownTableTS',
       formats: ['es', 'cjs'],
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`

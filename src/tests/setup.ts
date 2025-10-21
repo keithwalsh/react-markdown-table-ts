@@ -17,22 +17,7 @@ jest.mock('../LineNumbers', () => ({
         className: 'language-markdown',
         role: 'code'
       }, children)
-    ),
-  LineNumbersRows: ({ lines, startLine }: any) => 
-    React.createElement('span', { className: 'line-numbers-rows' },
-      lines.map((_: any, index: number) => 
-        React.createElement('span', { key: index }, startLine + index)
-      )
-    ),
-  LineNumber: ({ number }: any) => React.createElement('span', {}, number),
-  useLineNumbers: () => ({
-    lines: [],
-    lineNumbers: [],
-    lineHeights: [],
-    sizerRef: { current: null },
-    calculateLineHeights: jest.fn()
-  }),
-  useResizeObserver: jest.fn()
+    )
 }));
 
 // Mock requestAnimationFrame
