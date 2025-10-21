@@ -14,9 +14,9 @@ export interface LineNumberOptions {
 }
 
 /**
- * Code block props with style support
+ * Line numbers component props with style support
  */
-export interface CodeBlockProps {
+export interface LineNumbersComponentProps {
   children: React.ReactNode;
   showLineNumbers?: boolean;
   startLine?: number;
@@ -130,9 +130,9 @@ export function LineNumber({
 }
 
 /**
- * Line Numbers component
+ * Line Numbers Rows component - renders the line number spans
  */
-export function LineNumbers({ 
+export function LineNumbersRows({ 
   lines, 
   startLine = 1, 
   lineHeights = [], 
@@ -153,13 +153,10 @@ export function LineNumbers({
 }
 
 /**
- * Memoized Code component
+ * Main component that displays code with optional line numbers.
+ * Creates a styled pre/code block with line numbers on the left side.
  */
-
-/**
- * Main CodeBlock component with line numbers
- */
-export function CodeBlock(props: CodeBlockProps) {
+export function LineNumbers(props: LineNumbersComponentProps) {
   const { 
     children, 
     showLineNumbers = false, 

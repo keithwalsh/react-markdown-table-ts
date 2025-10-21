@@ -55,7 +55,7 @@ export interface MarkdownTableProps {
     /**
      * Optional CSS class for styling the rendered Markdown table.
      * This class will be applied to the <pre> element containing the table.
-     * It will be combined with built-in classes for syntax highlighting.
+     * It will be combined with built-in classes for the code block display.
      * @default undefined
      * @example
      * <MarkdownTable
@@ -99,7 +99,7 @@ export interface MarkdownTableProps {
      */
     minWidth?: number;
     /**
-     * Optional flag to show or hide line numbers in the Prism syntax highlighting.
+     * Optional flag to show or hide line numbers in the code block.
      * When true, line numbers are displayed on the left side of the code block.
      * @default true
      * @example

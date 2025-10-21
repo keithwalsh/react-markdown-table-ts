@@ -4,7 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { MarkdownTable } from '../index'
+import { MarkdownTable } from '../MarkdownTable';
 
 const meta = {
   title: 'Components/MarkdownTable',
@@ -161,7 +161,7 @@ const meta = {
     },
     showLineNumbers: {
       control: 'boolean',
-      description: 'Optional flag to show or hide line numbers in the Prism syntax highlighting.',
+      description: 'Optional flag to show or hide line numbers in the code block.',
       table: {
         category: 'Visual/UI Props',
         type: {

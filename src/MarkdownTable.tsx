@@ -1,16 +1,14 @@
 /**
- * @fileoverview Main MarkdownTable component that generates and displays markdown
- * table syntax with line numbers.
+ * @fileoverview Main MarkdownTable component that generates and displays formatted
+ * markdown table syntax with optional line numbers and theme support.
  */
 
 import { useEffect, useMemo, useDeferredValue, useId } from 'react';
-import { CodeBlock } from './prism';
+import { LineNumbers } from './LineNumbers';
 import type { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
 import { validateInputData, MarkdownTableError } from './validation';
 
-export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './types';
-export { MarkdownTableError } from './validation';
 
 const LIGHT_THEME_CSS = `
 code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:visible}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:3.8em}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block}
@@ -130,9 +128,9 @@ export function MarkdownTable({
           display: 'inline-block'
         }}
       >
-        <CodeBlock
+        <LineNumbers
           showLineNumbers={showLineNumbers}
-          className={className}
+          className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
           topPadding={topPadding}
           {...({
             style: {
@@ -144,7 +142,7 @@ export function MarkdownTable({
           } as any)}
         >
           {markdownTableSyntax}
-        </CodeBlock>
+        </LineNumbers>
       </div>
     </>
   );

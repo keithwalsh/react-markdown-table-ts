@@ -12,7 +12,7 @@
 | `'light'` theme                          | `'dark'` theme                          |
 
 ## Overview 
-A React component for generating and displaying formatted Markdown tables with syntax highlighting. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. For syntax highlighting and line numbering, Prism.js is used within a `<pre>` HTML element.
+A React component for generating and displaying formatted Markdown tables. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. The output is displayed in a styled `<pre>` element with optional line numbering and supports both light and dark themes.
 
 ## Installation
 
@@ -20,7 +20,7 @@ A React component for generating and displaying formatted Markdown tables with s
 npm install react-markdown-table-ts
 ```
 
-The component includes all necessary Prism.js dependencies and CSS is embedded inline, so no additional setup is required.
+The component includes all necessary dependencies and CSS is embedded inline, so no additional setup is required.
 
 ## API
 ```typescript
@@ -55,7 +55,7 @@ interface MarkdownTableProps {
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
 | `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
-| `showLineNumbers`    | `boolean`                               | `true`      | Show or hide line numbers in the Prism syntax highlighting.                        |
+| `showLineNumbers`    | `boolean`                               | `true`      | Show or hide line numbers in the code block.                                       |
 | `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
 ## Usage Patterns
 
@@ -116,9 +116,9 @@ interface MarkdownTableProps {
 - Preserves stack traces for debugging
 
 4. **Styling**:
-- Uses Prism.js for syntax highlighting
-- Supports light/dark themes
+- Includes built-in light and dark themes
 - Custom styles via `className` and `preStyle` props
+- Optional line numbers for better readability
 
 ## Common Transformations
 
@@ -133,31 +133,16 @@ interface MarkdownTableProps {
 
 ## Troubleshooting
 
-### Styling Issues (Missing Line Numbers or Wrong Colors)
+### Styling Issues
 
-If you experience styling issues when importing this component into your project (e.g., missing line numbers, incorrect header colors), this may be due to your bundler's tree-shaking configuration.
+If you experience styling issues when importing this component into your project (e.g., missing line numbers, incorrect colors), this may be due to CSS conflicts with other libraries or global styles in your application.
 
-**Solution 1 - Module Side Effects (Recommended)**
+**Common Solutions:**
 
-Ensure your bundler preserves module side effects from this package. If using Webpack, add to your config:
+1. **Check for CSS conflicts**: Ensure no other libraries or global styles are overriding the component's built-in CSS.
 
-```javascript
-module.exports = {
-  // ... other config
-  optimization: {
-    sideEffects: true,
-  },
-};
-```
+2. **Verify theme prop**: Make sure you're using the correct `theme` prop value (`'light'` or `'dark'`) for your application.
 
-**Solution 2 - Force Import**
+3. **Custom styling**: Use the `className` and `preStyle` props to add custom styles or override defaults as needed.
 
-If issues persist, you can manually import the Prism.js plugins in your app entry file:
-
-```javascript
-import 'prismjs/components/prism-markdown';
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-```
-
-Note: You may need to install `@types/prismjs` as a dev dependency for TypeScript projects.
+4. **Line numbers**: If line numbers aren't displaying, verify that `showLineNumbers` is set to `true` (default).

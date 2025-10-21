@@ -6,18 +6,19 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 
-// Mock React components from prism.tsx
-jest.mock('../prism', () => ({
-  CodeBlock: ({ children, showLineNumbers, className, style }: any) => 
+// Mock React components from LineNumbers.tsx
+jest.mock('../LineNumbers', () => ({
+  LineNumbers: ({ children, showLineNumbers, className, style }: any) => 
     React.createElement('pre', { 
-      className: `${showLineNumbers ? 'line-numbers' : ''} ${className || ''}`.trim(),
+      className: `language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className || ''}`.trim(),
       style 
     }, 
       React.createElement('code', { 
+        className: 'language-markdown',
         role: 'code'
       }, children)
     ),
-  LineNumbers: ({ lines, startLine }: any) => 
+  LineNumbersRows: ({ lines, startLine }: any) => 
     React.createElement('span', { className: 'line-numbers-rows' },
       lines.map((_: any, index: number) => 
         React.createElement('span', { key: index }, startLine + index)
@@ -33,11 +34,6 @@ jest.mock('../prism', () => ({
   }),
   useResizeObserver: jest.fn()
 }));
-
-// Mock Prism markdown component
-jest.mock('prismjs/components/prism-markdown', () => ({}));
-
-// Line numbers functionality is now integrated into prism.ts
 
 // Mock requestAnimationFrame
 global.requestAnimationFrame = (callback: FrameRequestCallback): number => {
