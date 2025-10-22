@@ -91,7 +91,7 @@ export function MarkdownTable({
   onGenerate,
   theme = 'light',
   preStyle,
-  topPadding = 16,
+  topPadding = 0,
   minWidth,
   showLineNumbers = true,
 }: MarkdownTableProps) {
@@ -128,20 +128,20 @@ export function MarkdownTable({
         {generateThemeCSS(theme)}
         {`
           /* Add top spacing for the table content */
-          pre > code {
+          #${id} pre > code {
             display: block;
             padding-top: ${topPadding}px !important;
             padding-left: 3em !important;
           }
           /* Hide line numbers when disabled */
-          pre:not(.line-numbers) .line-numbers-rows {
+          #${id} pre:not(.line-numbers) .line-numbers-rows {
             display: none !important;
           }
-          pre:not(.line-numbers) > code {
+          #${id} pre:not(.line-numbers) > code {
             padding-left: 0.3em !important;
           }
           /* Ensure line numbers are visible */
-          .line-numbers .line-numbers-rows {
+          #${id} .line-numbers .line-numbers-rows {
             display: block !important;
           }
         `}
