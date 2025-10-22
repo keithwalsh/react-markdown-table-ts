@@ -138,21 +138,21 @@ describe('generateMarkdownTableString', () => {
       const alignments: Alignment[] = ['left'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/:\-+/);
+      expect(result).toMatch(/:-+/);
     });
 
     it('should apply center alignment', () => {
       const alignments: Alignment[] = ['none', 'center'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/:\-+:/);
+      expect(result).toMatch(/:-+:/);
     });
 
     it('should apply right alignment', () => {
       const alignments: Alignment[] = ['none', 'none', 'right'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/\-+:/);
+      expect(result).toMatch(/-+:/);
     });
 
     it('should apply none alignment (no colons)', () => {
@@ -171,10 +171,10 @@ describe('generateMarkdownTableString', () => {
       const lines = result.split('\n');
       const alignmentRow = lines[1];
       
-      expect(alignmentRow).toMatch(/:\-+/);   // left
-      expect(alignmentRow).toMatch(/:\-+:/);  // center
-      expect(alignmentRow).toMatch(/\-+:/);   // right
-      expect(alignmentRow).toMatch(/\-+/);    // none (dashes without colons)
+      expect(alignmentRow).toMatch(/:-+/);   // left
+      expect(alignmentRow).toMatch(/:-+:/);  // center
+      expect(alignmentRow).toMatch(/-+:/);   // right
+      expect(alignmentRow).toMatch(/-+/);    // none (dashes without colons)
     });
 
     it('should default to none alignment for unspecified columns', () => {
@@ -184,8 +184,8 @@ describe('generateMarkdownTableString', () => {
       const lines = result.split('\n');
       const alignmentRow = lines[1];
       
-      expect(alignmentRow).toMatch(/:\-+/); // First column left
-      expect(alignmentRow).toMatch(/\-+/); // Others have dashes
+      expect(alignmentRow).toMatch(/:-+/); // First column left
+      expect(alignmentRow).toMatch(/-+/); // Others have dashes
     });
   });
 

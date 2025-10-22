@@ -8,7 +8,15 @@ import type { InputData, Alignment, TableConfig } from './types';
 type TableRow = readonly string[];
 
 function calculatePadding(config: TableConfig): string {
-  return config.useTabs ? '\t' : (config.hasPadding ? ' ' : '');
+  let padding: string;
+  if (config.useTabs) {
+    padding = '\t';
+  } else if (config.hasPadding) {
+    padding = ' ';
+  } else {
+    padding = '';
+  }
+  return padding;
 }
 
 class CellFormatter {
