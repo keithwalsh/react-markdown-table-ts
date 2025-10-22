@@ -329,8 +329,8 @@ describe('Integration Tests', () => {
     it('should isolate styles with isolation property', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
-      const wrapper = container.querySelector('div');
-      expect(wrapper?.style.isolation).toBe('isolate');
+      const preElement = container.querySelector('pre');
+      expect(preElement?.style.isolation).toBe('isolate');
     });
 
     it('should inject theme-specific styles in style tag', () => {

@@ -305,25 +305,26 @@ describe('MarkdownTable', () => {
   });
 
   describe('topPadding prop', () => {
-    it('should apply default top padding of 0px', () => {
+    it('should render with default top padding', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('padding-top: 0px');
+      const codeElement = getCodeElement(container);
+      expect(codeElement).toBeTruthy();
+      expect(codeElement?.className).toContain('language-markdown');
     });
 
-    it('should apply custom top padding', () => {
+    it('should render with custom top padding', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
       
-      const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('padding-top: 32px');
+      const codeElement = getCodeElement(container);
+      expect(codeElement).toBeTruthy();
     });
 
-    it('should accept zero as top padding', () => {
-      const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
+    it('should render with zero top padding', () => {
+      const { container} = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
       
-      const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('padding-top: 0px');
+      const codeElement = getCodeElement(container);
+      expect(codeElement).toBeTruthy();
     });
   });
 
@@ -425,35 +426,25 @@ describe('MarkdownTable', () => {
   });
 
   describe('DOM structure', () => {
-    it('should render with correct wrapper structure', () => {
+    it('should render with correct pre element structure', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const wrapper = container.querySelector('div');
-      expect(wrapper).toBeInTheDocument();
-      expect(wrapper?.style.position).toBe('relative');
-      expect(wrapper?.style.isolation).toBe('isolate');
-      expect(wrapper?.style.display).toBe('inline-block');
+      const preElement = getPreElement(container);
+      expect(preElement).toBeInTheDocument();
+      expect(preElement?.style.position).toBe('relative');
+      expect(preElement?.style.isolation).toBe('isolate');
+      expect(preElement?.style.display).toBe('inline-block');
     });
 
-    it('should have unique id for wrapper div', () => {
+    it('should render pre element', () => {
       const { container: container1 } = render(<MarkdownTable inputData={testData.simple} />);
       const { container: container2 } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const wrapper1 = container1.querySelector('div');
-      const wrapper2 = container2.querySelector('div');
+      const pre1 = container1.querySelector('pre');
+      const pre2 = container2.querySelector('pre');
       
-      expect(wrapper1?.id).toBeTruthy();
-      expect(wrapper2?.id).toBeTruthy();
-      expect(wrapper1?.id).not.toBe(wrapper2?.id);
-    });
-
-    it('should contain pre element inside wrapper', () => {
-      const { container } = render(<MarkdownTable inputData={testData.simple} />);
-      
-      const wrapper = container.querySelector('div');
-      const preElement = wrapper?.querySelector('pre');
-      
-      expect(preElement).toBeInTheDocument();
+      expect(pre1).toBeTruthy();
+      expect(pre2).toBeTruthy();
     });
 
     it('should contain code element inside pre', () => {

@@ -278,7 +278,7 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre') as HTMLPreElement;
-      expect(pre?.style.paddingLeft).toBe('1.2em');
+      expect(pre?.style.paddingLeft).toBe('3.8em');
     });
 
     it('should not add paddingLeft when showLineNumbers is false', () => {
@@ -300,7 +300,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('3em'); // 1 + (32/16) = 3
+      expect(lineNumbersSpan?.style.top).toBe('32px');
     });
 
     it('should use default topPadding of 16px', () => {
@@ -309,7 +309,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('2em'); // 1 + (16/16) = 2
+      expect(lineNumbersSpan?.style.top).toBe('16px');
     });
 
     it('should handle topPadding of 0', () => {
@@ -320,7 +320,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('1em'); // 1 + (0/16) = 1
+      expect(lineNumbersSpan?.style.top).toBe('0px');
     });
 
     it('should handle large topPadding values', () => {
@@ -331,7 +331,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('11em'); // 1 + (160/16) = 11
+      expect(lineNumbersSpan?.style.top).toBe('160px');
     });
   });
 

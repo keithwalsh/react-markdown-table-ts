@@ -3,7 +3,7 @@
  * markdown table syntax with optional line numbers and theme support.
  */
 
-import { useEffect, useMemo, useDeferredValue, useId } from 'react';
+import { useEffect, useDeferredValue } from 'react';
 import { LineNumbers } from './LineNumbers';
 import type { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
@@ -91,14 +91,13 @@ export function MarkdownTable({
   onGenerate,
   theme = 'light',
   preStyle,
-  topPadding = 0,
+  topPadding = 16,
   minWidth,
   showLineNumbers = true,
 }: MarkdownTableProps) {
-  const id = useId();
   const deferredInputData = useDeferredValue(inputData);
 
-  const markdownTableSyntax = useMemo(() => generateTableSyntax(
+  const markdownTableSyntax = generateTableSyntax(
     deferredInputData,
     hasHeader,
     columnAlignments,
@@ -106,15 +105,7 @@ export function MarkdownTable({
     hasTabs,
     convertLineBreaks,
     hasPadding
-  ), [
-    deferredInputData,
-    hasHeader,
-    columnAlignments,
-    isCompact,
-    hasTabs,
-    convertLineBreaks,
-    hasPadding,
-  ]);
+  );
 
   useEffect(() => {
     if (onGenerate) {
@@ -124,50 +115,23 @@ export function MarkdownTable({
 
   return (
     <>
-      <style>
-        {generateThemeCSS(theme)}
-        {`
-          /* Add top spacing for the table content */
-          #${id} pre > code {
-            display: block;
-            padding-top: ${topPadding}px !important;
-            padding-left: 3em !important;
-          }
-          /* Hide line numbers when disabled */
-          #${id} pre:not(.line-numbers) .line-numbers-rows {
-            display: none !important;
-          }
-          #${id} pre:not(.line-numbers) > code {
-            padding-left: 0.3em !important;
-          }
-          /* Ensure line numbers are visible */
-          #${id} .line-numbers .line-numbers-rows {
-            display: block !important;
-          }
-        `}
-      </style>
-      <div
-        id={id}
+      <style>{generateThemeCSS(theme)}</style>
+      <LineNumbers
+        showLineNumbers={showLineNumbers}
+        className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
+        topPadding={topPadding}
         style={{
           position: 'relative',
           isolation: 'isolate',
-          display: 'inline-block'
+          display: 'inline-block',
+          width: 'fit-content',
+          minWidth: minWidth ? `${minWidth}px` : 'min-content',
+          margin: 0,
+          ...preStyle
         }}
       >
-        <LineNumbers
-          showLineNumbers={showLineNumbers}
-          className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
-          topPadding={topPadding}
-          style={{
-            width: 'fit-content',
-            minWidth: minWidth ? `${minWidth}px` : 'min-content',
-            margin: 0,
-            ...preStyle
-          }}
-        >
-          {markdownTableSyntax}
-        </LineNumbers>
-      </div>
+        {markdownTableSyntax}
+      </LineNumbers>
     </>
   );
 }
