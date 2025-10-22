@@ -158,14 +158,12 @@ export function MarkdownTable({
           showLineNumbers={showLineNumbers}
           className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
           topPadding={topPadding}
-          {...({
-            style: {
-              width: 'fit-content',
-              minWidth: minWidth ? `${minWidth}px` : 'min-content',
-              margin: 0,
-              ...preStyle
-            }
-          } as any)}
+          style={{
+            width: 'fit-content',
+            minWidth: minWidth ? `${minWidth}px` : 'min-content',
+            margin: 0,
+            ...preStyle
+          }}
         >
           {markdownTableSyntax}
         </LineNumbers>
