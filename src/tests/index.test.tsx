@@ -305,11 +305,11 @@ describe('MarkdownTable', () => {
   });
 
   describe('topPadding prop', () => {
-    it('should apply default top padding of 16px', () => {
+    it('should apply default top padding of 0px', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
       const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('padding-top: 16px');
+      expect(styleElement?.textContent).toContain('padding-top: 0px');
     });
 
     it('should apply custom top padding', () => {

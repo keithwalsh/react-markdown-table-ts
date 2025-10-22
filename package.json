@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-table-ts",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "A React component that converts structured data into formatted Markdown table syntax and displays it in a styled code block with optional line numbers.",
   "keywords": [
     "markdown",
