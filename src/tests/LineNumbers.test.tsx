@@ -4,6 +4,7 @@
  */
 
 import { render } from '@testing-library/react';
+import { getPreElement, getCodeElement, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
 
 // Unmock LineNumbers since we want to test the real implementation
 jest.unmock('../LineNumbers');
@@ -15,25 +16,25 @@ describe('LineNumbers', () => {
     it('should render without crashing', () => {
       const { container } = render(<LineNumbers>code content</LineNumbers>);
       
-      const pre = container.querySelector('pre');
+      const pre = getPreElement(container);
       expect(pre).toBeInTheDocument();
     });
 
     it('should render children as string', () => {
       const { container } = render(<LineNumbers>test code</LineNumbers>);
       
-      const code = container.querySelector('code');
+      const code = getCodeElement(container);
       expect(code?.textContent).toBe('test code');
     });
 
     it('should apply language-markdown class', () => {
       const { container } = render(<LineNumbers>code</LineNumbers>);
       
-      const pre = container.querySelector('pre');
-      const code = container.querySelector('code');
+      const pre = getPreElement(container);
+      const code = getCodeElement(container);
       
-      expect(pre?.className).toContain('language-markdown');
-      expect(code?.className).toContain('language-markdown');
+      expect(hasClass(pre, 'language-markdown')).toBe(true);
+      expect(hasClass(code, 'language-markdown')).toBe(true);
     });
 
     it('should handle empty children', () => {
@@ -60,8 +61,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>code</LineNumbers>
       );
       
-      const pre = container.querySelector('pre');
-      expect(pre?.className).toContain('line-numbers');
+      expectPreClasses(container, ['line-numbers']);
     });
 
     it('should not add line-numbers class when showLineNumbers is false', () => {
@@ -69,8 +69,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={false}>code</LineNumbers>
       );
       
-      const pre = container.querySelector('pre');
-      expect(pre?.className).not.toContain('line-numbers');
+      expectPreNotToHaveClasses(container, ['line-numbers']);
     });
 
     it('should render line numbers spans when showLineNumbers is true', () => {
@@ -79,7 +78,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{code}</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
+      const lineNumbersSpan = getLineNumbersSpan(container);
       expect(lineNumbersSpan).toBeInTheDocument();
       expect(lineNumbersSpan?.children.length).toBe(3);
     });
@@ -90,7 +89,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={false}>{code}</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
+      const lineNumbersSpan = getLineNumbersSpan(container);
       expect(lineNumbersSpan).not.toBeInTheDocument();
     });
 
@@ -100,7 +99,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{code}</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
+      const lineNumbersSpan = getLineNumbersSpan(container);
       expect(lineNumbersSpan?.children.length).toBe(4);
     });
 
@@ -109,7 +108,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>code</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
       expect(lineNumbersSpan?.style.pointerEvents).toBe('none');
       expect(lineNumbersSpan?.getAttribute('aria-hidden')).toBe('true');
     });
@@ -119,7 +118,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>code</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
       expect(lineNumbersSpan?.style.position).toBe('absolute');
     });
 
@@ -128,7 +127,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>line1</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
       expect(lineNumbersSpan?.style.fontSize).toBe('100%');
       expect(lineNumbersSpan?.style.userSelect).toBe('none');
       expect(lineNumbersSpan?.style.borderRight).toBe('1px solid #999');

@@ -5,6 +5,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable } from '../index';
+import { testData, getStyleElement, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectUniformColumnCount } from './test-utils';
 
 describe('Integration Tests', () => {
   describe('complete data flow', () => {
@@ -57,7 +58,7 @@ describe('Integration Tests', () => {
         ['Testing', '✗', 'Not started'],
       ];
 
-      render(
+      const { container } = render(
         <MarkdownTable
           inputData={inputData}
           columnAlignments={['left', 'center', 'left']}
@@ -65,13 +66,7 @@ describe('Integration Tests', () => {
         />
       );
 
-      const codeElement = screen.getByRole('code');
-      
-      expect(codeElement.textContent).toContain('Authentication');
-      expect(codeElement.textContent).toContain('✓');
-      expect(codeElement.textContent).toContain('OAuth');
-      expect(codeElement.textContent).toContain('⚠');
-      expect(codeElement.textContent).toContain('✗');
+      expectCodeToContainAll(container, 'Authentication', '✓', 'OAuth', '⚠', '✗');
     });
   });
 
@@ -168,24 +163,19 @@ describe('Integration Tests', () => {
 
   describe('theme switching', () => {
     it('should switch between light and dark themes', () => {
-      const data = [['A'], ['1']];
-
       const { container, rerender } = render(
-        <MarkdownTable inputData={data} theme="light" />
+        <MarkdownTable inputData={testData.simple} theme="light" />
       );
 
-      let preElement = container.querySelector('pre');
-      expect(preElement?.className).not.toContain('dark-theme');
+      expectPreNotToHaveClasses(container, ['dark-theme']);
 
-      rerender(<MarkdownTable inputData={data} theme="dark" />);
+      rerender(<MarkdownTable inputData={testData.simple} theme="dark" />);
 
-      preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('dark-theme');
+      expectPreClasses(container, ['dark-theme']);
 
-      rerender(<MarkdownTable inputData={data} theme="light" />);
+      rerender(<MarkdownTable inputData={testData.simple} theme="light" />);
 
-      preElement = container.querySelector('pre');
-      expect(preElement?.className).not.toContain('dark-theme');
+      expectPreNotToHaveClasses(container, ['dark-theme']);
     });
   });
 
@@ -199,18 +189,9 @@ describe('Integration Tests', () => {
         ['7', '8', '9', '10'],
       ];
 
-      render(<MarkdownTable inputData={inputData} />);
+      const { container } = render(<MarkdownTable inputData={inputData} />);
 
-      const codeElement = screen.getByRole('code');
-      const lines = (codeElement.textContent || '').split('\n');
-
-      // Each row should have the same number of column separators
-      const columnCounts = lines
-        .filter(line => line.trim())
-        .map(line => (line.match(/\|/g) || []).length);
-
-      // All rows should have the same number of pipes
-      expect(new Set(columnCounts).size).toBe(1);
+      expectUniformColumnCount(container);
     });
 
     it('should handle markdown syntax in cell content', () => {
@@ -222,14 +203,9 @@ describe('Integration Tests', () => {
         ['Link', '[link](url)'],
       ];
 
-      render(<MarkdownTable inputData={inputData} />);
+      const { container } = render(<MarkdownTable inputData={inputData} />);
 
-      const codeElement = screen.getByRole('code');
-      
-      expect(codeElement.textContent).toContain('**text**');
-      expect(codeElement.textContent).toContain('*text*');
-      expect(codeElement.textContent).toContain('`code`');
-      expect(codeElement.textContent).toContain('[link](url)');
+      expectCodeToContainAll(container, '**text**', '*text*', '`code`', '[link](url)');
     });
 
     it('should handle multiline content with line break conversion', () => {
@@ -351,37 +327,31 @@ describe('Integration Tests', () => {
 
   describe('style isolation', () => {
     it('should isolate styles with isolation property', () => {
-      const data = [['A'], ['1']];
-
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
       const wrapper = container.querySelector('div');
       expect(wrapper?.style.isolation).toBe('isolate');
     });
 
     it('should inject theme-specific styles in style tag', () => {
-      const data = [['A'], ['1']];
+      const { container } = render(<MarkdownTable inputData={testData.simple} theme="light" />);
 
-      const { container } = render(<MarkdownTable inputData={data} theme="light" />);
-
-      const styleTag = container.querySelector('style');
+      const styleTag = getStyleElement(container);
       expect(styleTag).toBeInTheDocument();
       expect(styleTag?.textContent).toContain('code[class*=language-]');
     });
 
     it('should update styles when theme changes', () => {
-      const data = [['A'], ['1']];
-
       const { container, rerender } = render(
-        <MarkdownTable inputData={data} theme="light" />
+        <MarkdownTable inputData={testData.simple} theme="light" />
       );
 
-      let styleTag = container.querySelector('style');
+      let styleTag = getStyleElement(container);
       const lightStyles = styleTag?.textContent;
 
-      rerender(<MarkdownTable inputData={data} theme="dark" />);
+      rerender(<MarkdownTable inputData={testData.simple} theme="dark" />);
 
-      styleTag = container.querySelector('style');
+      styleTag = getStyleElement(container);
       const darkStyles = styleTag?.textContent;
 
       // Styles should be different for different themes

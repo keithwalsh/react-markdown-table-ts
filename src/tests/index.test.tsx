@@ -6,6 +6,7 @@
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable } from '../index';
 import * as utils from '../utils';
+import { testData, getPreElement, getCodeElement, getStyleElement, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
 
 describe('MarkdownTable', () => {
   beforeEach(() => {
@@ -20,33 +21,17 @@ describe('MarkdownTable', () => {
     });
 
     it('should render with valid data', () => {
-      const data = [
-        ['Name', 'Age'],
-        ['John', '30'],
-      ];
-
-      render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.withHeader} />);
       
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
-      expect(codeElement.textContent).toContain('Name');
-      expect(codeElement.textContent).toContain('Age');
-      expect(codeElement.textContent).toContain('John');
-      expect(codeElement.textContent).toContain('30');
+      expectCodeToContainAll(container, 'Name', 'Age', 'John', '30');
     });
 
     it('should render table with alphabet headers when hasHeader is false', () => {
-      const data = [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
-      ];
-
-      render(<MarkdownTable inputData={data} hasHeader={false} />);
+      const { container } = render(<MarkdownTable inputData={testData.threeColumn} hasHeader={false} />);
       
-      const codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).toContain('A');
-      expect(codeElement.textContent).toContain('B');
-      expect(codeElement.textContent).toContain('C');
+      expectCodeToContainAll(container, 'A', 'B', 'C');
     });
 
     it('should render with null inputData', () => {
@@ -212,103 +197,88 @@ describe('MarkdownTable', () => {
   });
 
   describe('theme prop', () => {
-    const data = [['A', 'B'], ['1', '2']];
-
     it('should apply light theme by default', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} />);
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).not.toContain('dark-theme');
+      expectPreNotToHaveClasses(container, ['dark-theme']);
     });
 
     it('should apply dark theme when specified', () => {
-      const { container } = render(<MarkdownTable inputData={data} theme="dark" />);
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('dark-theme');
+      expectPreClasses(container, ['dark-theme']);
     });
 
     it('should inject light theme CSS', () => {
-      const { container } = render(<MarkdownTable inputData={data} theme="light" />);
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="light" />);
       
-      const styleElement = container.querySelector('style');
+      const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('code[class*=language-]');
     });
 
     it('should inject dark theme CSS', () => {
-      const { container } = render(<MarkdownTable inputData={data} theme="dark" />);
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
       
-      const styleElement = container.querySelector('style');
+      const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('code[class*=language-]');
     });
   });
 
   describe('className prop', () => {
-    const data = [['A'], ['1']];
-
     it('should apply custom className', () => {
       const { container } = render(
-        <MarkdownTable inputData={data} className="custom-class" />
+        <MarkdownTable inputData={testData.simple} className="custom-class" />
       );
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('custom-class');
+      expectPreClasses(container, ['custom-class']);
     });
 
     it('should combine custom className with default classes', () => {
       const { container } = render(
-        <MarkdownTable inputData={data} className="custom-class" />
+        <MarkdownTable inputData={testData.simple} className="custom-class" />
       );
       
-      const preElement = container.querySelector('pre');
-      const codeElement = container.querySelector('code');
-      expect(preElement?.className).toContain('custom-class');
-      expect(preElement?.className).toContain('line-numbers');
-      expect(codeElement?.className).toContain('language-markdown');
+      const preElement = getPreElement(container);
+      const codeElement = getCodeElement(container);
+      expect(hasClass(preElement, 'custom-class')).toBe(true);
+      expect(hasClass(preElement, 'line-numbers')).toBe(true);
+      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
     });
 
     it('should work without custom className', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = container.querySelector('pre');
-      const codeElement = container.querySelector('code');
-      expect(preElement?.className).toContain('line-numbers');
-      expect(codeElement?.className).toContain('language-markdown');
+      expectPreClasses(container, ['line-numbers']);
+      const codeElement = getCodeElement(container);
+      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
     });
   });
 
   describe('showLineNumbers prop', () => {
-    const data = [['A'], ['1']];
-
     it('should include line-numbers class by default', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('line-numbers');
+      expectPreClasses(container, ['line-numbers']);
     });
 
     it('should include line-numbers class when showLineNumbers is true', () => {
       const { container } = render(
-        <MarkdownTable inputData={data} showLineNumbers={true} />
+        <MarkdownTable inputData={testData.simple} showLineNumbers={true} />
       );
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('line-numbers');
+      expectPreClasses(container, ['line-numbers']);
     });
 
     it('should not include line-numbers class when showLineNumbers is false', () => {
       const { container } = render(
-        <MarkdownTable inputData={data} showLineNumbers={false} />
+        <MarkdownTable inputData={testData.simple} showLineNumbers={false} />
       );
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).not.toContain('line-numbers');
+      expectPreNotToHaveClasses(container, ['line-numbers']);
     });
   });
 
   describe('preStyle prop', () => {
-    const data = [['A'], ['1']];
-
     it('should apply custom styles to pre element', () => {
       const customStyle = {
         maxHeight: '300px',
@@ -316,10 +286,10 @@ describe('MarkdownTable', () => {
       };
 
       const { container } = render(
-        <MarkdownTable inputData={data} preStyle={customStyle} />
+        <MarkdownTable inputData={testData.simple} preStyle={customStyle} />
       );
       
-      const preElement = container.querySelector('pre') as HTMLPreElement;
+      const preElement = getPreElement(container) as HTMLPreElement;
       expect(preElement.style.maxHeight).toBe('300px');
       // Browser converts hex to rgb, so check if backgroundColor is set
       expect(preElement.style.backgroundColor).toBeTruthy();
@@ -327,68 +297,55 @@ describe('MarkdownTable', () => {
 
     it('should maintain default styles with custom preStyle', () => {
       const { container } = render(
-        <MarkdownTable inputData={data} preStyle={{ maxHeight: '500px' }} />
+        <MarkdownTable inputData={testData.simple} preStyle={{ maxHeight: '500px' }} />
       );
       
-      const preElement = container.querySelector('pre') as HTMLPreElement;
-      // Check that styles are applied, even if computed differently
-      expect(preElement.style.maxHeight).toBe('500px');
-      expect(preElement.style.margin).toBe('0px');
+      expectPreStyle(container, { maxHeight: '500px', margin: '0px' });
     });
   });
 
   describe('topPadding prop', () => {
-    const data = [['A'], ['1']];
-
     it('should apply default top padding of 16px', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const styleElement = container.querySelector('style');
+      const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('padding-top: 16px');
     });
 
     it('should apply custom top padding', () => {
-      const { container } = render(<MarkdownTable inputData={data} topPadding={32} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
       
-      const styleElement = container.querySelector('style');
+      const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('padding-top: 32px');
     });
 
     it('should accept zero as top padding', () => {
-      const { container } = render(<MarkdownTable inputData={data} topPadding={0} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
       
-      const styleElement = container.querySelector('style');
+      const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('padding-top: 0px');
     });
   });
 
   describe('minWidth prop', () => {
-    const data = [['A'], ['1']];
-
     it('should apply minWidth when specified', () => {
-      const { container } = render(<MarkdownTable inputData={data} minWidth={400} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} minWidth={400} />);
       
-      const preElement = container.querySelector('pre') as HTMLPreElement;
-      expect(preElement.style.minWidth).toBe('400px');
+      expectPreStyle(container, { minWidth: '400px' });
     });
 
     it('should use min-content when minWidth is not specified', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = container.querySelector('pre') as HTMLPreElement;
-      expect(preElement.style.minWidth).toBe('min-content');
+      expectPreStyle(container, { minWidth: 'min-content' });
     });
   });
 
   describe('onGenerate callback', () => {
     it('should call onGenerate with generated markdown', () => {
       const onGenerate = jest.fn();
-      const data = [
-        ['Name', 'Age'],
-        ['John', '30'],
-      ];
 
-      render(<MarkdownTable inputData={data} onGenerate={onGenerate} />);
+      render(<MarkdownTable inputData={testData.withHeader} onGenerate={onGenerate} />);
       
       expect(onGenerate).toHaveBeenCalledTimes(1);
       expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Name'));
@@ -397,16 +354,14 @@ describe('MarkdownTable', () => {
 
     it('should call onGenerate when data changes', () => {
       const onGenerate = jest.fn();
-      const data1 = [['A'], ['1']];
-      const data2 = [['B'], ['2']];
 
       const { rerender } = render(
-        <MarkdownTable inputData={data1} onGenerate={onGenerate} />
+        <MarkdownTable inputData={testData.simple} onGenerate={onGenerate} />
       );
       
       expect(onGenerate).toHaveBeenCalledTimes(1);
 
-      rerender(<MarkdownTable inputData={data2} onGenerate={onGenerate} />);
+      rerender(<MarkdownTable inputData={testData.twoColumn} onGenerate={onGenerate} />);
       
       expect(onGenerate).toHaveBeenCalledTimes(2);
     });
@@ -420,65 +375,49 @@ describe('MarkdownTable', () => {
     });
 
     it('should work without onGenerate callback', () => {
-      const data = [['A'], ['1']];
-
       expect(() => {
-        render(<MarkdownTable inputData={data} />);
+        render(<MarkdownTable inputData={testData.simple} />);
       }).not.toThrow();
     });
   });
 
   describe('React component integration', () => {
     it('should render CodeBlock component with correct props', () => {
-      const data = [['A'], ['1']];
-
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = container.querySelector('pre');
-      const codeElement = container.querySelector('code');
+      const preElement = getPreElement(container);
+      const codeElement = getCodeElement(container);
       
       expect(preElement).toBeInTheDocument();
-      expect(codeElement?.className).toContain('language-markdown');
+      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
     });
 
     it('should render with line numbers when showLineNumbers is true', () => {
-      const data = [['A'], ['1']];
-
-      const { container } = render(<MarkdownTable inputData={data} showLineNumbers={true} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} showLineNumbers={true} />);
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).toContain('line-numbers');
+      expectPreClasses(container, ['line-numbers']);
     });
 
     it('should render without line numbers when showLineNumbers is false', () => {
-      const data = [['A'], ['1']];
-
-      const { container } = render(<MarkdownTable inputData={data} showLineNumbers={false} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} showLineNumbers={false} />);
       
-      const preElement = container.querySelector('pre');
-      expect(preElement?.className).not.toContain('line-numbers');
+      expectPreNotToHaveClasses(container, ['line-numbers']);
     });
   });
 
   describe('useDeferredValue optimisation', () => {
     it('should render with deferred input data', () => {
-      const data = [['A', 'B'], ['1', '2']];
-
-      render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} />);
       
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
-      expect(codeElement.textContent).toContain('A');
+      expectCodeToContainAll(container, 'A');
     });
 
     it('should handle rapid data updates', () => {
-      const data1 = [['A'], ['1']];
-      const data2 = [['B'], ['2']];
-      const data3 = [['C'], ['3']];
-
-      const { rerender } = render(<MarkdownTable inputData={data1} />);
-      rerender(<MarkdownTable inputData={data2} />);
-      rerender(<MarkdownTable inputData={data3} />);
+      const { rerender } = render(<MarkdownTable inputData={testData.simple} />);
+      rerender(<MarkdownTable inputData={testData.twoColumn} />);
+      rerender(<MarkdownTable inputData={testData.threeColumn} />);
       
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
@@ -486,10 +425,8 @@ describe('MarkdownTable', () => {
   });
 
   describe('DOM structure', () => {
-    const data = [['A'], ['1']];
-
     it('should render with correct wrapper structure', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
       const wrapper = container.querySelector('div');
       expect(wrapper).toBeInTheDocument();
@@ -499,8 +436,8 @@ describe('MarkdownTable', () => {
     });
 
     it('should have unique id for wrapper div', () => {
-      const { container: container1 } = render(<MarkdownTable inputData={data} />);
-      const { container: container2 } = render(<MarkdownTable inputData={data} />);
+      const { container: container1 } = render(<MarkdownTable inputData={testData.simple} />);
+      const { container: container2 } = render(<MarkdownTable inputData={testData.simple} />);
       
       const wrapper1 = container1.querySelector('div');
       const wrapper2 = container2.querySelector('div');
@@ -511,7 +448,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should contain pre element inside wrapper', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
       const wrapper = container.querySelector('div');
       const preElement = wrapper?.querySelector('pre');
@@ -520,9 +457,9 @@ describe('MarkdownTable', () => {
     });
 
     it('should contain code element inside pre', () => {
-      const { container } = render(<MarkdownTable inputData={data} />);
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = container.querySelector('pre');
+      const preElement = getPreElement(container);
       const codeElement = preElement?.querySelector('code');
       
       expect(codeElement).toBeInTheDocument();
@@ -552,18 +489,14 @@ describe('MarkdownTable', () => {
     });
 
     it('should handle empty strings in cells', () => {
-      const data = [['', ''], ['', '']];
-
-      render(<MarkdownTable inputData={data} />);
+      render(<MarkdownTable inputData={testData.empty} />);
       
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
     });
 
     it('should handle special characters', () => {
-      const data = [['<>', '&amp;', '\'"`']];
-
-      render(<MarkdownTable inputData={data} />);
+      render(<MarkdownTable inputData={testData.specialChars} />);
       
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
