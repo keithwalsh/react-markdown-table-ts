@@ -82,7 +82,8 @@ function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
   }
 }
 #${scopeId} pre[class*=language-] {
-  padding: 1em;
+  padding-right: 1em !important;
+  padding-bottom: 1em !important;
   margin: .5em 0;
   overflow: visible${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
 }
