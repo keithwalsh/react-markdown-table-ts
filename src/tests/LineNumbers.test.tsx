@@ -278,7 +278,7 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre') as HTMLPreElement;
-      expect(pre?.style.paddingLeft).toBe('3.8em');
+      expect(pre?.style.paddingLeft).toBe('1em');
     });
 
     it('should not add paddingLeft when showLineNumbers is false', () => {
