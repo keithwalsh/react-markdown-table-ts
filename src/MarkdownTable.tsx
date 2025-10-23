@@ -3,7 +3,7 @@
  * markdown table syntax with optional line numbers and theme support.
  */
 
-import { useEffect, useDeferredValue } from 'react';
+import { useEffect, useDeferredValue, useId } from 'react';
 import { LineNumbers } from './LineNumbers';
 import type { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
@@ -35,7 +35,7 @@ function getThemeColors(theme: 'light' | 'dark'): ThemeColors {
       };
 }
 
-function generateThemeCSS(theme: 'light' | 'dark'): string {
+function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
   const colors = getThemeColors(theme);
   const commonStyles = `
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -56,54 +56,54 @@ function generateThemeCSS(theme: 'light' | 'dark'): string {
   `.replace(/\s{2,}/g, ''); // remove extra spaces
 
   return `
-code[class*=language-], pre[class*=language-] {
+#${scopeId} code[class*=language-], #${scopeId} pre[class*=language-] {
   color: ${colors.textColor};
   background: 0 0;
   text-shadow: ${colors.textShadow};
   ${commonStyles}
 }
-code[class*=language-] ::-moz-selection,
-code[class*=language-]::-moz-selection,
-pre[class*=language-] ::-moz-selection,
-pre[class*=language-]::-moz-selection {
+#${scopeId} code[class*=language-] ::-moz-selection,
+#${scopeId} code[class*=language-]::-moz-selection,
+#${scopeId} pre[class*=language-] ::-moz-selection,
+#${scopeId} pre[class*=language-]::-moz-selection {
   text-shadow: none;
   background: ${colors.selectionBackground};
 }
-code[class*=language-] ::selection,
-code[class*=language-]::selection,
-pre[class*=language-] ::selection,
-pre[class*=language-]::selection {
+#${scopeId} code[class*=language-] ::selection,
+#${scopeId} code[class*=language-]::selection,
+#${scopeId} pre[class*=language-] ::selection,
+#${scopeId} pre[class*=language-]::selection {
   text-shadow: none;
   background: ${colors.selectionBackground};
 }
 @media print {
-  code[class*=language-], pre[class*=language-] {
+  #${scopeId} code[class*=language-], #${scopeId} pre[class*=language-] {
     text-shadow: none;
   }
 }
-pre[class*=language-] {
+#${scopeId} pre[class*=language-] {
   padding: 1em;
   margin: .5em 0;
   overflow: visible${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
 }
-:not(pre) > code[class*=language-],
-pre[class*=language-] {
+#${scopeId} :not(pre) > code[class*=language-],
+#${scopeId} pre[class*=language-] {
   background: ${colors.background};
 }
-:not(pre) > code[class*=language-] {
+#${scopeId} :not(pre) > code[class*=language-] {
   padding: .1em;
   border-radius: .3em;
   white-space: normal;
 }
-pre[class*=language-].line-numbers {
+#${scopeId} pre[class*=language-].line-numbers {
   position: relative;
   padding-left: 3.8em;
 }
-pre[class*=language-].line-numbers > code {
+#${scopeId} pre[class*=language-].line-numbers > code {
   position: relative;
   white-space: inherit;
 }
-.line-numbers .line-numbers-rows {
+#${scopeId} .line-numbers .line-numbers-rows {
   position: absolute;
   pointer-events: none;
   top: 0;
@@ -117,7 +117,7 @@ pre[class*=language-].line-numbers > code {
   -ms-user-select: none;
   user-select: none;
 }
-.line-numbers-rows > span {
+#${scopeId} .line-numbers-rows > span {
   display: block;
 }
 `.trim();
@@ -174,6 +174,7 @@ export function MarkdownTable({
   minWidth,
   showLineNumbers = true,
 }: MarkdownTableProps) {
+  const scopeId = useId().replace(/:/g, '_');
   const deferredInputData = useDeferredValue(inputData);
 
   const markdownTableSyntax = generateTableSyntax(
@@ -193,8 +194,8 @@ export function MarkdownTable({
   }, [markdownTableSyntax, onGenerate]);
 
   return (
-    <>
-      <style>{generateThemeCSS(theme)}</style>
+    <div id={scopeId}>
+      <style>{generateThemeCSS(theme, scopeId)}</style>
       <LineNumbers
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
@@ -211,6 +212,6 @@ export function MarkdownTable({
       >
         {markdownTableSyntax}
       </LineNumbers>
-    </>
+    </div>
   );
 }
