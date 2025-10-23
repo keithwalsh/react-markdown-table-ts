@@ -40,7 +40,7 @@ export function LineNumbers({
     position: 'relative',
     counterReset: `linenumber ${startLine - 1}`,
     paddingTop: 0,
-    ...(showLineNumbers ? { paddingLeft: '3.8em' } : {}),
+    ...(showLineNumbers ? { paddingLeft: '1em' } : {}),
     ...style
   };
 

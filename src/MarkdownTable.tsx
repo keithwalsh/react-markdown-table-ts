@@ -37,11 +37,90 @@ function getThemeColors(theme: 'light' | 'dark'): ThemeColors {
 
 function generateThemeCSS(theme: 'light' | 'dark'): string {
   const colors = getThemeColors(theme);
-  const commonStyles = `font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none`;
-  
+  const commonStyles = `
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 1em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  `.replace(/\s{2,}/g, ''); // remove extra spaces
+
   return `
-code[class*=language-],pre[class*=language-]{color:${colors.textColor};background:0 0;text-shadow:${colors.textShadow};${commonStyles}}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:${colors.selectionBackground}}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:${colors.selectionBackground}}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:visible${colors.borderRadius ? `;border-radius:${colors.borderRadius}` : ''}}:not(pre)>code[class*=language-],pre[class*=language-]{background:${colors.background}}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}pre[class*=language-].line-numbers{position:relative;padding-left:3.8em}pre[class*=language-].line-numbers>code{position:relative;white-space:inherit}.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:0;font-size:100%;left:-3.8em;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.line-numbers-rows>span{display:block}
-`;
+code[class*=language-], pre[class*=language-] {
+  color: ${colors.textColor};
+  background: 0 0;
+  text-shadow: ${colors.textShadow};
+  ${commonStyles}
+}
+code[class*=language-] ::-moz-selection,
+code[class*=language-]::-moz-selection,
+pre[class*=language-] ::-moz-selection,
+pre[class*=language-]::-moz-selection {
+  text-shadow: none;
+  background: ${colors.selectionBackground};
+}
+code[class*=language-] ::selection,
+code[class*=language-]::selection,
+pre[class*=language-] ::selection,
+pre[class*=language-]::selection {
+  text-shadow: none;
+  background: ${colors.selectionBackground};
+}
+@media print {
+  code[class*=language-], pre[class*=language-] {
+    text-shadow: none;
+  }
+}
+pre[class*=language-] {
+  padding: 1em;
+  margin: .5em 0;
+  overflow: visible${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
+}
+:not(pre) > code[class*=language-],
+pre[class*=language-] {
+  background: ${colors.background};
+}
+:not(pre) > code[class*=language-] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+}
+pre[class*=language-].line-numbers {
+  position: relative;
+  padding-left: 3.8em;
+}
+pre[class*=language-].line-numbers > code {
+  position: relative;
+  white-space: inherit;
+}
+.line-numbers .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  font-size: 100%;
+  left: -3.8em;
+  width: 3em;
+  letter-spacing: -1px;
+  border-right: 1px solid #999;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.line-numbers-rows > span {
+  display: block;
+}
+`.trim();
 }
 
 function getTableData(inputData: string[][], hasHeader: boolean) {
