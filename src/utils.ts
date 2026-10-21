@@ -7,7 +7,9 @@ import type { InputData, Alignment, TableConfig } from './types.js';
 
 type TableRow = readonly string[];
 
-const UNESCAPED_PIPE_PATTERN = /(?<!\\)\|/g;
+// No lookbehind: Safari only supports it from 16.4, and it would throw on import before that
+const PIPE_PATTERN = /(\\*)\|/g;
+const TRAILING_BACKSLASHES_PATTERN = /\\+$/;
 const LINE_BREAK_PATTERN = /\r\n|\r|\n/g;
 const PRINTABLE_ASCII_PATTERN = /^[\x20-\x7e]*$/;
 
@@ -35,15 +37,24 @@ function getDisplayWidth(text: string): number {
   return clusters.reduce((width, cluster) => width + (WIDE_CHAR_PATTERN.test(cluster) ? 2 : 1), 0);
 }
 
+const isOdd = (backslashes: string) => backslashes.length % 2 === 1;
+
 /**
  * Converts a cell to a single-line string that cannot break the table: pipes
- * are escaped and line breaks become `<br>` tags or spaces.
+ * are escaped unless an odd number of backslashes already escapes them, a
+ * trailing unescaped backslash is doubled so it cannot escape the closing pipe,
+ * and line breaks become `<br>` tags or spaces.
  */
 function normaliseCell(cell: unknown, replaceNewlines: boolean): string {
-  const text = cell == null ? '' : String(cell);
-  return text
-    .replace(UNESCAPED_PIPE_PATTERN, '\\|')
-    .replace(LINE_BREAK_PATTERN, replaceNewlines ? '<br>' : ' ');
+  let text = cell == null ? '' : String(cell);
+  // Most cells have no pipe or trailing backslash, so skip those regexes to keep large tables fast
+  if (text.includes('|')) {
+    text = text.replace(PIPE_PATTERN, (pipe, backslashes: string) => (isOdd(backslashes) ? pipe : `${backslashes}\\|`));
+  }
+  if (text.endsWith('\\')) {
+    text = text.replace(TRAILING_BACKSLASHES_PATTERN, backslashes => (isOdd(backslashes) ? `${backslashes}\\` : backslashes));
+  }
+  return text.replace(LINE_BREAK_PATTERN, replaceNewlines ? '<br>' : ' ');
 }
 
 function normaliseInputData(inputData: InputData, replaceNewlines: boolean): InputData {

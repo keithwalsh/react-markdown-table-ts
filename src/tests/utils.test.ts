@@ -541,6 +541,33 @@ describe('generateMarkdownTableString', () => {
       expect(result).toContain('| a \\| b |');
       expect(result).not.toContain('\\\\|');
     });
+
+    it('should escape a pipe that follows an escaped backslash', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['H'],
+        inputDataBody: [['a\\\\|b']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| H      |\n' +
+        '| ------ |\n' +
+        '| a\\\\\\|b |'
+      );
+    });
+
+    it('should double a trailing backslash so it cannot escape the closing pipe', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Path', 'X'],
+        inputDataBody: [['C:\\dir\\', 'y'], ['C:\\dir\\\\', 'z']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [], true, false, false, false)).toBe(
+        '|Path    |X  |\n' +
+        '|--------|---|\n' +
+        '|C:\\dir\\\\|y  |\n' +
+        '|C:\\dir\\\\|z  |'
+      );
+    });
   });
 
   describe('non-string cells', () => {
