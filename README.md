@@ -49,7 +49,7 @@ interface MarkdownTableProps {
 | `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
 | `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `data` is a header.                             |
-| `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells.                                    |
+| `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells. When `false`, newlines become spaces. |
 | `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
 | `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the colour scheme of the \<pre\> element display.                            |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
@@ -109,13 +109,18 @@ interface MarkdownTableProps {
 - Default: Adjusts columns to fit content with 'none' alignment
 - `isCompact={true}`: Minimizes column widths
 - Maintains minimum width of 3 characters for alignment indicators
+- Measures display width, so CJK characters and emoji count as two columns
 
-3. **Error Handling**:
+3. **Cell Content**:
+- Pipes (`|`) are escaped as `\|`; already-escaped pipes are left unchanged
+- Non-string values are converted with `String()`; `null` and `undefined` become empty cells
+
+4. **Error Handling**:
 - Returns error message string if validation fails
 - Wraps errors in `MarkdownTableError` class
 - Preserves stack traces for debugging
 
-4. **Styling**:
+5. **Styling**:
 - Includes built-in light and dark themes
 - Custom styles via `className` and `preStyle` props
 - Optional line numbers for better readability

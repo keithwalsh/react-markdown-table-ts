@@ -237,7 +237,7 @@ describe('Integration Tests', () => {
       const codeElement = screen.getByRole('code');
       const content = codeElement.textContent || '';
       
-      expect(content).toContain('This | That');
+      expect(content).toContain('This \\| That');
       expect(content).toContain('Path\\To\\File');
       expect(content).toContain('<div>content</div>');
       expect(content).toContain('"double"');

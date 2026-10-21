@@ -280,16 +280,42 @@ describe('generateMarkdownTableString', () => {
       expect(result).not.toMatch(/Line1\nLine2/);
     });
 
-    it('should not replace newlines when disabled', () => {
+    it('should replace newlines with spaces when disabled so the row stays intact', () => {
       const inputData: InputData = {
         inputDataHeader: ['Header'],
         inputDataBody: [['Line1\nLine2']],
       };
 
       const result = generateMarkdownTableString(inputData, [], true, false, false);
-      
-      expect(result).toContain('Line1\nLine2');
+
+      expect(result).toBe('| Header      |\n| ----------- |\n| Line1 Line2 |');
       expect(result).not.toContain('<br>');
+    });
+
+    it('should size columns using the converted <br> text', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Name', 'Notes'],
+        inputDataBody: [['Al', 'one\ntwo'], ['Bo', 'short']],
+      };
+
+      const result = generateMarkdownTableString(inputData, [], true, false, true);
+
+      expect(result).toBe(
+        '| Name | Notes      |\n' +
+        '| ---- | ---------- |\n' +
+        '| Al   | one<br>two |\n' +
+        '| Bo   | short      |'
+      );
+    });
+
+    it('should treat CRLF and CR as single line breaks', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['H'],
+        inputDataBody: [['A\r\nB\rC']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [], true, false, true)).toContain('A<br>B<br>C');
+      expect(generateMarkdownTableString(inputData, [], true, false, false)).toContain('A B C');
     });
 
     it('should handle multiple consecutive newlines', () => {
@@ -478,6 +504,117 @@ describe('generateMarkdownTableString', () => {
       // In left alignment, shorter content should be padded on the right
       expect(lines[2]).toMatch(/\|\s+Hi\s+\|/);
       expect(lines[3]).toMatch(/\|\s+Hello\s+\|/);
+    });
+  });
+
+  describe('pipe escaping', () => {
+    it('should escape pipes so they do not create extra columns', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Cmd', 'Desc'],
+        inputDataBody: [['a | b', 'x']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| Cmd    | Desc |\n' +
+        '| ------ | ---- |\n' +
+        '| a \\| b | x    |'
+      );
+    });
+
+    it('should escape pipes in header cells', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['A|B'],
+        inputDataBody: [['1']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toContain('| A\\|B |');
+    });
+
+    it('should leave already-escaped pipes unchanged', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['H'],
+        inputDataBody: [['a \\| b']],
+      };
+
+      const result = generateMarkdownTableString(inputData, []);
+
+      expect(result).toContain('| a \\| b |');
+      expect(result).not.toContain('\\\\|');
+    });
+  });
+
+  describe('non-string cells', () => {
+    it('should convert numbers, booleans, null and undefined to strings', () => {
+      const inputData = {
+        inputDataHeader: ['N', 'B', 'Null', 'Undef'],
+        inputDataBody: [[42, true, null, undefined]],
+      } as unknown as InputData;
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| N   | B    | Null | Undef |\n' +
+        '| --- | ---- | ---- | ----- |\n' +
+        '| 42  | true |      |       |'
+      );
+    });
+  });
+
+  describe('display width', () => {
+    it('should count CJK characters as two columns', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Name', 'X'],
+        inputDataBody: [['東京', 'y'], ['abcd', 'z']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| Name | X   |\n' +
+        '| ---- | --- |\n' +
+        '| 東京 | y   |\n' +
+        '| abcd | z   |'
+      );
+    });
+
+    it('should count emoji as two columns and combining marks as zero', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Col'],
+        inputDataBody: [['😀'], ['👍🏽'], ['é']],
+      };
+
+      const lines = generateMarkdownTableString(inputData, []).split('\n');
+
+      expect(lines[2]).toBe('| 😀  |');
+      expect(lines[3]).toBe('| 👍🏽  |');
+      expect(lines[4]).toBe('| é   |');
+    });
+
+    it('should pad wide characters correctly for right and center alignment', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Right', 'Center'],
+        inputDataBody: [['日本', '中']],
+      };
+
+      const lines = generateMarkdownTableString(inputData, ['right', 'center']).split('\n');
+
+      expect(lines[2]).toBe('|  日本 |   中   |');
+    });
+
+    it('should fall back to code points when Intl.Segmenter is unavailable', () => {
+      const writableIntl = Intl as { Segmenter?: unknown };
+      const originalSegmenter = writableIntl.Segmenter;
+      writableIntl.Segmenter = undefined;
+
+      try {
+        jest.isolateModules(() => {
+          const { generateMarkdownTableString: generate } = require('../utils') as typeof import('../utils');
+          const inputData: InputData = {
+            inputDataHeader: ['Name'],
+            inputDataBody: [['東京']],
+          };
+
+          expect(generate(inputData, []).split('\n')[2]).toBe('| 東京 |');
+        });
+      } finally {
+        writableIntl.Segmenter = originalSegmenter;
+      }
     });
   });
 });

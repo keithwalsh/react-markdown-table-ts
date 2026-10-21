@@ -7,6 +7,53 @@ import type { InputData, Alignment, TableConfig } from './types';
 
 type TableRow = readonly string[];
 
+const UNESCAPED_PIPE_PATTERN = /(?<!\\)\|/g;
+const LINE_BREAK_PATTERN = /\r\n|\r|\n/g;
+const PRINTABLE_ASCII_PATTERN = /^[\x20-\x7e]*$/;
+
+/**
+ * Characters that occupy two columns in a monospace font: CJK ideographs,
+ * kana, Hangul, fullwidth forms and emoji. A trailing U+FE0F also forces
+ * emoji presentation.
+ */
+const WIDE_CHAR_PATTERN =
+  /[\u1100-\u115F\u2E80-\u303E\u3041-\u33FF\u3400-\u4DBF\u4E00-\u9FFF\uA000-\uA4CF\uA960-\uA97F\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6\u{20000}-\u{3FFFD}\p{Emoji_Presentation}]|\uFE0F/u;
+
+const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter() : undefined;
+
+/**
+ * Returns the number of monospace columns the text occupies, counting each
+ * grapheme cluster as one column, or two if it is a wide character.
+ */
+function getDisplayWidth(text: string): number {
+  if (PRINTABLE_ASCII_PATTERN.test(text)) {
+    return text.length;
+  }
+  const clusters = graphemeSegmenter
+    ? Array.from(graphemeSegmenter.segment(text), ({ segment }) => segment)
+    : Array.from(text);
+  return clusters.reduce((width, cluster) => width + (WIDE_CHAR_PATTERN.test(cluster) ? 2 : 1), 0);
+}
+
+/**
+ * Converts a cell to a single-line string that cannot break the table: pipes
+ * are escaped and line breaks become `<br>` tags or spaces.
+ */
+function normaliseCell(cell: unknown, replaceNewlines: boolean): string {
+  const text = cell == null ? '' : String(cell);
+  return text
+    .replace(UNESCAPED_PIPE_PATTERN, '\\|')
+    .replace(LINE_BREAK_PATTERN, replaceNewlines ? '<br>' : ' ');
+}
+
+function normaliseInputData(inputData: InputData, replaceNewlines: boolean): InputData {
+  const normaliseRow = (row: TableRow) => Array.from(row, cell => normaliseCell(cell, replaceNewlines));
+  return {
+    inputDataHeader: normaliseRow(inputData.inputDataHeader),
+    inputDataBody: inputData.inputDataBody.map(normaliseRow),
+  };
+}
+
 function calculatePadding(config: TableConfig): string {
   let padding: string;
   if (config.useTabs) {
@@ -27,19 +74,18 @@ class CellFormatter {
   }
 
   formatCell(content: string, alignment: Alignment, width: number): string {
-    const totalWidth = width;
+    const totalPadding = Math.max(0, width - getDisplayWidth(content));
 
     switch (alignment) {
       case 'right':
-        return `${this.padding}${content.padStart(totalWidth)}${this.padding}`;
+        return `${this.padding}${' '.repeat(totalPadding)}${content}${this.padding}`;
       case 'center': {
-        const totalPadding = totalWidth - content.length;
         const paddingLeft = Math.floor(totalPadding / 2);
         const paddingRight = totalPadding - paddingLeft;
         return `${this.padding}${' '.repeat(paddingLeft)}${content}${' '.repeat(paddingRight)}${this.padding}`;
       }
       default: // left or none
-        return `${this.padding}${content.padEnd(totalWidth)}${this.padding}`;
+        return `${this.padding}${content}${' '.repeat(totalPadding)}${this.padding}`;
     }
   }
 }
@@ -81,12 +127,9 @@ class TableFormatter {
 
   formatRow(row: TableRow): string {
     const formattedCells = Array.from({ length: this.config.columnCount }, (_, i) => {
-      let cell = row[i] ?? '';
-      if (this.config.replaceNewlines) {
-        cell = cell.replace(/\n/g, '<br>');
-      }
+      const cell = row[i] ?? '';
       const alignment = this.adjustedAlignments[i];
-      const width = this.config.columnWidths ? this.config.columnWidths[i] : cell.length;
+      const width = this.config.columnWidths ? this.config.columnWidths[i] : getDisplayWidth(cell);
 
       return this.cellFormatter.formatCell(cell, alignment, width);
     });
@@ -116,7 +159,7 @@ function calculateColumnWidths(
   tableRows.forEach((row: TableRow) => {
     for (let i = 0; i < maxColumnCount; i++) {
       const cell = row[i] ?? '';
-      widths[i] = Math.max(widths[i], cell.length);
+      widths[i] = Math.max(widths[i], getDisplayWidth(cell));
     }
   });
 
@@ -150,8 +193,9 @@ export function generateMarkdownTableString(
   replaceNewlines = false,
   hasPadding = true
 ): string {
-  const maxColumnCount = calculateMaxColumnCount(inputData);
-  const columnWidths = getColumnWidths(inputData, maxColumnCount, canAdjustColumnWidths);
+  const tableData = normaliseInputData(inputData, replaceNewlines);
+  const maxColumnCount = calculateMaxColumnCount(tableData);
+  const columnWidths = getColumnWidths(tableData, maxColumnCount, canAdjustColumnWidths);
 
   const config: TableConfig = {
     columnCount: maxColumnCount,
@@ -164,9 +208,9 @@ export function generateMarkdownTableString(
 
   const tableFormatter = new TableFormatter(config);
 
-  const headerRow = tableFormatter.formatRow(inputData.inputDataHeader);
+  const headerRow = tableFormatter.formatRow(tableData.inputDataHeader);
   const alignmentRow = tableFormatter.formatAlignmentRow();
-  const bodyRows = inputData.inputDataBody
+  const bodyRows = tableData.inputDataBody
     .map(row => tableFormatter.formatRow(row))
     .join('\n');
 

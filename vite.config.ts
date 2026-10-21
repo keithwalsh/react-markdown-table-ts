@@ -13,7 +13,8 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      // Regexes so subpaths like react/jsx-runtime stay external too
+      external: [/^react($|\/)/, /^react-dom($|\/)/],
       output: {
         globals: {
           react: 'React',

@@ -50,6 +50,7 @@ export interface MarkdownTableProps {
 
   /**
    * Optional flag to replace newlines with <br> tags in table cells.
+   * When false, newlines are replaced with spaces so each row stays on one line.
    * @default false
    */
   convertLineBreaks?: boolean;
