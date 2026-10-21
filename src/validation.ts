@@ -24,7 +24,7 @@ function describeValue(value: unknown): string {
 }
 
 /**
- * Validates that the input data is a non-empty two-dimensional array.
+ * Validates that the input data is a two-dimensional array with at least one cell.
  * @param inputData - The data to validate
  * @throws {MarkdownTableError} If validation fails
  */
@@ -42,6 +42,10 @@ export function validateInputData(inputData: unknown): asserts inputData is stri
     throw new MarkdownTableError(
       `The 'inputData' prop must be a two-dimensional array, but inputData[${invalidRowIndex}] is ${describeValue(inputData[invalidRowIndex])}.`
     );
+  }
+
+  if (inputData.every(row => row.length === 0)) {
+    throw new MarkdownTableError("The 'inputData' array must contain at least one cell.");
   }
 }
 

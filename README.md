@@ -101,7 +101,7 @@ interface MarkdownTableProps {
 1. **Input Validation**:
 - Input must be non-null 2D string array
 - All rows should contain string values
-- Empty arrays are not allowed
+- Empty arrays are not allowed, and at least one row must contain a cell
 - Column alignments must be valid ('left', 'center', 'right', 'none')
 
 2. **Column Width Handling**:

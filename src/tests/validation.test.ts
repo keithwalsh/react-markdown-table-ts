@@ -155,16 +155,26 @@ describe('validateInputData', () => {
     });
   });
 
-  describe('edge cases', () => {
-    it('should accept array with nested empty arrays', () => {
-      const data = [[]];
-      expect(() => validateInputData(data)).not.toThrow();
+  describe('rows without cells', () => {
+    it('should throw MarkdownTableError when the only row is empty', () => {
+      expect(() => validateInputData([[]])).toThrow(MarkdownTableError);
+      expect(() => validateInputData([[]])).toThrow(
+        "The 'inputData' array must contain at least one cell."
+      );
     });
 
-    it('should accept array with multiple empty nested arrays', () => {
-      const data = [[], [], []];
-      expect(() => validateInputData(data)).not.toThrow();
+    it('should throw MarkdownTableError when every row is empty', () => {
+      expect(() => validateInputData([[], [], []])).toThrow(
+        "The 'inputData' array must contain at least one cell."
+      );
     });
+
+    it('should accept empty rows when another row has a cell', () => {
+      expect(() => validateInputData([[], ['A']])).not.toThrow();
+    });
+  });
+
+  describe('edge cases', () => {
 
     it('should accept array with special characters', () => {
       const data = [['!@#$%', '^&*()', '{}[]<>']];

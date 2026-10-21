@@ -75,6 +75,14 @@ describe('MarkdownTable', () => {
       expect(codeElement.textContent).toContain('must contain at least one row');
     });
 
+    it('should render an error message instead of a broken table when no row has a cell', () => {
+      render(<MarkdownTable inputData={[[]]} />);
+
+      expect(screen.getByRole('code').textContent).toBe(
+        "Error: The 'inputData' array must contain at least one cell."
+      );
+    });
+
     it('should render an error message for a row that is not an array', () => {
       const onGenerate = jest.fn();
 
