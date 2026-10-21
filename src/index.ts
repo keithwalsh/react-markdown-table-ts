@@ -3,7 +3,7 @@
  * and related types.
  */
 
-export { MarkdownTable } from './MarkdownTable';
-export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './types';
-export { MarkdownTableError } from './validation';
+export { MarkdownTable } from './MarkdownTable.js';
+export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './types.js';
+export { MarkdownTableError } from './validation.js';
 

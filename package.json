@@ -24,7 +24,7 @@
         "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
     }
@@ -44,7 +44,7 @@
   "scripts": {
     "dev": "vite",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build": "npm run clean && tsc -p tsconfig.build.json && vite build",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/emit-cjs-types.mjs && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "jest",

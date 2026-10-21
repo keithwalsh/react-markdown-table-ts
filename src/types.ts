@@ -3,7 +3,7 @@
  * alignment options, and table configuration.
  */
 
-import type { MarkdownTableError } from './validation';
+import type { MarkdownTableError } from './validation.js';
 
 export interface InputData {
   inputDataHeader: string[];

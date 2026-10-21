@@ -4,10 +4,10 @@
  */
 
 import { useEffect, useDeferredValue, useId, useMemo, useRef } from 'react';
-import { LineNumbers } from './LineNumbers';
-import type { Alignment, MarkdownTableProps } from './types';
-import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
-import { validateInputData, MarkdownTableError } from './validation';
+import { LineNumbers } from './LineNumbers.js';
+import type { Alignment, MarkdownTableProps } from './types.js';
+import { generateMarkdownTableString, generateAlphabetHeaders } from './utils.js';
+import { validateInputData, MarkdownTableError } from './validation.js';
 
 
 interface ThemeColors {

@@ -33,6 +33,8 @@ module.exports = {
   },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/tests/__mocks__/styleMock.cjs',
+    // Source imports use .js extensions for Node ESM type resolution; map them back to the .ts files
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
 };
 

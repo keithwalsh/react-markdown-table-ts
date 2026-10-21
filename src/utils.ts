@@ -3,7 +3,7 @@
  * table strings with alignment, padding, and column width adjustments.
  */
 
-import type { InputData, Alignment, TableConfig } from './types';
+import type { InputData, Alignment, TableConfig } from './types.js';
 
 type TableRow = readonly string[];
 
