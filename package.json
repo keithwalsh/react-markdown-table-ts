@@ -32,10 +32,7 @@
   "files": [
     "dist"
   ],
-  "sideEffects": [
-    "src/index.ts",
-    "**/*.css"
-  ],
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/keithwalsh/react-markdown-table-ts.git"
@@ -46,11 +43,14 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.build.json && vite build",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.build.json && vite build",
     "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:bundle": "node scripts/test-bundle.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prepublishOnly": "npm run build"

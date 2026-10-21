@@ -22,6 +22,9 @@ export default defineConfig({
         }
       }
     },
-    emptyOutDir: false
+    // tsc writes declarations to dist first; the clean script empties it before each build
+    emptyOutDir: false,
+    // public/ holds README screenshots, which don't belong in the npm package
+    copyPublicDir: false
   }
 })
