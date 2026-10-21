@@ -21,6 +21,17 @@ const PRINTABLE_ASCII_PATTERN = /^[\x20-\x7e]*$/;
 const WIDE_CHAR_PATTERN =
   /[\u1100-\u115F\u2E80-\u303E\u3041-\u33FF\u3400-\u4DBF\u4E00-\u9FFF\uA000-\uA4CF\uA960-\uA97F\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6\u{20000}-\u{3FFFD}\p{Emoji_Presentation}]|\uFE0F/u;
 
+const WIDE_CHARS_PATTERN = new RegExp(WIDE_CHAR_PATTERN.source, 'gu');
+
+/**
+ * Characters that can join a neighbour into one grapheme cluster: combining
+ * marks, joiners and other format characters, emoji modifiers, regional
+ * indicators, Hangul jamo, and the few letters that attach to the letter
+ * before or after them.
+ */
+const CLUSTER_JOINING_PATTERN =
+  /[\p{M}\p{Grapheme_Extend}\p{Cf}\p{Emoji_Modifier}\p{Regional_Indicator}\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FF\u0D4E\u0E33\u0EB3\u{111C2}\u{111C3}\u{1193F}\u{11941}\u{11A3A}\u{11A84}-\u{11A89}\u{11D46}\u{11F02}]/u;
+
 const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter() : undefined;
 
 /**
@@ -30,6 +41,10 @@ const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmen
 function getDisplayWidth(text: string): number {
   if (PRINTABLE_ASCII_PATTERN.test(text)) {
     return text.length;
+  }
+  if (!CLUSTER_JOINING_PATTERN.test(text)) {
+    // Every code point is its own cluster, so skip the much slower segmenter
+    return Array.from(text).length + (text.match(WIDE_CHARS_PATTERN)?.length ?? 0);
   }
   const clusters = graphemeSegmenter
     ? Array.from(graphemeSegmenter.segment(text), ({ segment }) => segment)

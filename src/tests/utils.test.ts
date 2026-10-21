@@ -625,6 +625,21 @@ describe('generateMarkdownTableString', () => {
       expect(lines[4]).toBe('| é   |');
     });
 
+    it('should measure accents, CJK, emoji, ZWJ sequences and flags in the same table', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Mixed'],
+        inputDataBody: [['café 東京 😀'], ['👨‍👩‍👧 🇮🇪'], ['abcdefghijk']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| Mixed        |\n' +
+        '| ------------ |\n' +
+        '| café 東京 😀 |\n' +
+        '| 👨‍👩‍👧 🇮🇪        |\n' +
+        '| abcdefghijk  |'
+      );
+    });
+
     it('should pad wide characters correctly for right and center alignment', () => {
       const inputData: InputData = {
         inputDataHeader: ['Right', 'Center'],
@@ -646,10 +661,13 @@ describe('generateMarkdownTableString', () => {
           const { generateMarkdownTableString: generate } = require('../utils') as typeof import('../utils');
           const inputData: InputData = {
             inputDataHeader: ['Name'],
-            inputDataBody: [['東京']],
+            inputDataBody: [['東京'], ['e\u0301']],
           };
 
-          expect(generate(inputData, []).split('\n')[2]).toBe('| 東京 |');
+          const lines = generate(inputData, []).split('\n');
+          expect(lines[2]).toBe('| 東京 |');
+          // Without a segmenter the combining accent counts as its own column
+          expect(lines[3]).toBe('| e\u0301   |');
         });
       } finally {
         writableIntl.Segmenter = originalSegmenter;
