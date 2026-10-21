@@ -51,6 +51,14 @@ describe('MarkdownTable', () => {
       expectCodeToContainAll(container, 'A', 'B', 'C');
     });
 
+    it('should label every column when hasHeader is false and rows differ in length', () => {
+      render(<MarkdownTable inputData={[['1'], ['2', '3', '4']]} hasHeader={false} />);
+
+      expect(screen.getByRole('code').textContent).toBe(
+        '| A   | B   | C   |\n| --- | --- | --- |\n| 1   |     |     |\n| 2   | 3   | 4   |'
+      );
+    });
+
     it('should render with null inputData', () => {
       render(<MarkdownTable inputData={null} />);
       
