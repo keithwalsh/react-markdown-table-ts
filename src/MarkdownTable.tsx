@@ -185,7 +185,8 @@ export function MarkdownTable({
 
   return (
     <div id={scopeId}>
-      <style>{themeCSS}</style>
+      {/* React 18's server renderer HTML-escapes <style> children, which breaks the CSS and hydration */}
+      <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
       <LineNumbers
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
