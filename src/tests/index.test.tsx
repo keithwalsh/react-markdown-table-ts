@@ -255,6 +255,14 @@ describe('MarkdownTable', () => {
       expect(css).toContain('background: #44475a;');
       expect(css).not.toContain('#b3d4fc');
     });
+
+    it('should colour line numbers for at least 4.5:1 contrast in each theme', () => {
+      const { container: light } = render(<MarkdownTable inputData={testData.twoColumn} theme="light" />);
+      const { container: dark } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
+
+      expect(getStyleElement(light)?.textContent).toContain('.line-numbers-rows {\n  color: #6e6e6e;\n}');
+      expect(getStyleElement(dark)?.textContent).toContain('.line-numbers-rows {\n  color: #999;\n}');
+    });
   });
 
   describe('className prop', () => {

@@ -147,6 +147,15 @@ describe('LineNumbers', () => {
       expect(firstNumber?.style.textAlign).toBe('right');
       expect(firstNumber?.style.display).toBe('block');
     });
+
+    it('should leave the line number colour to the theme CSS', () => {
+      const { container } = render(
+        <LineNumbers showLineNumbers={true}>line1</LineNumbers>
+      );
+
+      const firstNumber = getLineNumbersSpan(container)?.children[0] as HTMLSpanElement;
+      expect(firstNumber?.style.color).toBe('');
+    });
   });
 
   describe('startLine prop', () => {

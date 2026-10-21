@@ -15,6 +15,7 @@ interface ThemeColors {
   textShadow: string;
   background: string;
   selectionBackground: string;
+  lineNumberColor: string;
   borderRadius?: string;
 }
 
@@ -25,12 +26,14 @@ function getThemeColors(theme: 'light' | 'dark'): ThemeColors {
         textShadow: '0 1px #fff',
         background: '#f5f2f0',
         selectionBackground: '#b3d4fc',
+        lineNumberColor: '#6e6e6e',
       }
     : {
         textColor: '#f8f8f2',
         textShadow: '0 1px rgba(0,0,0,.3)',
         background: '#282a36',
         selectionBackground: '#44475a',
+        lineNumberColor: '#999',
         borderRadius: '.3em',
       };
 }
@@ -90,6 +93,9 @@ function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
 #${scopeId} pre[class*=language-].line-numbers > code {
   position: relative;
   white-space: inherit;
+}
+#${scopeId} .line-numbers-rows {
+  color: ${colors.lineNumberColor};
 }
 `.trim();
 }

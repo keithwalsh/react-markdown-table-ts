@@ -82,7 +82,6 @@ export function LineNumbers({
                 display: 'block',
                 textAlign: 'right',
                 paddingRight: '0.8em',
-                color: '#999',
                 lineHeight: '1.5'
               }}
             >
