@@ -176,12 +176,11 @@ describe('MarkdownTable', () => {
     ];
 
     it('should generate compact table when isCompact is true', () => {
-      const { container } = render(
-        <MarkdownTable inputData={data} isCompact={true} />
+      render(<MarkdownTable inputData={data} isCompact={true} />);
+
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Header1 | Header2 |\n| --- | --- |\n| Value1 | Value2 |'
       );
-      
-      const codeElement = container.querySelector('code');
-      expect(codeElement).toBeInTheDocument();
     });
 
     it('should add tabs when hasTabs is true', () => {

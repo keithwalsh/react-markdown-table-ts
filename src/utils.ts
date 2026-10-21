@@ -84,9 +84,7 @@ class CellFormatter {
     this.padding = calculatePadding(config);
   }
 
-  formatCell(content: string, alignment: Alignment, width: number): string {
-    const totalPadding = Math.max(0, width - getDisplayWidth(content));
-
+  formatCell(content: string, alignment: Alignment, totalPadding: number): string {
     switch (alignment) {
       case 'right':
         return `${this.padding}${' '.repeat(totalPadding)}${content}${this.padding}`;
@@ -136,13 +134,16 @@ class TableFormatter {
       : Array.from(this.config.columnAlignments);
   }
 
-  formatRow(row: TableRow): string {
+  formatRow(row: TableRow, cellWidths?: readonly number[]): string {
     const formattedCells = Array.from({ length: this.config.columnCount }, (_, i) => {
       const cell = row[i] ?? '';
       const alignment = this.adjustedAlignments[i];
-      const width = this.config.columnWidths ? this.config.columnWidths[i] : getDisplayWidth(cell);
+      // Without column widths the table is compact, so cells get no extra padding
+      const totalPadding = this.config.columnWidths
+        ? Math.max(0, this.config.columnWidths[i] - (cellWidths?.[i] ?? 0))
+        : 0;
 
-      return this.cellFormatter.formatCell(cell, alignment, width);
+      return this.cellFormatter.formatCell(cell, alignment, totalPadding);
     });
 
     return `|${formattedCells.join('|')}|`;
@@ -162,16 +163,15 @@ class TableFormatter {
 }
 
 function calculateColumnWidths(
-  tableRows: readonly TableRow[],
+  cellWidths: readonly (readonly number[])[],
   maxColumnCount: number
 ): number[] {
   const widths: number[] = new Array(maxColumnCount).fill(3);
 
-  tableRows.forEach((row: TableRow) => {
-    for (let i = 0; i < maxColumnCount; i++) {
-      const cell = row[i] ?? '';
-      widths[i] = Math.max(widths[i], getDisplayWidth(cell));
-    }
+  cellWidths.forEach(rowWidths => {
+    rowWidths.forEach((width, i) => {
+      widths[i] = Math.max(widths[i], width);
+    });
   });
 
   return widths;
@@ -185,19 +185,6 @@ function calculateMaxColumnCount(inputData: InputData): number {
   );
 }
 
-function getColumnWidths(
-  inputData: InputData,
-  maxColumnCount: number,
-  canAdjustColumnWidths: boolean
-): number[] | undefined {
-  return canAdjustColumnWidths
-    ? calculateColumnWidths(
-        [inputData.inputDataHeader, ...inputData.inputDataBody],
-        maxColumnCount
-      )
-    : undefined;
-}
-
 export function generateMarkdownTableString(
   inputData: InputData,
   columnAlignments: readonly Alignment[],
@@ -208,7 +195,11 @@ export function generateMarkdownTableString(
 ): string {
   const tableData = normaliseInputData(inputData, replaceNewlines);
   const maxColumnCount = calculateMaxColumnCount(tableData);
-  const columnWidths = getColumnWidths(tableData, maxColumnCount, canAdjustColumnWidths);
+  // Measure each cell once, and only when columns are padded to a shared width
+  const cellWidths = canAdjustColumnWidths
+    ? [tableData.inputDataHeader, ...tableData.inputDataBody].map(row => row.map(cell => getDisplayWidth(cell)))
+    : undefined;
+  const columnWidths = cellWidths && calculateColumnWidths(cellWidths, maxColumnCount);
 
   const config: TableConfig = {
     columnCount: maxColumnCount,
@@ -221,10 +212,10 @@ export function generateMarkdownTableString(
 
   const tableFormatter = new TableFormatter(config);
 
-  const headerRow = tableFormatter.formatRow(tableData.inputDataHeader);
+  const headerRow = tableFormatter.formatRow(tableData.inputDataHeader, cellWidths?.[0]);
   const alignmentRow = tableFormatter.formatAlignmentRow();
   const bodyRows = tableData.inputDataBody
-    .map(row => tableFormatter.formatRow(row))
+    .map((row, i) => tableFormatter.formatRow(row, cellWidths?.[i + 1]))
     .join('\n');
 
   return `${headerRow}\n${alignmentRow}\n${bodyRows}`.trimEnd();
