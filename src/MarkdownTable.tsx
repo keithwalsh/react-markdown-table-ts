@@ -106,6 +106,16 @@ function getTableData(inputData: string[][], hasHeader: boolean) {
     : { inputDataHeader: generateAlphabetHeaders(inputData[0].length), inputDataBody: inputData };
 }
 
+interface TableInputs {
+  inputData: string[][] | null;
+  hasHeader: boolean;
+  columnAlignments: readonly Alignment[];
+  isCompact: boolean;
+  hasTabs: boolean;
+  convertLineBreaks: boolean;
+  hasPadding: boolean;
+}
+
 interface TableSyntaxResult {
   markdown: string;
   error: MarkdownTableError | null;
@@ -113,15 +123,15 @@ interface TableSyntaxResult {
 
 const DEFAULT_COLUMN_ALIGNMENTS: readonly Alignment[] = [];
 
-function generateTableSyntax(
-  inputData: string[][] | null,
-  hasHeader: boolean,
-  columnAlignments: readonly Alignment[],
-  adjustColumnWidths: boolean,
-  hasTabs: boolean,
-  canReplaceNewlines: boolean,
-  hasPadding: boolean
-): TableSyntaxResult {
+function generateTableSyntax({
+  inputData,
+  hasHeader,
+  columnAlignments,
+  isCompact,
+  hasTabs,
+  convertLineBreaks,
+  hasPadding,
+}: TableInputs): TableSyntaxResult {
   try {
     validateInputData(inputData);
     validateColumnAlignments(columnAlignments);
@@ -130,9 +140,9 @@ function generateTableSyntax(
     const markdown = generateMarkdownTableString(
       { inputDataHeader, inputDataBody },
       columnAlignments,
-      adjustColumnWidths,
+      !isCompact,
       hasTabs,
-      canReplaceNewlines,
+      convertLineBreaks,
       hasPadding
     );
     return { markdown, error: null };
@@ -161,24 +171,17 @@ export function MarkdownTable({
   showLineNumbers = true,
 }: MarkdownTableProps) {
   const scopeId = useId().replace(/:/g, '_');
-  const deferredInputData = useDeferredValue(inputData);
   // Inline alignment arrays are new on every render, so memoise on their contents.
   // String() rather than join() so a non-array from JavaScript reaches validation instead of throwing here
   const columnAlignmentsKey = String(columnAlignments);
-
-  const result = useMemo(
-    () =>
-      generateTableSyntax(
-        deferredInputData,
-        hasHeader,
-        columnAlignments,
-        !isCompact,
-        hasTabs,
-        convertLineBreaks,
-        hasPadding
-      ),
-    [deferredInputData, hasHeader, columnAlignmentsKey, isCompact, hasTabs, convertLineBreaks, hasPadding]
+  // Defer all inputs together so a render never pairs old data with new options
+  const tableInputs = useMemo(
+    () => ({ inputData, hasHeader, columnAlignments, isCompact, hasTabs, convertLineBreaks, hasPadding }),
+    [inputData, hasHeader, columnAlignmentsKey, isCompact, hasTabs, convertLineBreaks, hasPadding]
   );
+  const deferredTableInputs = useDeferredValue(tableInputs);
+
+  const result = useMemo(() => generateTableSyntax(deferredTableInputs), [deferredTableInputs]);
   const themeCSS = useMemo(() => generateThemeCSS(theme, scopeId), [theme, scopeId]);
 
   // Read the latest callback from a ref so a new inline onGenerate doesn't re-fire it

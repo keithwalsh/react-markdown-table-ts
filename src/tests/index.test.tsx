@@ -513,6 +513,25 @@ describe('MarkdownTable', () => {
       spy.mockRestore();
     });
 
+    it('should not pair old data with new options when both change together', () => {
+      const onGenerate = jest.fn();
+
+      const { rerender } = render(<MarkdownTable inputData={testData.twoColumn} onGenerate={onGenerate} />);
+      rerender(
+        <MarkdownTable
+          inputData={testData.threeColumn}
+          hasHeader={false}
+          columnAlignments={['right', 'right', 'right']}
+          onGenerate={onGenerate}
+        />
+      );
+
+      expect(onGenerate.mock.calls.map(([markdown]) => markdown)).toEqual([
+        '| A   | B   |\n| --- | --- |\n| 1   | 2   |',
+        '|   A |   B |   C |\n| --: | --: | --: |\n|   A |   B |   C |\n|   1 |   2 |   3 |',
+      ]);
+    });
+
     it('should handle rapid data updates', () => {
       const { rerender } = render(<MarkdownTable inputData={testData.simple} />);
       rerender(<MarkdownTable inputData={testData.twoColumn} />);
