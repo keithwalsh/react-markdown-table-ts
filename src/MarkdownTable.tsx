@@ -30,7 +30,7 @@ function getThemeColors(theme: 'light' | 'dark'): ThemeColors {
         textColor: '#f8f8f2',
         textShadow: '0 1px rgba(0,0,0,.3)',
         background: '#282a36',
-        selectionBackground: '#b3d4fc',
+        selectionBackground: '#44475a',
         borderRadius: '.3em',
       };
 }

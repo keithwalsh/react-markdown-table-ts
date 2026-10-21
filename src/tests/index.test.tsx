@@ -247,6 +247,14 @@ describe('MarkdownTable', () => {
       const styleElement = getStyleElement(container);
       expect(styleElement?.textContent).toContain('code[class*=language-]');
     });
+
+    it('should use a dark selection background so selected dark theme text stays readable', () => {
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
+
+      const css = getStyleElement(container)?.textContent;
+      expect(css).toContain('background: #44475a;');
+      expect(css).not.toContain('#b3d4fc');
+    });
   });
 
   describe('className prop', () => {
