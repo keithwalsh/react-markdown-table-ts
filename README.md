@@ -3,7 +3,6 @@
 ![build](https://github.com/keithwalsh/react-markdown-table-ts/actions/workflows/build.yml/badge.svg)
 [![NPM Version](https://img.shields.io/npm/v/react-markdown-table-ts.svg)](https://www.npmjs.com/package/react-markdown-table-ts)
 [![codecov](https://codecov.io/gh/keithwalsh/react-markdown-table-ts/branch/main/graph/badge.svg)](https://codecov.io/gh/keithwalsh/react-markdown-table-ts)
-[![Code Climate](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts/badges/gpa.svg)](https://codeclimate.com/github/keithwalsh/react-markdown-table-ts)
 [![code quality](https://img.shields.io/codefactor/grade/github/keithwalsh/react-markdown-table-ts)](https://www.codefactor.io/repository/github/keithwalsh/react-markdown-table-ts)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 
@@ -38,7 +37,7 @@ interface MarkdownTableProps {
     preStyle?: React.CSSProperties;
     minWidth?: number;
     showLineNumbers?: boolean;
-    onGenerate?: (markdownTableString: string) => void;
+    onGenerate?: (markdownTableString: string, error: MarkdownTableError | null) => void;
 }
 ```
 | Prop                 | Type                                    | Default     | Description                                                                        |
@@ -48,7 +47,7 @@ interface MarkdownTableProps {
 | `isCompact`          | `boolean`                               | `false`     | Disables column width alignment to provide a more compact markdown table string.   |
 | `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
 | `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
-| `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `data` is a header.                             |
+| `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `inputData` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells. When `false`, newlines become spaces. |
 | `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
 | `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the colour scheme of the \<pre\> element display.                            |
@@ -56,7 +55,7 @@ interface MarkdownTableProps {
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
 | `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
 | `showLineNumbers`    | `boolean`                               | `true`      | Show or hide line numbers in the code block.                                       |
-| `onGenerate`         | `(markdownTableString: string) => void` | `undefined` | Callback to receive the generated Markdown table string.                           |
+| `onGenerate`         | `(markdownTableString: string, error: MarkdownTableError \| null) => void` | `undefined` | Called whenever the table changes. `error` is set when `inputData` is invalid. |
 ## Usage Patterns
 
 1. **Basic Table Generation**:
@@ -116,7 +115,7 @@ interface MarkdownTableProps {
 - Non-string values are converted with `String()`; `null` and `undefined` become empty cells
 
 4. **Error Handling**:
-- Returns error message string if validation fails
+- Displays an error message if validation fails and passes the `MarkdownTableError` to `onGenerate`
 - Wraps errors in `MarkdownTableError` class
 - Preserves stack traces for debugging
 

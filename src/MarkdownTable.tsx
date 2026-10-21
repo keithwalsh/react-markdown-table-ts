@@ -3,7 +3,7 @@
  * markdown table syntax with optional line numbers and theme support.
  */
 
-import { useEffect, useDeferredValue, useId } from 'react';
+import { useEffect, useDeferredValue, useId, useMemo, useRef } from 'react';
 import { LineNumbers } from './LineNumbers';
 import type { Alignment, MarkdownTableProps } from './types';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils';
@@ -82,44 +82,14 @@ function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
   }
 }
 #${scopeId} pre[class*=language-] {
-  padding-right: 1em !important;
-  padding-bottom: 1em !important;
-  margin: .5em 0;
-  overflow: visible${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
-}
-#${scopeId} :not(pre) > code[class*=language-],
-#${scopeId} pre[class*=language-] {
-  background: ${colors.background};
-}
-#${scopeId} :not(pre) > code[class*=language-] {
-  padding: .1em;
-  border-radius: .3em;
-  white-space: normal;
-}
-#${scopeId} pre[class*=language-].line-numbers {
-  position: relative;
-  padding-left: 3.8em;
+  padding-right: 1em;
+  padding-bottom: 1em;
+  overflow: visible;
+  background: ${colors.background}${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
 }
 #${scopeId} pre[class*=language-].line-numbers > code {
   position: relative;
   white-space: inherit;
-}
-#${scopeId} .line-numbers .line-numbers-rows {
-  position: absolute;
-  pointer-events: none;
-  top: 0;
-  font-size: 100%;
-  left: -3.8em;
-  width: 3em;
-  letter-spacing: -1px;
-  border-right: 1px solid #999;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-#${scopeId} .line-numbers-rows > span {
-  display: block;
 }
 `.trim();
 }
@@ -130,6 +100,13 @@ function getTableData(inputData: string[][], hasHeader: boolean) {
     : { inputDataHeader: generateAlphabetHeaders(inputData[0].length), inputDataBody: inputData };
 }
 
+interface TableSyntaxResult {
+  markdown: string;
+  error: MarkdownTableError | null;
+}
+
+const DEFAULT_COLUMN_ALIGNMENTS: readonly Alignment[] = [];
+
 function generateTableSyntax(
   inputData: string[][] | null,
   hasHeader: boolean,
@@ -138,12 +115,12 @@ function generateTableSyntax(
   hasTabs: boolean,
   canReplaceNewlines: boolean,
   hasPadding: boolean
-): string {
+): TableSyntaxResult {
   try {
     validateInputData(inputData);
     const { inputDataHeader, inputDataBody } = getTableData(inputData as string[][], hasHeader);
 
-    return generateMarkdownTableString(
+    const markdown = generateMarkdownTableString(
       { inputDataHeader, inputDataBody },
       columnAlignments,
       adjustColumnWidths,
@@ -151,9 +128,10 @@ function generateTableSyntax(
       canReplaceNewlines,
       hasPadding
     );
+    return { markdown, error: null };
   } catch (error) {
     if (error instanceof MarkdownTableError) {
-      return `Error: ${error.message}`;
+      return { markdown: `Error: ${error.message}`, error };
     }
     throw error;
   }
@@ -162,7 +140,7 @@ function generateTableSyntax(
 export function MarkdownTable({
   inputData = null,
   hasHeader = true,
-  columnAlignments = [],
+  columnAlignments = DEFAULT_COLUMN_ALIGNMENTS,
   isCompact = false,
   hasTabs = false,
   hasPadding = true,
@@ -177,26 +155,37 @@ export function MarkdownTable({
 }: MarkdownTableProps) {
   const scopeId = useId().replace(/:/g, '_');
   const deferredInputData = useDeferredValue(inputData);
+  // Inline alignment arrays are new on every render, so memoise on their contents
+  const columnAlignmentsKey = columnAlignments.join(',');
 
-  const markdownTableSyntax = generateTableSyntax(
-    deferredInputData,
-    hasHeader,
-    columnAlignments,
-    !isCompact,
-    hasTabs,
-    convertLineBreaks,
-    hasPadding
+  const result = useMemo(
+    () =>
+      generateTableSyntax(
+        deferredInputData,
+        hasHeader,
+        columnAlignments,
+        !isCompact,
+        hasTabs,
+        convertLineBreaks,
+        hasPadding
+      ),
+    [deferredInputData, hasHeader, columnAlignmentsKey, isCompact, hasTabs, convertLineBreaks, hasPadding]
   );
+  const themeCSS = useMemo(() => generateThemeCSS(theme, scopeId), [theme, scopeId]);
+
+  // Read the latest callback from a ref so a new inline onGenerate doesn't re-fire it
+  const onGenerateRef = useRef(onGenerate);
+  useEffect(() => {
+    onGenerateRef.current = onGenerate;
+  });
 
   useEffect(() => {
-    if (onGenerate) {
-      onGenerate(markdownTableSyntax);
-    }
-  }, [markdownTableSyntax, onGenerate]);
+    onGenerateRef.current?.(result.markdown, result.error);
+  }, [result]);
 
   return (
     <div id={scopeId}>
-      <style>{generateThemeCSS(theme, scopeId)}</style>
+      <style>{themeCSS}</style>
       <LineNumbers
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
@@ -211,7 +200,7 @@ export function MarkdownTable({
           ...preStyle
         }}
       >
-        {markdownTableSyntax}
+        {result.markdown}
       </LineNumbers>
     </div>
   );

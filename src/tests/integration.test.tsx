@@ -4,7 +4,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { MarkdownTable } from '../index';
+import { MarkdownTable, MarkdownTableError } from '../index';
 import { testData, getStyleElement, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectUniformColumnCount } from './test-utils';
 
 describe('Integration Tests', () => {
@@ -81,7 +81,7 @@ describe('Integration Tests', () => {
       // Verify error is displayed
       let codeElement = screen.getByRole('code');
       expect(codeElement.textContent).toContain('Error:');
-      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'));
+      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'), expect.any(MarkdownTableError));
 
       // Now provide valid data
       const validData = [['A'], ['1']];
@@ -91,7 +91,7 @@ describe('Integration Tests', () => {
       codeElement = screen.getByRole('code');
       expect(codeElement.textContent).not.toContain('Error:');
       expect(codeElement.textContent).toContain('A');
-      expect(onGenerate).toHaveBeenLastCalledWith(expect.not.stringContaining('Error:'));
+      expect(onGenerate).toHaveBeenLastCalledWith(expect.not.stringContaining('Error:'), null);
     });
   });
 

@@ -22,10 +22,10 @@ export class MarkdownTableError extends Error {
  */
 export function validateInputData(inputData: unknown): void {
   if (inputData === null || !Array.isArray(inputData)) {
-    throw new MarkdownTableError("The 'data' prop must be a two-dimensional array.");
+    throw new MarkdownTableError("The 'inputData' prop must be a two-dimensional array.");
   }
 
   if (inputData.length === 0) {
-    throw new MarkdownTableError("The 'data' array must contain at least one row.");
+    throw new MarkdownTableError("The 'inputData' array must contain at least one row.");
   }
 }

@@ -83,14 +83,14 @@ describe('validateInputData', () => {
     it('should throw MarkdownTableError for null input', () => {
       expect(() => validateInputData(null)).toThrow(MarkdownTableError);
       expect(() => validateInputData(null)).toThrow(
-        "The 'data' prop must be a two-dimensional array."
+        "The 'inputData' prop must be a two-dimensional array."
       );
     });
 
     it('should throw MarkdownTableError for undefined input', () => {
       expect(() => validateInputData(undefined)).toThrow(MarkdownTableError);
       expect(() => validateInputData(undefined)).toThrow(
-        "The 'data' prop must be a two-dimensional array."
+        "The 'inputData' prop must be a two-dimensional array."
       );
     });
   });
@@ -99,7 +99,7 @@ describe('validateInputData', () => {
     it('should throw MarkdownTableError for string input', () => {
       expect(() => validateInputData('not an array')).toThrow(MarkdownTableError);
       expect(() => validateInputData('not an array')).toThrow(
-        "The 'data' prop must be a two-dimensional array."
+        "The 'inputData' prop must be a two-dimensional array."
       );
     });
 
@@ -125,7 +125,7 @@ describe('validateInputData', () => {
     it('should throw MarkdownTableError for empty array', () => {
       expect(() => validateInputData([])).toThrow(MarkdownTableError);
       expect(() => validateInputData([])).toThrow(
-        "The 'data' array must contain at least one row."
+        "The 'inputData' array must contain at least one row."
       );
     });
   });

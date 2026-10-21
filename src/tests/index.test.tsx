@@ -4,7 +4,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { MarkdownTable } from '../index';
+import { MarkdownTable, MarkdownTableError } from '../index';
 import * as utils from '../utils';
 import { testData, getPreElement, getCodeElement, getStyleElement, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
 
@@ -302,6 +302,15 @@ describe('MarkdownTable', () => {
       
       expectPreStyle(container, { maxHeight: '500px', margin: '0px' });
     });
+
+    it('should not use !important so preStyle can override any padding', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.simple} preStyle={{ padding: 0 }} />
+      );
+
+      expect(getStyleElement(container)?.textContent).not.toContain('!important');
+      expectPreStyle(container, { paddingRight: '0px', paddingBottom: '0px' });
+    });
   });
 
   describe('topPadding prop', () => {
@@ -349,8 +358,8 @@ describe('MarkdownTable', () => {
       render(<MarkdownTable inputData={testData.withHeader} onGenerate={onGenerate} />);
       
       expect(onGenerate).toHaveBeenCalledTimes(1);
-      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Name'));
-      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('John'));
+      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Name'), null);
+      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('John'), null);
     });
 
     it('should call onGenerate when data changes', () => {
@@ -367,12 +376,35 @@ describe('MarkdownTable', () => {
       expect(onGenerate).toHaveBeenCalledTimes(2);
     });
 
-    it('should call onGenerate with error message on invalid data', () => {
+    it('should call onGenerate with error message and error on invalid data', () => {
       const onGenerate = jest.fn();
 
       render(<MarkdownTable inputData={[]} onGenerate={onGenerate} />);
-      
-      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'));
+
+      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'), expect.any(MarkdownTableError));
+      expect(onGenerate.mock.calls[0][1].message).toBe("The 'inputData' array must contain at least one row.");
+    });
+
+    it('should not call onGenerate again when only the callback changes', () => {
+      const firstCallback = jest.fn();
+      const secondCallback = jest.fn();
+
+      const { rerender } = render(<MarkdownTable inputData={testData.simple} onGenerate={firstCallback} />);
+      rerender(<MarkdownTable inputData={testData.simple} onGenerate={secondCallback} />);
+
+      expect(firstCallback).toHaveBeenCalledTimes(1);
+      expect(secondCallback).not.toHaveBeenCalled();
+    });
+
+    it('should call the latest onGenerate when the table changes', () => {
+      const firstCallback = jest.fn();
+      const secondCallback = jest.fn();
+
+      const { rerender } = render(<MarkdownTable inputData={testData.simple} onGenerate={firstCallback} />);
+      rerender(<MarkdownTable inputData={testData.twoColumn} onGenerate={secondCallback} />);
+
+      expect(firstCallback).toHaveBeenCalledTimes(1);
+      expect(secondCallback).toHaveBeenCalledTimes(1);
     });
 
     it('should work without onGenerate callback', () => {
@@ -413,6 +445,31 @@ describe('MarkdownTable', () => {
       const codeElement = screen.getByRole('code');
       expect(codeElement).toBeInTheDocument();
       expectCodeToContainAll(container, 'A');
+    });
+
+    it('should not regenerate the table when re-rendered with equal props', () => {
+      const spy = jest.spyOn(utils, 'generateMarkdownTableString');
+
+      const { rerender } = render(
+        <MarkdownTable inputData={testData.twoColumn} columnAlignments={['left', 'right']} />
+      );
+      const callsAfterMount = spy.mock.calls.length;
+      rerender(<MarkdownTable inputData={testData.twoColumn} columnAlignments={['left', 'right']} />);
+
+      expect(callsAfterMount).toBe(1);
+      expect(spy).toHaveBeenCalledTimes(1);
+      spy.mockRestore();
+    });
+
+    it('should regenerate the table when column alignments change', () => {
+      const spy = jest.spyOn(utils, 'generateMarkdownTableString');
+
+      const { rerender } = render(<MarkdownTable inputData={testData.twoColumn} columnAlignments={['left']} />);
+      rerender(<MarkdownTable inputData={testData.twoColumn} columnAlignments={['right']} />);
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(screen.getByRole('code').textContent).toContain('| --: |');
+      spy.mockRestore();
     });
 
     it('should handle rapid data updates', () => {

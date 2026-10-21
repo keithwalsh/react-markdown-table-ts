@@ -3,6 +3,8 @@
  * alignment options, and table configuration.
  */
 
+import type { MarkdownTableError } from './validation';
+
 export interface InputData {
   inputDataHeader: string[];
   inputDataBody: readonly string[][];
@@ -43,7 +45,7 @@ export interface MarkdownTableProps {
    */
   hasTabs?: boolean;
   /**
-   * Indicates whether the first row of `data` is a header.
+   * Indicates whether the first row of `inputData` is a header.
    * @default true
    */
   hasHeader?: boolean;
@@ -92,13 +94,20 @@ export interface MarkdownTableProps {
   preStyle?: React.CSSProperties;
 
   /**
-   * Optional callback function to receive the generated Markdown table string.
+   * Optional callback that receives the generated Markdown table string whenever it changes.
+   * When `inputData` is invalid, the string is the displayed error message and `error` is set.
+   * @default undefined
+   * @example
+   * <MarkdownTable
+   *   inputData={data}
+   *   onGenerate={(markdown, error) => setMarkdown(error ? '' : markdown)}
+   * />
    */
-  onGenerate?: (markdownTableString: string) => void;
+  onGenerate?: (markdownTableString: string, error: MarkdownTableError | null) => void;
 
   /**
-   * Optional top padding for the pre element.
-   * @default 0
+   * Optional top padding in pixels above the first line of the table.
+   * @default 16
    */
   topPadding?: number;
 

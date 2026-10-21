@@ -83,7 +83,7 @@ const meta = {
     },
     hasHeader: {
       control: 'boolean',
-      description: 'Indicates whether the first row of `data` is a header.',
+      description: 'Indicates whether the first row of `inputData` is a header.',
       table: {
         category: 'Configuration Props',
         type: {
@@ -171,11 +171,11 @@ const meta = {
       }
     },
     onGenerate: {
-      description: 'Callback function that receives the generated Markdown table string.',
+      description: 'Callback that receives the generated Markdown table string, plus a MarkdownTableError when inputData is invalid.',
       table: {
         category: 'Callbacks',
         type: {
-          summary: '(markdownTableString: string) => void'
+          summary: '(markdownTableString: string, error: MarkdownTableError | null) => void'
         }
       }
     }
