@@ -397,6 +397,18 @@ describe('generateMarkdownTableString', () => {
       expect(result).toContain(longString);
     });
 
+    it('should handle more rows than fit in a single function call', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['H'],
+        inputDataBody: Array.from({ length: 200_000 }, () => ['x']),
+      };
+
+      const lines = generateMarkdownTableString(inputData, []).split('\n');
+
+      expect(lines).toHaveLength(200_002);
+      expect(lines[200_001]).toBe('| x   |');
+    });
+
     it('should generate valid markdown with all options enabled', () => {
       const inputData: InputData = {
         inputDataHeader: ['Name', 'Description'],

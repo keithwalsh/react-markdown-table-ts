@@ -178,9 +178,11 @@ function calculateColumnWidths(
 }
 
 function calculateMaxColumnCount(inputData: InputData): number {
-  const headerColumnCount = inputData.inputDataHeader.length;
-  const bodyColumnCounts = inputData.inputDataBody.map(row => row.length);
-  return Math.max(headerColumnCount, ...bodyColumnCounts);
+  // reduce() rather than Math.max(...lengths), which overflows the call stack for very long tables
+  return inputData.inputDataBody.reduce(
+    (columnCount, row) => Math.max(columnCount, row.length),
+    inputData.inputDataHeader.length
+  );
 }
 
 function getColumnWidths(
