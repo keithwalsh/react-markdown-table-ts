@@ -3,10 +3,27 @@
  * including rendering, props handling, and callback functionality.
  */
 
+import { Component, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable, MarkdownTableError } from '../index';
 import * as utils from '../utils';
 import { testData, getPreElement, getCodeElement, getStyleElement, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
+
+class ErrorBoundary extends Component<{ children: ReactNode; onError: (error: Error) => void }, { hasError: boolean }> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    this.props.onError(error);
+  }
+
+  render() {
+    return this.state.hasError ? null : this.props.children;
+  }
+}
 
 describe('MarkdownTable', () => {
   beforeEach(() => {
@@ -50,37 +67,45 @@ describe('MarkdownTable', () => {
       expect(codeElement.textContent).toContain('must contain at least one row');
     });
 
-    it.skip('should re-throw non-MarkdownTableError exceptions', () => {
-      // Suppress all console methods for this test
+    it('should render an error message for a row that is not an array', () => {
+      const onGenerate = jest.fn();
+
+      render(<MarkdownTable inputData={[['A'], null as any]} onGenerate={onGenerate} />);
+
+      expect(screen.getByRole('code').textContent).toBe(
+        "Error: The 'inputData' prop must be a two-dimensional array, but inputData[1] is null."
+      );
+      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'), expect.any(MarkdownTableError));
+    });
+
+    it('should render an error message for an unknown column alignment', () => {
+      render(<MarkdownTable inputData={testData.simple} columnAlignments={['middle' as any]} />);
+
+      expect(screen.getByRole('code').textContent).toContain("columnAlignments[0] is 'middle'.");
+    });
+
+    it('should render an error message when column alignments are not an array', () => {
+      render(<MarkdownTable inputData={testData.simple} columnAlignments={'left' as any} />);
+
+      expect(screen.getByRole('code').textContent).toBe("Error: The 'columnAlignments' prop must be an array.");
+    });
+
+    it('should re-throw non-MarkdownTableError exceptions to the nearest error boundary', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-      
-      // Spy on generateMarkdownTableString to throw a generic Error
-      const spy = jest.spyOn(utils, 'generateMarkdownTableString').mockImplementationOnce(() => {
+      const spy = jest.spyOn(utils, 'generateMarkdownTableString').mockImplementation(() => {
         throw new Error('Unexpected internal error');
       });
+      const onError = jest.fn();
 
-      // The component will try to render but React will catch and recover from the error
-      // This test verifies the error re-throw path (line 54) is executed
-      let didComplete = false;
-      try {
-        render(<MarkdownTable inputData={[['A'], ['B']]} />);
-        didComplete = true;
-      } catch (error) {
-        // Expected: React catches the error during render
-        didComplete = true;
-      }
+      render(
+        <ErrorBoundary onError={onError}>
+          <MarkdownTable inputData={testData.simple} />
+        </ErrorBoundary>
+      );
 
-      // Verify the mock was called, which means our error path was executed
-      expect(spy).toHaveBeenCalled();
-      expect(didComplete).toBe(true);
-
-      // Restore all mocks
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Unexpected internal error' }));
       spy.mockRestore();
       consoleErrorSpy.mockRestore();
-      consoleWarnSpy.mockRestore();
-      consoleLogSpy.mockRestore();
     });
   });
 

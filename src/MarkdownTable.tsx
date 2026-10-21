@@ -7,7 +7,7 @@ import { useEffect, useDeferredValue, useId, useMemo, useRef } from 'react';
 import { LineNumbers } from './LineNumbers.js';
 import type { Alignment, MarkdownTableProps } from './types.js';
 import { generateMarkdownTableString, generateAlphabetHeaders } from './utils.js';
-import { validateInputData, MarkdownTableError } from './validation.js';
+import { validateInputData, validateColumnAlignments, MarkdownTableError } from './validation.js';
 
 
 interface ThemeColors {
@@ -118,7 +118,8 @@ function generateTableSyntax(
 ): TableSyntaxResult {
   try {
     validateInputData(inputData);
-    const { inputDataHeader, inputDataBody } = getTableData(inputData as string[][], hasHeader);
+    validateColumnAlignments(columnAlignments);
+    const { inputDataHeader, inputDataBody } = getTableData(inputData, hasHeader);
 
     const markdown = generateMarkdownTableString(
       { inputDataHeader, inputDataBody },
@@ -155,8 +156,9 @@ export function MarkdownTable({
 }: MarkdownTableProps) {
   const scopeId = useId().replace(/:/g, '_');
   const deferredInputData = useDeferredValue(inputData);
-  // Inline alignment arrays are new on every render, so memoise on their contents
-  const columnAlignmentsKey = columnAlignments.join(',');
+  // Inline alignment arrays are new on every render, so memoise on their contents.
+  // String() rather than join() so a non-array from JavaScript reaches validation instead of throwing here
+  const columnAlignmentsKey = String(columnAlignments);
 
   const result = useMemo(
     () =>

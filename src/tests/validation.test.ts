@@ -3,7 +3,7 @@
  * class.
  */
 
-import { validateInputData, MarkdownTableError } from '../validation';
+import { validateInputData, validateColumnAlignments, MarkdownTableError } from '../validation';
 
 describe('MarkdownTableError', () => {
   describe('constructor', () => {
@@ -130,6 +130,31 @@ describe('validateInputData', () => {
     });
   });
 
+  describe('rows that are not arrays', () => {
+    it('should throw MarkdownTableError for a null row', () => {
+      expect(() => validateInputData([['A'], null])).toThrow(MarkdownTableError);
+      expect(() => validateInputData([['A'], null])).toThrow(
+        "The 'inputData' prop must be a two-dimensional array, but inputData[1] is null."
+      );
+    });
+
+    it('should throw MarkdownTableError for a string row instead of splitting it into cells', () => {
+      expect(() => validateInputData([['A', 'B'], 'CD'])).toThrow(
+        "The 'inputData' prop must be a two-dimensional array, but inputData[1] is 'CD'."
+      );
+    });
+
+    it('should throw MarkdownTableError for a one-dimensional array', () => {
+      expect(() => validateInputData(['A', 'B'])).toThrow(
+        "The 'inputData' prop must be a two-dimensional array, but inputData[0] is 'A'."
+      );
+    });
+
+    it('should report the first invalid row', () => {
+      expect(() => validateInputData([['A'], undefined, 3])).toThrow('inputData[1] is undefined.');
+    });
+  });
+
   describe('edge cases', () => {
     it('should accept array with nested empty arrays', () => {
       const data = [[]];
@@ -164,3 +189,28 @@ describe('validateInputData', () => {
   });
 });
 
+describe('validateColumnAlignments', () => {
+  it('should accept an empty array', () => {
+    expect(() => validateColumnAlignments([])).not.toThrow();
+  });
+
+  it('should accept every known alignment', () => {
+    expect(() => validateColumnAlignments(['left', 'center', 'right', 'none'])).not.toThrow();
+  });
+
+  it('should throw MarkdownTableError for an unknown alignment', () => {
+    expect(() => validateColumnAlignments(['left', 'middle'])).toThrow(MarkdownTableError);
+    expect(() => validateColumnAlignments(['left', 'middle'])).toThrow(
+      "The 'columnAlignments' prop must only contain 'left', 'center', 'right' or 'none', but columnAlignments[1] is 'middle'."
+    );
+  });
+
+  it('should throw MarkdownTableError for a non-string alignment', () => {
+    expect(() => validateColumnAlignments([null])).toThrow('columnAlignments[0] is null.');
+  });
+
+  it('should throw MarkdownTableError when alignments are not an array', () => {
+    expect(() => validateColumnAlignments('left')).toThrow(MarkdownTableError);
+    expect(() => validateColumnAlignments('left')).toThrow("The 'columnAlignments' prop must be an array.");
+  });
+});
