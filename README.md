@@ -46,14 +46,14 @@ interface MarkdownTableProps {
 | `columnAlignments`   | `readonly Alignment[]`                  | `[]`	       | Acceptable values are 'left', 'center', 'right', or 'none'. Defaults to 'none' when unspecified. |
 | `isCompact`          | `boolean`                               | `false`     | Disables column width alignment to provide a more compact markdown table string.   |
 | `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
-| `hasTabs`            | `boolean`                               | `false`     | Adds a tab character after each \| and before the content.                         |
+| `hasTabs`            | `boolean`                               | `false`     | Puts a tab on each side of the cell content, in place of the `hasPadding` space.   |
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `inputData` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells. When `false`, newlines become spaces. |
-| `topPadding`         | `number`                                | `16`        | Controls the padding-top (in pixels) of the \<pre\> element display.               |
+| `topPadding`         | `number`                                | `16`        | Space in pixels above the first line, set as padding-top on the \<code\> element.  |
 | `theme`              | `'light' \| 'dark'`                     | `light`     | Controls the colour scheme of the \<pre\> element display.                            |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
-| `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the table container.                          |
+| `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the \<pre\> element.                          |
 | `showLineNumbers`    | `boolean`                               | `true`      | Show or hide line numbers in the code block.                                       |
 | `onGenerate`         | `(markdownTableString: string, error: MarkdownTableError \| null) => void` | `undefined` | Called whenever the table changes. `error` is set when `inputData` is invalid. |
 ## Usage Patterns
@@ -85,7 +85,7 @@ interface MarkdownTableProps {
 ```typescript
 <MarkdownTable
     inputData={data}
-    minWidth={500} // Sets the minimum width of the table container to 500 pixels
+    minWidth={500} // Sets the minimum width of the <pre> element to 500 pixels
 />
 ```
 5. **Hiding Line Numbers**:

@@ -43,8 +43,8 @@ export interface MarkdownTableOptions {
   hasPadding?: boolean;
 
   /**
-   * Optional flag to add tabs as additional padding between column pipes.
-   * When true, adds a tab character after each | and before the content.
+   * Optional flag to put a tab character on each side of the cell content.
+   * The tabs replace the space that `hasPadding` adds.
    * @default false
    */
   hasTabs?: boolean;
