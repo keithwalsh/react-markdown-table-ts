@@ -7,6 +7,12 @@ import type { InputData, Alignment, TableConfig } from './types.js';
 
 type TableRow = readonly string[];
 
+/** Header and body rows before their cells are converted to strings */
+interface RawTableData {
+  inputDataHeader: readonly unknown[];
+  inputDataBody: readonly (readonly unknown[])[];
+}
+
 // No lookbehind: Safari only supports it from 16.4, and it would throw on import before that
 const PIPE_PATTERN = /(\\*)\|/g;
 const TRAILING_BACKSLASHES_PATTERN = /\\+$/;
@@ -72,8 +78,8 @@ function normaliseCell(cell: unknown, replaceNewlines: boolean): string {
   return text.replace(LINE_BREAK_PATTERN, replaceNewlines ? '<br>' : ' ');
 }
 
-function normaliseInputData(inputData: InputData, replaceNewlines: boolean): InputData {
-  const normaliseRow = (row: TableRow) => Array.from(row, cell => normaliseCell(cell, replaceNewlines));
+function normaliseInputData(inputData: RawTableData, replaceNewlines: boolean): InputData {
+  const normaliseRow = (row: readonly unknown[]) => Array.from(row, cell => normaliseCell(cell, replaceNewlines));
   return {
     inputDataHeader: normaliseRow(inputData.inputDataHeader),
     inputDataBody: inputData.inputDataBody.map(normaliseRow),
@@ -201,7 +207,7 @@ function calculateMaxColumnCount(inputData: InputData): number {
 }
 
 export function generateMarkdownTableString(
-  inputData: InputData,
+  inputData: RawTableData,
   columnAlignments: readonly Alignment[],
   canAdjustColumnWidths = true,
   useTabs = false,

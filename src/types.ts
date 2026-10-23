@@ -6,6 +6,12 @@
 import type { CSSProperties } from 'react';
 import type { MarkdownTableError } from './validation.js';
 
+/**
+ * A table cell. Values other than strings are converted with `String()`,
+ * and `null` and `undefined` become empty cells.
+ */
+export type CellValue = string | number | boolean | null | undefined;
+
 export interface InputData {
   inputDataHeader: string[];
   inputDataBody: readonly string[][];
@@ -15,9 +21,10 @@ export interface MarkdownTableProps {
   /**
    * The entire table data as a two-dimensional array.
    * If `hasHeader` is true, the first row is treated as the header.
+   * Readonly arrays, such as `as const` data, are accepted.
    * @default null
    */
-  inputData?: string[][] | null;
+  inputData?: readonly (readonly CellValue[])[] | null;
 
   /**
    * Optional array specifying the alignment for each column.

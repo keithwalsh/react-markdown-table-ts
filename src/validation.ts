@@ -29,7 +29,7 @@ function describeValue(value: unknown): string {
  * @param inputData - The data to validate
  * @throws {MarkdownTableError} If validation fails
  */
-export function validateInputData(inputData: unknown): asserts inputData is string[][] {
+export function validateInputData(inputData: unknown): asserts inputData is readonly (readonly unknown[])[] {
   if (inputData === null || !Array.isArray(inputData)) {
     throw new MarkdownTableError("The 'inputData' prop must be a two-dimensional array.");
   }

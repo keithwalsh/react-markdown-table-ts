@@ -4,6 +4,6 @@
  */
 
 export { MarkdownTable } from './MarkdownTable.js';
-export type { Alignment, MarkdownTableProps, InputData, TableConfig } from './types.js';
+export type { Alignment, CellValue, MarkdownTableProps, InputData, TableConfig } from './types.js';
 export { MarkdownTableError } from './validation.js';
 

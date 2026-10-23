@@ -100,18 +100,18 @@ function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
 `.trim();
 }
 
-function getLongestRowLength(rows: readonly string[][]): number {
+function getLongestRowLength(rows: readonly (readonly unknown[])[]): number {
   return rows.reduce((length, row) => Math.max(length, row.length), 0);
 }
 
-function getTableData(inputData: string[][], hasHeader: boolean) {
+function getTableData(inputData: readonly (readonly unknown[])[], hasHeader: boolean) {
   return hasHeader
     ? { inputDataHeader: inputData[0], inputDataBody: inputData.slice(1) }
     : { inputDataHeader: generateAlphabetHeaders(getLongestRowLength(inputData)), inputDataBody: inputData };
 }
 
 interface TableInputs {
-  inputData: string[][] | null;
+  inputData: MarkdownTableProps['inputData'];
   hasHeader: boolean;
   columnAlignments: readonly Alignment[];
   isCompact: boolean;

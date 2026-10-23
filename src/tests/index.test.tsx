@@ -59,6 +59,16 @@ describe('MarkdownTable', () => {
       );
     });
 
+    it('should accept readonly data with non-string cells', () => {
+      const data = [['Name', 'Age', 'Member'], ['Ann', 30, true], ['Bob', null, undefined]] as const;
+
+      render(<MarkdownTable inputData={data} />);
+
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Name | Age | Member |\n| ---- | --- | ------ |\n| Ann  | 30  | true   |\n| Bob  |     |        |'
+      );
+    });
+
     it('should render with null inputData', () => {
       render(<MarkdownTable inputData={null} />);
       
