@@ -195,7 +195,7 @@ const markdown = generateMarkdownTable(
 5. **Styling**:
 - Includes built-in light and dark themes, and an auto theme that follows the reader's colour scheme
 - A table wider than its container scrolls horizontally, and can be focused so keyboard users can scroll it
-- Custom styles via `className` and `preStyle` props
+- Custom styles via the `className` and `preStyle` props, or the classes listed under [Custom Styles](#custom-styles)
 - Optional line numbers for better readability
 
 ## Common Transformations
@@ -208,6 +208,23 @@ const markdown = generateMarkdownTable(
 2. **Header Generation**:
 - Auto-generates A, B, C... headers when `hasHeader={false}`
 - Supports custom headers via first row when `hasHeader={true}`
+
+## Custom Styles
+
+Add your own class to the \<pre\> element with `className`, or inline styles with `preStyle`. The component's elements also have these classes, which your stylesheet can target:
+
+| Class                                | Element                                          |
+|--------------------------------------|--------------------------------------------------|
+| `rmt`                                | The wrapper \<div\>                              |
+| `rmt-light`, `rmt-dark`, `rmt-auto`  | The wrapper, matching the `theme` prop           |
+| `rmt-pre`                            | The \<pre\> element                              |
+| `rmt-has-line-numbers`               | The \<pre\> element, when line numbers show      |
+| `rmt-code`                           | The \<code\> element that holds the table        |
+| `rmt-line-numbers`                   | The line numbers                                 |
+
+A selector like `.rmt-dark .rmt-pre` works for properties the built-in CSS doesn't set, so `.rmt-dark .rmt-pre:focus-visible { outline: 2px solid #8be9fd; }` outlines a focused dark table. To change a property it does set, such as `padding`, use `preStyle`, or a selector with three classes, such as `.rmt .rmt-pre.my-table { padding: 0; }` with `className="my-table"`, since the built-in rules use selectors like `.rmt pre.rmt-pre`.
+
+None of the classes start with `language-`, so a page that runs Prism doesn't restyle the table.
 
 ## Content Security Policy
 
