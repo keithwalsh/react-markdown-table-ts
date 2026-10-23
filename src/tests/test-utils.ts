@@ -42,7 +42,7 @@ export function getCodeElement(container: HTMLElement): HTMLElement | null {
  * Helper function to get line numbers span from container
  */
 export function getLineNumbersSpan(container: HTMLElement): HTMLSpanElement | null {
-  return container.querySelector('.line-numbers-rows');
+  return container.querySelector('.rmt-line-numbers');
 }
 
 /**

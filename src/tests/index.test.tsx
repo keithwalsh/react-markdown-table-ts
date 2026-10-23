@@ -317,7 +317,7 @@ describe('MarkdownTable', () => {
       const css = getStyleElement()?.textContent;
       expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-background: #f5f2f0;');
       expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-background: #282a36;');
-      expect(css).toContain('.rmt code[class*=language-], .rmt pre[class*=language-] {');
+      expect(css).toContain('.rmt code.rmt-code, .rmt pre.rmt-pre {');
     });
 
     it('should switch the auto theme to dark when the reader prefers a dark colour scheme', () => {
@@ -344,7 +344,7 @@ describe('MarkdownTable', () => {
       const css = getStyleElement()?.textContent;
       expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-line-number-color: #6e6e6e;');
       expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-line-number-color: #999;');
-      expect(getCssRule(css, '.rmt pre[class*=language-] > .line-numbers-rows')).toContain(
+      expect(getCssRule(css, '.rmt pre.rmt-pre > .rmt-line-numbers')).toContain(
         'color: var(--rmt-line-number-color);'
       );
     });
@@ -383,6 +383,16 @@ describe('MarkdownTable', () => {
       // React 19 hoists a single copy into the head; React 18 renders an identical copy per table
       expect(styles).toHaveLength(version.startsWith('18.') ? 2 : 1);
       expect(new Set(styles).size).toBe(1);
+    });
+  });
+
+  describe('class names', () => {
+    it("should avoid Prism's class names, so Prism's highlighter and CSS leave the table alone", () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
+
+      const classNames = Array.from(container.querySelectorAll('[class]'), element => element.className);
+      expect(classNames).toEqual(['rmt rmt-light', 'rmt-pre rmt-has-line-numbers', 'rmt-code', 'rmt-line-numbers']);
+      expect(getStyleElement()?.textContent).not.toMatch(/language-|line-numbers-rows/);
     });
   });
 
@@ -430,16 +440,16 @@ describe('MarkdownTable', () => {
       const preElement = getPreElement(container);
       const codeElement = getCodeElement(container);
       expect(hasClass(preElement, 'custom-class')).toBe(true);
-      expect(hasClass(preElement, 'line-numbers')).toBe(true);
-      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
+      expect(hasClass(preElement, 'rmt-has-line-numbers')).toBe(true);
+      expect(hasClass(codeElement, 'rmt-code')).toBe(true);
     });
 
     it('should work without custom className', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      expectPreClasses(container, ['line-numbers']);
+      expectPreClasses(container, ['rmt-has-line-numbers']);
       const codeElement = getCodeElement(container);
-      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
+      expect(hasClass(codeElement, 'rmt-code')).toBe(true);
     });
   });
 
@@ -486,33 +496,33 @@ describe('MarkdownTable', () => {
         <MarkdownTable inputData={testData.simple} id="table" className="custom-class" minWidth={400} />
       );
 
-      expectPreClasses(container, ['language-markdown', 'line-numbers', 'custom-class']);
+      expectPreClasses(container, ['rmt-pre', 'rmt-has-line-numbers', 'custom-class']);
       expectPreStyle(container, { minWidth: '400px' });
       expect(getPreElement(container)?.id).toBe('table');
     });
   });
 
   describe('showLineNumbers prop', () => {
-    it('should include line-numbers class by default', () => {
+    it('should include rmt-has-line-numbers class by default', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      expectPreClasses(container, ['line-numbers']);
+      expectPreClasses(container, ['rmt-has-line-numbers']);
     });
 
-    it('should include line-numbers class when showLineNumbers is true', () => {
+    it('should include rmt-has-line-numbers class when showLineNumbers is true', () => {
       const { container } = render(
         <MarkdownTable inputData={testData.simple} showLineNumbers={true} />
       );
       
-      expectPreClasses(container, ['line-numbers']);
+      expectPreClasses(container, ['rmt-has-line-numbers']);
     });
 
-    it('should not include line-numbers class when showLineNumbers is false', () => {
+    it('should not include rmt-has-line-numbers class when showLineNumbers is false', () => {
       const { container } = render(
         <MarkdownTable inputData={testData.simple} showLineNumbers={false} />
       );
       
-      expectPreNotToHaveClasses(container, ['line-numbers']);
+      expectPreNotToHaveClasses(container, ['rmt-has-line-numbers']);
     });
   });
 
@@ -557,21 +567,21 @@ describe('MarkdownTable', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
       expect(getComputedStyle(getCodeElement(container)!).paddingTop).toBe('16px');
-      expect(getComputedStyle(container.querySelector('.line-numbers-rows')!).top).toBe('16px');
+      expect(getComputedStyle(container.querySelector('.rmt-line-numbers')!).top).toBe('16px');
     });
 
     it('should apply a custom top padding to the code and line numbers', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
 
       expect(getCodeElement(container)?.style.paddingTop).toBe('32px');
-      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('32px');
+      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.top).toBe('32px');
     });
 
     it('should allow zero top padding', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
 
       expect(getCodeElement(container)?.style.paddingTop).toBe('0px');
-      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('0px');
+      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.top).toBe('0px');
     });
   });
 
@@ -667,19 +677,19 @@ describe('MarkdownTable', () => {
       const codeElement = getCodeElement(container);
       
       expect(preElement).toBeInTheDocument();
-      expect(hasClass(codeElement, 'language-markdown')).toBe(true);
+      expect(hasClass(codeElement, 'rmt-code')).toBe(true);
     });
 
     it('should render with line numbers when showLineNumbers is true', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} showLineNumbers={true} />);
       
-      expectPreClasses(container, ['line-numbers']);
+      expectPreClasses(container, ['rmt-has-line-numbers']);
     });
 
     it('should render without line numbers when showLineNumbers is false', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} showLineNumbers={false} />);
       
-      expectPreNotToHaveClasses(container, ['line-numbers']);
+      expectPreNotToHaveClasses(container, ['rmt-has-line-numbers']);
     });
   });
 

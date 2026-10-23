@@ -60,31 +60,31 @@ export const STYLESHEET = `
   .${THEME_CLASSES.auto} {${DARK_THEME.replace(/\n/g, '\n  ')}
   }
 }
-.rmt code[class*=language-], .rmt pre[class*=language-] {
+.rmt code.rmt-code, .rmt pre.rmt-pre {
   color: var(--rmt-color);
   background: 0 0;
   text-shadow: var(--rmt-text-shadow);${TEXT_STYLES}
 }
-.rmt code[class*=language-] ::-moz-selection,
-.rmt code[class*=language-]::-moz-selection,
-.rmt pre[class*=language-] ::-moz-selection,
-.rmt pre[class*=language-]::-moz-selection {
+.rmt code.rmt-code ::-moz-selection,
+.rmt code.rmt-code::-moz-selection,
+.rmt pre.rmt-pre ::-moz-selection,
+.rmt pre.rmt-pre::-moz-selection {
   text-shadow: none;
   background: var(--rmt-selection-background);
 }
-.rmt code[class*=language-] ::selection,
-.rmt code[class*=language-]::selection,
-.rmt pre[class*=language-] ::selection,
-.rmt pre[class*=language-]::selection {
+.rmt code.rmt-code ::selection,
+.rmt code.rmt-code::selection,
+.rmt pre.rmt-pre ::selection,
+.rmt pre.rmt-pre::selection {
   text-shadow: none;
   background: var(--rmt-selection-background);
 }
 @media print {
-  .rmt code[class*=language-], .rmt pre[class*=language-] {
+  .rmt code.rmt-code, .rmt pre.rmt-pre {
     text-shadow: none;
   }
 }
-.rmt pre[class*=language-] {
+.rmt pre.rmt-pre {
   position: relative;
   isolation: isolate;
   display: inline-block;
@@ -98,20 +98,20 @@ export const STYLESHEET = `
   background: var(--rmt-background);
   border-radius: var(--rmt-border-radius);
 }
-.rmt pre[class*=language-].line-numbers {
+.rmt pre.rmt-pre.rmt-has-line-numbers {
   padding-left: 1em;
 }
-.rmt pre[class*=language-] > code {
+.rmt pre.rmt-pre > code {
   display: block;
   padding-top: ${DEFAULT_TOP_PADDING}px;
   padding-left: .3em;
 }
-.rmt pre[class*=language-].line-numbers > code {
+.rmt pre.rmt-pre.rmt-has-line-numbers > code {
   position: relative;
   white-space: inherit;
   padding-left: 3em;
 }
-.rmt pre[class*=language-] > .line-numbers-rows {
+.rmt pre.rmt-pre > .rmt-line-numbers {
   position: absolute;
   top: ${DEFAULT_TOP_PADDING}px;
   left: 0;

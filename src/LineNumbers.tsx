@@ -45,14 +45,14 @@ export function LineNumbers({
       tabIndex={0}
       {...preAttributes}
       ref={preRef}
-      className={`language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className}`.trim()}
+      className={`rmt-pre ${showLineNumbers ? 'rmt-has-line-numbers' : ''} ${className}`.trim()}
       style={style}
     >
-      <code className="language-markdown" style={topPaddingStyle}>
+      <code className="rmt-code" style={topPaddingStyle}>
         {children}
       </code>
       {showLineNumbers && (
-        <span className="line-numbers-rows" aria-hidden="true" style={lineNumbersTopStyle}>
+        <span className="rmt-line-numbers" aria-hidden="true" style={lineNumbersTopStyle}>
           {lineNumbers}
         </span>
       )}

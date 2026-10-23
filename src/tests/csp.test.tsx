@@ -26,7 +26,7 @@ describe('Content-Security-Policy support', () => {
   it('should lay out the line numbers from the stylesheet', () => {
     const { container } = render(<MarkdownTable inputData={testData.withHeader} />);
 
-    const lineNumbers = getComputedStyle(container.querySelector('.line-numbers-rows')!);
+    const lineNumbers = getComputedStyle(container.querySelector('.rmt-line-numbers')!);
     expect(lineNumbers.position).toBe('absolute');
     expect(lineNumbers.pointerEvents).toBe('none');
     expect(lineNumbers.userSelect).toBe('none');

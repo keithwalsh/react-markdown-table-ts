@@ -26,14 +26,14 @@ describe('LineNumbers', () => {
       expect(code?.textContent).toBe('test code');
     });
 
-    it('should apply language-markdown class', () => {
+    it('should apply the rmt-pre and rmt-code classes', () => {
       const { container } = render(<LineNumbers>code</LineNumbers>);
       
       const pre = getPreElement(container);
       const code = getCodeElement(container);
       
-      expect(hasClass(pre, 'language-markdown')).toBe(true);
-      expect(hasClass(code, 'language-markdown')).toBe(true);
+      expect(hasClass(pre, 'rmt-pre')).toBe(true);
+      expect(hasClass(code, 'rmt-code')).toBe(true);
     });
 
     it('should handle empty children', () => {
@@ -55,20 +55,20 @@ describe('LineNumbers', () => {
   });
 
   describe('Line numbers display', () => {
-    it('should add line-numbers class when showLineNumbers is true', () => {
+    it('should add rmt-has-line-numbers class when showLineNumbers is true', () => {
       const { container } = render(
         <LineNumbers showLineNumbers={true}>code</LineNumbers>
       );
       
-      expectPreClasses(container, ['line-numbers']);
+      expectPreClasses(container, ['rmt-has-line-numbers']);
     });
 
-    it('should not add line-numbers class when showLineNumbers is false', () => {
+    it('should not add rmt-has-line-numbers class when showLineNumbers is false', () => {
       const { container } = render(
         <LineNumbers showLineNumbers={false}>code</LineNumbers>
       );
       
-      expectPreNotToHaveClasses(container, ['line-numbers']);
+      expectPreNotToHaveClasses(container, ['rmt-has-line-numbers']);
     });
 
     it('should render line numbers spans when showLineNumbers is true', () => {
@@ -165,7 +165,7 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre');
-      expect(pre?.className).toBe('language-markdown');
+      expect(pre?.className).toBe('rmt-pre');
     });
 
     it('should combine all classNames correctly', () => {
@@ -176,7 +176,7 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre');
-      expect(pre?.className).toBe('language-markdown line-numbers custom');
+      expect(pre?.className).toBe('rmt-pre rmt-has-line-numbers custom');
     });
   });
 
@@ -256,7 +256,7 @@ describe('LineNumbers', () => {
         </LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
       expect(lineNumbersSpan?.style.top).toBe('32px');
     });
 
@@ -265,7 +265,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>line1</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
       expect(lineNumbersSpan?.style.top).toBe('');
       expect(container.querySelector('code')?.style.paddingTop).toBe('');
     });
@@ -277,7 +277,7 @@ describe('LineNumbers', () => {
         </LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
       expect(lineNumbersSpan?.style.top).toBe('0px');
     });
 
@@ -288,7 +288,7 @@ describe('LineNumbers', () => {
         </LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
+      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
       expect(lineNumbersSpan?.style.top).toBe('160px');
     });
   });
@@ -351,7 +351,7 @@ describe('LineNumbers', () => {
       
       const pre = container.querySelector('pre') as HTMLPreElement;
       
-      expect(pre?.className).toContain('line-numbers');
+      expect(pre?.className).toContain('rmt-has-line-numbers');
       expect(pre?.className).toContain('custom-code');
       expect(pre?.style.backgroundColor).toBe('blue');
       expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
@@ -362,7 +362,7 @@ describe('LineNumbers', () => {
       
       const pre = container.querySelector('pre');
       expect(pre).toBeInTheDocument();
-      expect(pre?.className).toBe('language-markdown');
+      expect(pre?.className).toBe('rmt-pre');
     });
 
     it('should update when props change', () => {
@@ -371,12 +371,12 @@ describe('LineNumbers', () => {
       );
       
       let pre = container.querySelector('pre');
-      expect(pre?.className).not.toContain('line-numbers');
+      expect(pre?.className).not.toContain('rmt-has-line-numbers');
       
       rerender(<LineNumbers showLineNumbers={true}>line1</LineNumbers>);
       
       pre = container.querySelector('pre');
-      expect(pre?.className).toContain('line-numbers');
+      expect(pre?.className).toContain('rmt-has-line-numbers');
     });
 
     it('should update line numbers when code changes', () => {

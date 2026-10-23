@@ -339,7 +339,7 @@ describe('Integration Tests', () => {
 
       const styleTag = getStyleElement();
       expect(styleTag).toBeInTheDocument();
-      expect(styleTag?.textContent).toContain('code[class*=language-]');
+      expect(styleTag?.textContent).toContain('code.rmt-code');
     });
 
     it('should switch the theme class when the theme changes', () => {
