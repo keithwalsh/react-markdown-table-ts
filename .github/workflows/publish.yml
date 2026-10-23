@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   publish:
+    # The branch picker accepts any branch, and npm's trusted publisher doesn't check it
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
