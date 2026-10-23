@@ -136,6 +136,10 @@ function generateTableSyntax({
   convertLineBreaks,
   hasPadding,
 }: TableInputs): TableSyntaxResult {
+  // null is the default, so a table still loading renders empty rather than as an error
+  if (inputData == null) {
+    return { markdown: '', error: null };
+  }
   try {
     validateInputData(inputData);
     validateColumnAlignments(columnAlignments);

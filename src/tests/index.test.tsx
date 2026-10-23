@@ -69,12 +69,30 @@ describe('MarkdownTable', () => {
       );
     });
 
-    it('should render with null inputData', () => {
-      render(<MarkdownTable inputData={null} />);
-      
-      const codeElement = screen.getByRole('code');
-      expect(codeElement).toBeInTheDocument();
-      expect(codeElement.textContent).toContain('Error:');
+    it('should render an empty table without an error for null inputData', () => {
+      const onGenerate = jest.fn();
+
+      render(<MarkdownTable inputData={null} onGenerate={onGenerate} />);
+
+      expect(screen.getByRole('code').textContent).toBe('');
+      expect(onGenerate).toHaveBeenCalledWith('', null);
+    });
+
+    it('should render an empty table without an error when inputData is left out', () => {
+      const onGenerate = jest.fn();
+
+      render(<MarkdownTable onGenerate={onGenerate} />);
+
+      expect(screen.getByRole('code').textContent).toBe('');
+      expect(onGenerate).toHaveBeenCalledWith('', null);
+    });
+
+    it('should render the table once inputData arrives', () => {
+      const { rerender } = render(<MarkdownTable inputData={null} />);
+
+      rerender(<MarkdownTable inputData={testData.simple} />);
+
+      expect(screen.getByRole('code').textContent).toBe('| A   |\n| --- |\n| 1   |');
     });
 
     it('should render error message for invalid data', () => {

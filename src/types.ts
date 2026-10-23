@@ -22,6 +22,7 @@ export interface MarkdownTableProps {
    * The entire table data as a two-dimensional array.
    * If `hasHeader` is true, the first row is treated as the header.
    * Readonly arrays, such as `as const` data, are accepted.
+   * `null` and `undefined` render an empty table, for example while data loads.
    * @default null
    */
   inputData?: readonly (readonly CellValue[])[] | null;
@@ -104,6 +105,7 @@ export interface MarkdownTableProps {
   /**
    * Optional callback that receives the generated Markdown table string whenever it changes.
    * When `inputData` is invalid, the string is the displayed error message and `error` is set.
+   * When `inputData` is `null` or `undefined`, the string is empty and `error` is `null`.
    * @default undefined
    * @example
    * <MarkdownTable
