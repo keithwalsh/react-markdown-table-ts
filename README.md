@@ -150,8 +150,8 @@ const markdown = generateMarkdownTable(
 ## Behaviours
 
 1. **Input Validation**:
-- Input must be non-null 2D string array
-- All rows should contain string values
+- `inputData` must be an array of rows, each of which is an array of cells
+- `null` or `undefined` renders an empty table, for example while data loads
 - Empty arrays are not allowed, and at least one row must contain a cell
 - Column alignments must be valid ('left', 'center', 'right', 'none')
 
@@ -167,12 +167,13 @@ const markdown = generateMarkdownTable(
 - Non-string values are converted with `String()`; `null` and `undefined` become empty cells
 
 4. **Error Handling**:
-- Displays an error message if validation fails and passes the `MarkdownTableError` to `onGenerate`
-- Wraps errors in `MarkdownTableError` class
-- Preserves stack traces for debugging
+- Invalid `inputData` or `columnAlignments` show an error message in place of the table, and `onGenerate` receives the `MarkdownTableError`
+- `generateMarkdownTable` throws the `MarkdownTableError` instead
+- Any other error is not caught, so it reaches the nearest error boundary
 
 5. **Styling**:
-- Includes built-in light and dark themes
+- Includes built-in light and dark themes, and an auto theme that follows the reader's colour scheme
+- A table wider than its container scrolls horizontally, and can be focused so keyboard users can scroll it
 - Custom styles via `className` and `preStyle` props
 - Optional line numbers for better readability
 
