@@ -4,7 +4,9 @@
     "noEmit": false,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    // Library code runs in browsers, so typecheck it without Node or Vite's client types
+    "types": []
   },
   "include": ["src"],
   "exclude": ["src/tests", "src/stories", "**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"]
