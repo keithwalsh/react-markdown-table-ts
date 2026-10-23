@@ -3,7 +3,7 @@
  * various configurations and use cases for markdown table generation and display.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MarkdownTable } from '../MarkdownTable';
 
 const meta = {
