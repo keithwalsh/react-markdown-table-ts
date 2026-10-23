@@ -83,29 +83,6 @@ export function hasClass(element: Element | null, className: string): boolean {
 }
 
 /**
- * Helper to get all classes as an array
- */
-export function getClasses(element: Element | null): string[] {
-  return element?.className.split(' ').filter(Boolean) ?? [];
-}
-
-/**
- * Helper to count occurrences of a substring in text
- */
-export function countOccurrences(text: string, substring: string): number {
-  return (text.match(new RegExp(substring, 'g')) || []).length;
-}
-
-/**
- * Helper to get number of lines in code content
- */
-export function getLineCount(container: HTMLElement): number {
-  const code = getCodeElement(container);
-  if (!code?.textContent) return 0;
-  return code.textContent.split('\n').length;
-}
-
-/**
  * Helper to verify pre element styles
  */
 export function expectPreStyle(
@@ -129,20 +106,6 @@ export function expectCodeToContainAll(
   const content = codeElement?.textContent || '';
   values.forEach(value => {
     expect(content).toContain(value);
-  });
-}
-
-/**
- * Helper to verify text content does not contain values
- */
-export function expectCodeNotToContainAny(
-  container: HTMLElement,
-  ...values: string[]
-): void {
-  const codeElement = getCodeElement(container);
-  const content = codeElement?.textContent || '';
-  values.forEach(value => {
-    expect(content).not.toContain(value);
   });
 }
 
