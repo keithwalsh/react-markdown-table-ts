@@ -3,102 +3,15 @@
  * markdown table syntax with optional line numbers and theme support.
  */
 
-import { useEffect, useDeferredValue, useId, useMemo, useRef } from 'react';
+import { useEffect, useDeferredValue, useMemo, useRef } from 'react';
 import { generateMarkdownTable } from './generateMarkdownTable.js';
 import { LineNumbers } from './LineNumbers.js';
+import { STYLESHEET, STYLESHEET_HREF, THEME_CLASSES } from './styles.js';
 import type { Alignment, MarkdownTableOptions, MarkdownTableProps } from './types.js';
 import { MarkdownTableError } from './validation.js';
 
-
-interface ThemeColors {
-  textColor: string;
-  textShadow: string;
-  background: string;
-  selectionBackground: string;
-  lineNumberColor: string;
-  borderRadius?: string;
-}
-
-function getThemeColors(theme: 'light' | 'dark'): ThemeColors {
-  return theme === 'light'
-    ? {
-        textColor: '#000',
-        textShadow: '0 1px #fff',
-        background: '#f5f2f0',
-        selectionBackground: '#b3d4fc',
-        lineNumberColor: '#6e6e6e',
-      }
-    : {
-        textColor: '#f8f8f2',
-        textShadow: '0 1px rgba(0,0,0,.3)',
-        background: '#282a36',
-        selectionBackground: '#44475a',
-        lineNumberColor: '#999',
-        borderRadius: '.3em',
-      };
-}
-
-function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
-  const colors = getThemeColors(theme);
-  const commonStyles = `
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    font-size: 1em;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-  `.replace(/\s{2,}/g, ''); // remove extra spaces
-
-  return `
-#${scopeId} code[class*=language-], #${scopeId} pre[class*=language-] {
-  color: ${colors.textColor};
-  background: 0 0;
-  text-shadow: ${colors.textShadow};
-  ${commonStyles}
-}
-#${scopeId} code[class*=language-] ::-moz-selection,
-#${scopeId} code[class*=language-]::-moz-selection,
-#${scopeId} pre[class*=language-] ::-moz-selection,
-#${scopeId} pre[class*=language-]::-moz-selection {
-  text-shadow: none;
-  background: ${colors.selectionBackground};
-}
-#${scopeId} code[class*=language-] ::selection,
-#${scopeId} code[class*=language-]::selection,
-#${scopeId} pre[class*=language-] ::selection,
-#${scopeId} pre[class*=language-]::selection {
-  text-shadow: none;
-  background: ${colors.selectionBackground};
-}
-@media print {
-  #${scopeId} code[class*=language-], #${scopeId} pre[class*=language-] {
-    text-shadow: none;
-  }
-}
-#${scopeId} pre[class*=language-] {
-  padding-right: 1em;
-  padding-bottom: 1em;
-  overflow: visible;
-  background: ${colors.background}${colors.borderRadius ? `;\n  border-radius: ${colors.borderRadius}` : ''};
-}
-#${scopeId} pre[class*=language-].line-numbers > code {
-  position: relative;
-  white-space: inherit;
-}
-#${scopeId} .line-numbers-rows {
-  color: ${colors.lineNumberColor};
-}
-`.trim();
-}
+// A variable, because React 18's types don't yet know the href and precedence attributes
+const STYLESHEET_PROPS = { href: STYLESHEET_HREF, precedence: 'default' };
 
 interface TableInputs extends Required<MarkdownTableOptions> {
   inputData: MarkdownTableProps['inputData'];
@@ -142,7 +55,6 @@ export function MarkdownTable({
   minWidth,
   showLineNumbers = true,
 }: MarkdownTableProps) {
-  const scopeId = useId().replace(/:/g, '_');
   // Inline alignment arrays are new on every render, so memoise on their contents.
   // String() rather than join() so a non-array from JavaScript reaches validation instead of throwing here
   const columnAlignmentsKey = String(columnAlignments);
@@ -155,7 +67,6 @@ export function MarkdownTable({
   const deferredTableInputs = useDeferredValue(tableInputs);
 
   const result = useMemo(() => generateTableSyntax(deferredTableInputs), [deferredTableInputs]);
-  const themeCSS = useMemo(() => generateThemeCSS(theme, scopeId), [theme, scopeId]);
 
   // Read the latest callback from a ref so a new inline onGenerate doesn't re-fire it
   const onGenerateRef = useRef(onGenerate);
@@ -168,9 +79,9 @@ export function MarkdownTable({
   }, [result]);
 
   return (
-    <div id={scopeId}>
+    <div className={`rmt ${theme === 'light' ? THEME_CLASSES.light : THEME_CLASSES.dark}`}>
       {/* React 18's server renderer HTML-escapes <style> children, which breaks the CSS and hydration */}
-      <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
+      <style {...STYLESHEET_PROPS} dangerouslySetInnerHTML={{ __html: STYLESHEET }} />
       <LineNumbers
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}

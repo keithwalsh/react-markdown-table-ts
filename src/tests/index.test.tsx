@@ -3,11 +3,12 @@
  * including rendering, props handling, and callback functionality.
  */
 
-import { Component, type ReactNode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { Component, version, type ReactNode } from 'react';
+import { act, render, screen } from '@testing-library/react';
+import { createRoot } from 'react-dom/client';
 import { MarkdownTable, MarkdownTableError } from '../index';
 import * as utils from '../utils';
-import { testData, getPreElement, getCodeElement, getStyleElement, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
+import { testData, getPreElement, getCodeElement, getStyleElement, getCssRule, getWrapperDiv, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
 
 class ErrorBoundary extends Component<{ children: ReactNode; onError: (error: Error) => void }, { hasError: boolean }> {
   state = { hasError: false };
@@ -277,34 +278,78 @@ describe('MarkdownTable', () => {
       expectPreClasses(container, ['dark-theme']);
     });
 
-    it('should inject light theme CSS', () => {
-      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="light" />);
-      
-      const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('code[class*=language-]');
+    it('should mark the wrapper with the light theme class by default', () => {
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} />);
+
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-light');
     });
 
-    it('should inject dark theme CSS', () => {
+    it('should mark the wrapper with the dark theme class', () => {
       const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
-      
-      const styleElement = getStyleElement(container);
-      expect(styleElement?.textContent).toContain('code[class*=language-]');
+
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-dark');
+    });
+
+    it('should define both themes in the stylesheet', () => {
+      render(<MarkdownTable inputData={testData.twoColumn} />);
+
+      const css = getStyleElement()?.textContent;
+      expect(getCssRule(css, '.rmt-light')).toContain('--rmt-background: #f5f2f0;');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-background: #282a36;');
+      expect(css).toContain('.rmt code[class*=language-], .rmt pre[class*=language-] {');
     });
 
     it('should use a dark selection background so selected dark theme text stays readable', () => {
-      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
+      render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
 
-      const css = getStyleElement(container)?.textContent;
-      expect(css).toContain('background: #44475a;');
-      expect(css).not.toContain('#b3d4fc');
+      const css = getStyleElement()?.textContent;
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-selection-background: #44475a;');
+      expect(css).toContain('::selection {\n  text-shadow: none;\n  background: var(--rmt-selection-background);\n}');
     });
 
     it('should colour line numbers for at least 4.5:1 contrast in each theme', () => {
-      const { container: light } = render(<MarkdownTable inputData={testData.twoColumn} theme="light" />);
-      const { container: dark } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
+      render(<MarkdownTable inputData={testData.twoColumn} />);
 
-      expect(getStyleElement(light)?.textContent).toContain('.line-numbers-rows {\n  color: #6e6e6e;\n}');
-      expect(getStyleElement(dark)?.textContent).toContain('.line-numbers-rows {\n  color: #999;\n}');
+      const css = getStyleElement()?.textContent;
+      expect(getCssRule(css, '.rmt-light')).toContain('--rmt-line-number-color: #6e6e6e;');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-line-number-color: #999;');
+      expect(getCssRule(css, '.rmt .line-numbers-rows')).toBe('  color: var(--rmt-line-number-color);\n');
+    });
+  });
+
+  describe('shared stylesheet', () => {
+    it('should style tables rendered under an identifierPrefix containing a dot', async () => {
+      const container = document.body.appendChild(document.createElement('div'));
+      const root = createRoot(container, { identifierPrefix: 'docs.' });
+
+      await act(async () => {
+        root.render(<MarkdownTable inputData={testData.simple} />);
+      });
+
+      // jsdom applies the stylesheet's padding, so this fails if its selectors stop matching
+      expect(getComputedStyle(getPreElement(container)!).paddingRight).toBe('1em');
+      act(() => root.unmount());
+      container.remove();
+    });
+
+    it('should not give the wrapper an id', () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
+
+      expect(getWrapperDiv(container)?.id).toBe('');
+    });
+
+    it('should share one stylesheet between tables', () => {
+      render(
+        <>
+          <MarkdownTable inputData={testData.simple} />
+          <MarkdownTable inputData={testData.simple} theme="dark" />
+        </>
+      );
+
+      const styles = Array.from(document.querySelectorAll('style'), style => style.textContent);
+      // React 19 hoists a single copy into the head; React 18 renders an identical copy per table
+      expect(styles).toHaveLength(version.startsWith('18.') ? 2 : 1);
+      expect(new Set(styles).size).toBe(1);
     });
   });
 
@@ -392,7 +437,7 @@ describe('MarkdownTable', () => {
         <MarkdownTable inputData={testData.simple} preStyle={{ padding: 0 }} />
       );
 
-      expect(getStyleElement(container)?.textContent).not.toContain('!important');
+      expect(getStyleElement()?.textContent).not.toContain('!important');
       expectPreStyle(container, { paddingRight: '0px', paddingBottom: '0px' });
     });
   });

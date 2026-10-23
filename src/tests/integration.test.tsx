@@ -333,29 +333,24 @@ describe('Integration Tests', () => {
       expect(preElement?.style.isolation).toBe('isolate');
     });
 
-    it('should inject theme-specific styles in style tag', () => {
-      const { container } = render(<MarkdownTable inputData={testData.simple} theme="light" />);
+    it('should inject the shared stylesheet', () => {
+      render(<MarkdownTable inputData={testData.simple} theme="light" />);
 
-      const styleTag = getStyleElement(container);
+      const styleTag = getStyleElement();
       expect(styleTag).toBeInTheDocument();
       expect(styleTag?.textContent).toContain('code[class*=language-]');
     });
 
-    it('should update styles when theme changes', () => {
+    it('should switch the theme class when the theme changes', () => {
       const { container, rerender } = render(
         <MarkdownTable inputData={testData.simple} theme="light" />
       );
-
-      let styleTag = getStyleElement(container);
-      const lightStyles = styleTag?.textContent;
+      const css = getStyleElement()?.textContent;
 
       rerender(<MarkdownTable inputData={testData.simple} theme="dark" />);
 
-      styleTag = getStyleElement(container);
-      const darkStyles = styleTag?.textContent;
-
-      // Styles should be different for different themes
-      expect(lightStyles).not.toBe(darkStyles);
+      expect(container.querySelector('.rmt')?.className).toBe('rmt rmt-dark');
+      expect(getStyleElement()?.textContent).toBe(css);
     });
   });
 });

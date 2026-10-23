@@ -44,10 +44,21 @@ export function getLineNumbersSpan(container: HTMLElement): HTMLSpanElement | nu
 }
 
 /**
- * Helper function to get style element from container
+ * Helper function to get the shared stylesheet. React 19 hoists it into the
+ * document head, so search the whole document unless given a detached root.
  */
-export function getStyleElement(container: HTMLElement): HTMLStyleElement | null {
-  return container.querySelector('style');
+export function getStyleElement(root: ParentNode = document): HTMLStyleElement | null {
+  return root.querySelector('style');
+}
+
+/**
+ * Helper to get the declarations of the CSS rule with exactly this selector
+ */
+export function getCssRule(css: string | null | undefined, selector: string): string | undefined {
+  const lines = `\n${css ?? ''}`;
+  const start = lines.indexOf(`\n${selector} {\n`);
+  if (start === -1) return undefined;
+  return lines.slice(start + selector.length + 4, lines.indexOf('}', start));
 }
 
 /**

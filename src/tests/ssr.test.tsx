@@ -27,6 +27,18 @@ describe('server rendering', () => {
     expect(css).toContain('.line-numbers > code');
   });
 
+  it('should keep each theme when separately rendered roots share a page', () => {
+    const page = document.createElement('div');
+    page.innerHTML =
+      renderToString(<MarkdownTable inputData={testData.simple} />) +
+      renderToString(<MarkdownTable inputData={testData.simple} theme="dark" />);
+
+    const [light, dark] = page.querySelectorAll('pre');
+    expect(light.closest('.rmt')?.className).toBe('rmt rmt-light');
+    expect(dark.closest('.rmt')?.className).toBe('rmt rmt-dark');
+    expect(page.querySelector('[id]')).toBeNull();
+  });
+
   it('should hydrate the server HTML without recoverable errors', async () => {
     const element = <MarkdownTable inputData={testData.withHeader} theme="dark" />;
     const container = renderOnServer(element);
