@@ -79,8 +79,11 @@ export function MarkdownTable({
     onGenerateRef.current?.(result.markdown, result.error);
   }, [result]);
 
+  // Anything but 'dark' gets the default light theme, so a stray value from JavaScript can't flip it
+  const themeClass = theme === 'dark' ? THEME_CLASSES.dark : THEME_CLASSES.light;
+
   return (
-    <div className={`rmt ${theme === 'light' ? THEME_CLASSES.light : THEME_CLASSES.dark}`}>
+    <div className={`rmt ${themeClass}`}>
       {/* React 18's server renderer HTML-escapes <style> children, which breaks the CSS and hydration */}
       <style {...STYLESHEET_PROPS} nonce={nonce} dangerouslySetInnerHTML={{ __html: STYLESHEET }} />
       <LineNumbers

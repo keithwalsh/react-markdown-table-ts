@@ -6,7 +6,7 @@
 import { Component, version, type ReactNode } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
-import { MarkdownTable, MarkdownTableError } from '../index';
+import { MarkdownTable, MarkdownTableError, type MarkdownTableProps } from '../index';
 import * as utils from '../utils';
 import { testData, getPreElement, getCodeElement, getStyleElement, getCssRule, getWrapperDiv, hasClass, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
 
@@ -288,6 +288,15 @@ describe('MarkdownTable', () => {
       const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
 
       expect(getWrapperDiv(container)?.className).toBe('rmt rmt-dark');
+    });
+
+    it('should fall back to the light theme for an unknown theme value', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.twoColumn} theme={'Light' as MarkdownTableProps['theme']} />
+      );
+
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-light');
+      expectPreNotToHaveClasses(container, ['dark-theme']);
     });
 
     it('should define both themes in the stylesheet', () => {
