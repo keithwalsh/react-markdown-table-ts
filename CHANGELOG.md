@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-10-23
+
+Tables look the same. The breaking changes are to class names and exported types:
+
+- CSS that targets `language-markdown`, `line-numbers`, `line-numbers-rows` or `dark-theme` needs the new class names below. The README's Custom Styles section lists them all.
+- Code that imports the `InputData` or `TableConfig` types should use `MarkdownTableProps['inputData']` or `CellValue[][]` instead.
+
+### Changed
+
+- The `<pre>`, `<code>` and line numbers elements have the classes `rmt-pre`, `rmt-code` and `rmt-line-numbers` instead of Prism's `language-markdown` and `line-numbers-rows`. With line numbers, the `<pre>` has `rmt-has-line-numbers` instead of `line-numbers`.
+- The bundles are built with Vite 8. With the shorter class names, the ES module is 6% smaller and the CommonJS one 3%.
+
+### Fixed
+
+- A page that loads Prism and runs its highlighter no longer restyles the table or adds a second column of line numbers.
+
+### Removed
+
+- The `dark-theme` class on the `<pre>` element with `theme="dark"`. Target `.rmt-dark .rmt-pre` instead.
+- The `InputData` and `TableConfig` type exports, which no public function accepted.
+
 ## [1.6.1] - 2026-10-23
 
 ### Fixed
@@ -66,7 +87,8 @@ All notable changes to this project are documented here. The format is based on 
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...main
+[2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...main
+[1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...667a2bc
 [1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...4901149
 [1.5.2]: https://github.com/keithwalsh/react-markdown-table-ts/compare/27b3b8f...ff06d3b
 [1.5.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/v1.5.0...27b3b8f
