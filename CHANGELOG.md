@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
+## [1.6.1] - 2026-10-23
+
+### Fixed
+
+- Tabs inside cells become spaces, so rows that contain tabs stay aligned.
+- Zero-width characters, such as U+200B, count as no columns when cells are padded.
+- Line numbers no longer show each number twice on pages that also load Prism's line-numbers plugin CSS.
+
+### Changed
+
+- Line numbers are one text node instead of a `<span>` per line, so a 10,000-row table renders about 3.5 times faster on the server. They look the same, but CSS that targets `.line-numbers-rows > span` no longer matches.
+
+### Removed
+
+- The `data-start` attribute on the `<pre>` element, left over from Prism.
+- The `-o-tab-size` and `-ms-hyphens` CSS prefixes, which no browser that React supports reads.
+
 ## [1.6.0] - 2026-10-23
 
 ### Added
@@ -49,6 +66,7 @@ All notable changes to this project are documented here. The format is based on 
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...main
+[1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...main
+[1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...4901149
 [1.5.2]: https://github.com/keithwalsh/react-markdown-table-ts/compare/27b3b8f...ff06d3b
 [1.5.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/v1.5.0...27b3b8f
