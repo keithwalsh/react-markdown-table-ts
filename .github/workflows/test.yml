@@ -50,6 +50,10 @@ jobs:
     - name: Render built bundles
       run: npm run test:bundle
 
+    - name: Check package shape
+      if: matrix.react == '18'
+      run: npm run check:package
+
     - name: Upload coverage to Codecov
       if: matrix.react == '18'
       uses: codecov/codecov-action@v4
