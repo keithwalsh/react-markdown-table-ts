@@ -50,7 +50,7 @@ describe('LineNumbers', () => {
       );
       
       const code = container.querySelector('code');
-      expect(code).toBeInTheDocument();
+      expect(code?.textContent).toBe('123');
     });
   });
 
@@ -351,8 +351,7 @@ describe('LineNumbers', () => {
       
       const pre = container.querySelector('pre') as HTMLPreElement;
       
-      expect(pre?.className).toContain('rmt-has-line-numbers');
-      expect(pre?.className).toContain('custom-code');
+      expect(pre?.className).toBe('rmt-pre rmt-has-line-numbers custom-code');
       expect(pre?.style.backgroundColor).toBe('blue');
       expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
     });
@@ -371,12 +370,12 @@ describe('LineNumbers', () => {
       );
       
       let pre = container.querySelector('pre');
-      expect(pre?.className).not.toContain('rmt-has-line-numbers');
+      expect(pre?.className).toBe('rmt-pre');
       
       rerender(<LineNumbers showLineNumbers={true}>line1</LineNumbers>);
       
       pre = container.querySelector('pre');
-      expect(pre?.className).toContain('rmt-has-line-numbers');
+      expect(pre?.className).toBe('rmt-pre rmt-has-line-numbers');
     });
 
     it('should update line numbers when code changes', () => {
