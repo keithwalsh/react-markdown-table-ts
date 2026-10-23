@@ -67,9 +67,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('| Name | Age |');
-      expect(result).toContain('| John | 30  |');
-      expect(result).toContain('| Jane | 25  |');
+      expect(result).toBe(
+        '| Name | Age |\n' +
+        '| ---- | --- |\n' +
+        '| John | 30  |\n' +
+        '| Jane | 25  |'
+      );
     });
 
     it('should generate table with single row', () => {
@@ -80,12 +83,11 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('| A');
-      expect(result).toContain('| B');
-      expect(result).toContain('| C');
-      expect(result).toContain('| 1');
-      expect(result).toContain('| 2');
-      expect(result).toContain('| 3');
+      expect(result).toBe(
+        '| A   | B   | C   |\n' +
+        '| --- | --- | --- |\n' +
+        '| 1   | 2   | 3   |'
+      );
     });
 
     it('should generate table with single column', () => {
@@ -96,9 +98,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('| Header |');
-      expect(result).toContain('| Value1 |');
-      expect(result).toContain('| Value2 |');
+      expect(result).toBe(
+        '| Header |\n' +
+        '| ------ |\n' +
+        '| Value1 |\n' +
+        '| Value2 |'
+      );
     });
 
     it('should handle empty body', () => {
@@ -109,9 +114,8 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('| A');
-      expect(result).toContain('| B');
-      expect(result.split('\n')).toHaveLength(2); // Header and alignment row only
+      // Header and alignment row only
+      expect(result).toBe('| A   | B   |\n| --- | --- |');
     });
 
     it('should handle empty cells', () => {
@@ -122,10 +126,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('Value');
-      const lines = result.split('\n');
-      expect(lines[2]).toMatch(/\|\s+\|\s+Value\s+\|/);
-      expect(lines[3]).toMatch(/\|\s+Value\s+\|\s+\|/);
+      expect(result).toBe(
+        '| Col1  | Col2  |\n' +
+        '| ----- | ----- |\n' +
+        '|       | Value |\n' +
+        '| Value |       |'
+      );
     });
   });
 
@@ -139,54 +145,62 @@ describe('generateMarkdownTableString', () => {
       const alignments: Alignment[] = ['left'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/:-+/);
+      expect(result).toBe(
+        '| Left | Center | Right | None |\n' +
+        '| :--- | ------ | ----- | ---- |\n' +
+        '| A    | B      | C     | D    |'
+      );
     });
 
     it('should apply center alignment', () => {
       const alignments: Alignment[] = ['none', 'center'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/:-+:/);
+      expect(result).toBe(
+        '| Left | Center | Right | None |\n' +
+        '| ---- | :----: | ----- | ---- |\n' +
+        '| A    |   B    | C     | D    |'
+      );
     });
 
     it('should apply right alignment', () => {
       const alignments: Alignment[] = ['none', 'none', 'right'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      expect(result).toMatch(/-+:/);
+      expect(result).toBe(
+        '| Left | Center | Right | None |\n' +
+        '| ---- | ------ | ----: | ---- |\n' +
+        '| A    | B      |     C | D    |'
+      );
     });
 
     it('should apply none alignment (no colons)', () => {
       const alignments: Alignment[] = ['none'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      const lines = result.split('\n');
-      const alignmentRow = lines[1];
-      expect(alignmentRow).toMatch(/^\| ---- \|/);
+      expect(result).toBe(
+        '| Left | Center | Right | None |\n' +
+        '| ---- | ------ | ----- | ---- |\n' +
+        '| A    | B      | C     | D    |'
+      );
     });
 
     it('should handle mixed alignments', () => {
       const alignments: Alignment[] = ['left', 'center', 'right', 'none'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      const lines = result.split('\n');
-      const alignmentRow = lines[1];
-      
-      expect(alignmentRow).toMatch(/:-+/);   // left
-      expect(alignmentRow).toMatch(/:-+:/);  // center
-      expect(alignmentRow).toMatch(/-+:/);   // right
-      expect(alignmentRow).toMatch(/-+/);    // none (dashes without colons)
+      expect(result).toBe(
+        '| Left | Center | Right | None |\n' +
+        '| :--- | :----: | ----: | ---- |\n' +
+        '| A    |   B    |     C | D    |'
+      );
     });
 
     it('should default to none alignment for unspecified columns', () => {
       const alignments: Alignment[] = ['left'];
       const result = generateMarkdownTableString(inputData, alignments);
       
-      const lines = result.split('\n');
-      const alignmentRow = lines[1];
-      
-      expect(alignmentRow).toMatch(/:-+/); // First column left
-      expect(alignmentRow).toMatch(/-+/); // Others have dashes
+      expect(result.split('\n')[1]).toBe('| :--- | ------ | ----- | ---- |');
     });
   });
 
@@ -199,13 +213,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true);
       
-      const lines = result.split('\n');
-      expect(lines[0]).toContain('Short');
-      expect(lines[0]).toContain('VeryLongHeader');
-      
-      // Check that columns are adjusted
-      expect(lines[2]).toContain('A');
-      expect(lines[3]).toContain('CCCCC');
+      expect(result).toBe(
+        '| Short | VeryLongHeader |\n' +
+        '| ----- | -------------- |\n' +
+        '| A     | B              |\n' +
+        '| CCCCC | D              |'
+      );
     });
 
     it('should not adjust column widths when disabled', () => {
@@ -216,9 +229,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], false);
       
-      // When not adjusting, widths should match content exactly
-      expect(result).toContain('| H1 |');
-      expect(result).toContain('| Short |');
+      // When not adjusting, each cell keeps its own width
+      expect(result).toBe(
+        '| H1 | H2 |\n' +
+        '| --- | --- |\n' +
+        '| Short | VeryLongValue |'
+      );
     });
 
     it('should handle varying row lengths', () => {
@@ -233,14 +249,14 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true);
       
-      // Should pad all rows to match max column count (4)
-      const lines = result.split('\n');
-      lines.forEach(line => {
-        if (line.trim()) {
-          const columns = line.split('|').filter(col => col !== '');
-          expect(columns.length).toBe(4);
-        }
-      });
+      // Every row is padded to the widest row's four columns
+      expect(result).toBe(
+        '| A   | B   | C   |     |\n' +
+        '| --- | --- | --- | --- |\n' +
+        '| 1   | 2   |     |     |\n' +
+        '| 3   | 4   | 5   | 6   |\n' +
+        '| 7   |     |     |     |'
+      );
     });
   });
 
@@ -253,7 +269,7 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true, true);
       
-      expect(result).toContain('\t');
+      expect(result).toBe('|\tA  \t|\tB  \t|\n|\t---\t|\t---\t|\n|\t1  \t|\t2  \t|');
     });
 
     it('should not add tabs when disabled', () => {
@@ -264,7 +280,7 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true, false);
       
-      expect(result).not.toContain('\t');
+      expect(result).toBe('| A   | B   |\n| --- | --- |\n| 1   | 2   |');
     });
   });
 
@@ -277,8 +293,11 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true, false, true);
       
-      expect(result).toContain('Line1<br>Line2<br>Line3');
-      expect(result).not.toMatch(/Line1\nLine2/);
+      expect(result).toBe(
+        '| Header                  |\n' +
+        '| ----------------------- |\n' +
+        '| Line1<br>Line2<br>Line3 |'
+      );
     });
 
     it('should replace newlines with spaces when disabled so the row stays intact', () => {
@@ -315,8 +334,16 @@ describe('generateMarkdownTableString', () => {
         inputDataBody: [['A\r\nB\rC']],
       };
 
-      expect(generateMarkdownTableString(inputData, [], true, false, true)).toContain('A<br>B<br>C');
-      expect(generateMarkdownTableString(inputData, [], true, false, false)).toContain('A B C');
+      expect(generateMarkdownTableString(inputData, [], true, false, true)).toBe(
+        '| H           |\n' +
+        '| ----------- |\n' +
+        '| A<br>B<br>C |'
+      );
+      expect(generateMarkdownTableString(inputData, [], true, false, false)).toBe(
+        '| H     |\n' +
+        '| ----- |\n' +
+        '| A B C |'
+      );
     });
 
     it('should handle multiple consecutive newlines', () => {
@@ -326,8 +353,12 @@ describe('generateMarkdownTableString', () => {
       };
 
       const result = generateMarkdownTableString(inputData, [], true, false, true);
-      
-      expect(result).toContain('A<br><br><br>B');
+
+      expect(result).toBe(
+        '| H              |\n' +
+        '| -------------- |\n' +
+        '| A<br><br><br>B |'
+      );
     });
   });
 
@@ -356,8 +387,7 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], false, false, false, true);
       
-      expect(result).toContain('| A | B |');
-      expect(result).toContain('| 1 | 2 |');
+      expect(result).toBe('| A | B |\n| --- | --- |\n| 1 | 2 |');
     });
 
     it('should not add padding when disabled', () => {
@@ -368,8 +398,7 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], false, false, false, false);
       
-      expect(result).toContain('|A|B|');
-      expect(result).toContain('|1|2|');
+      expect(result).toBe('|A|B|\n|---|---|\n|1|2|');
     });
   });
 
@@ -382,10 +411,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('日本語');
-      expect(result).toContain('한국어');
-      expect(result).toContain('こんにちは');
-      expect(result).toContain('안녕하세요');
+      // Each of these characters takes two columns
+      expect(result).toBe(
+        '| 日本語     | 한국어     |\n' +
+        '| ---------- | ---------- |\n' +
+        '| こんにちは | 안녕하세요 |'
+      );
     });
 
     it('should handle special markdown characters', () => {
@@ -396,10 +427,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toContain('`code`');
-      expect(result).toContain('**bold**');
-      expect(result).toContain('*italic*');
-      expect(result).toContain('[link]');
+      expect(result).toBe(
+        '| Code     | Symbol   |\n' +
+        '| -------- | -------- |\n' +
+        '| `code`   | **bold** |\n' +
+        '| *italic* | [link]   |'
+      );
     });
 
     it('should handle very long content', () => {
@@ -411,7 +444,11 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true);
       
-      expect(result).toContain(longString);
+      expect(result).toBe(
+        `| Header${' '.repeat(994)} |\n` +
+        `| ${'-'.repeat(1000)} |\n` +
+        `| ${longString} |`
+      );
     });
 
     it('should handle more rows than fit in a single function call', () => {
@@ -444,9 +481,12 @@ describe('generateMarkdownTableString', () => {
         true
       );
 
-      expect(result).toContain('\t');
-      expect(result).toContain(':');
-      expect(result.split('\n')).toHaveLength(4); // Header, alignment, 2 rows
+      expect(result).toBe(
+        '|\tName \t|\tDescription\t|\n' +
+        '|\t:----\t|\t:---------:\t|\n' +
+        '|\tItem1\t|\t   Short   \t|\n' +
+        '|\tItem2\t|\t  Simple   \t|'
+      );
     });
 
     it('should handle empty header and body with different lengths', () => {
@@ -457,12 +497,8 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true);
       
-      const lines = result.split('\n');
-      const headerCols = lines[0].split('|').filter(col => col !== '').length;
-      const bodyCols = lines[2].split('|').filter(col => col !== '').length;
-      
-      expect(headerCols).toBe(bodyCols);
-      expect(headerCols).toBe(3); // Should match body's column count
+      // The header gets empty cells to match the body's three columns
+      expect(result).toBe('| A   |     |     |\n| --- | --- | --- |\n| 1   | 2   | 3   |');
     });
 
     it('should trim trailing whitespace at end of output', () => {
@@ -473,8 +509,7 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, []);
       
-      expect(result).toBe(result.trimEnd());
-      expect(result).not.toMatch(/\n$/);
+      expect(result).toBe('| A   |\n| --- |\n| 1   |');
     });
 
     it('should handle minimum width columns', () => {
@@ -485,11 +520,8 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, [], true);
       
-      const lines = result.split('\n');
-      const alignmentRow = lines[1];
-      
-      // Should have at least minimum width of 3 for alignment indicators
-      expect(alignmentRow).toMatch(/\|\s*---\s*\|/);
+      // Columns are at least three wide, the shortest alignment row a parser accepts
+      expect(result).toBe('| A   |\n| --- |\n|     |');
     });
   });
 
@@ -502,10 +534,13 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, ['right'], true);
       
-      const lines = result.split('\n');
-      // In right alignment, shorter content should be padded on the left
-      expect(lines[2]).toMatch(/\|\s+1\s+\|/);
-      expect(lines[3]).toMatch(/\|\s+100\s+\|/);
+      // In right alignment, shorter content is padded on the left
+      expect(result).toBe(
+        '| Number |\n' +
+        '| -----: |\n' +
+        '|      1 |\n' +
+        '|    100 |'
+      );
     });
 
     it('should center-align content correctly', () => {
@@ -516,9 +551,12 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, ['center'], true);
       
-      // Should have roughly equal padding on both sides
-      const lines = result.split('\n');
-      expect(lines[0]).toMatch(/\|\s+Centered\s+\|/);
+      // The odd space of padding goes on the right
+      expect(result).toBe(
+        '| Centered |\n' +
+        '| :------: |\n' +
+        '|   ABC    |'
+      );
     });
 
     it('should left-align content correctly', () => {
@@ -529,10 +567,13 @@ describe('generateMarkdownTableString', () => {
 
       const result = generateMarkdownTableString(inputData, ['left'], true);
       
-      const lines = result.split('\n');
-      // In left alignment, shorter content should be padded on the right
-      expect(lines[2]).toMatch(/\|\s+Hi\s+\|/);
-      expect(lines[3]).toMatch(/\|\s+Hello\s+\|/);
+      // In left alignment, shorter content is padded on the right
+      expect(result).toBe(
+        '| Text  |\n' +
+        '| :---- |\n' +
+        '| Hi    |\n' +
+        '| Hello |'
+      );
     });
   });
 
@@ -556,7 +597,7 @@ describe('generateMarkdownTableString', () => {
         inputDataBody: [['1']],
       };
 
-      expect(generateMarkdownTableString(inputData, [])).toContain('| A\\|B |');
+      expect(generateMarkdownTableString(inputData, [])).toBe('| A\\|B |\n| ---- |\n| 1    |');
     });
 
     it('should leave already-escaped pipes unchanged', () => {
@@ -565,10 +606,11 @@ describe('generateMarkdownTableString', () => {
         inputDataBody: [['a \\| b']],
       };
 
-      const result = generateMarkdownTableString(inputData, []);
-
-      expect(result).toContain('| a \\| b |');
-      expect(result).not.toContain('\\\\|');
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| H      |\n' +
+        '| ------ |\n' +
+        '| a \\| b |'
+      );
     });
 
     it('should escape a pipe that follows an escaped backslash', () => {
