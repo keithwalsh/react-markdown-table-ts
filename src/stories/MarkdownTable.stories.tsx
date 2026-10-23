@@ -30,11 +30,12 @@ const meta = {
       control: {
         type: 'object'
       },
-      description: 'The outer array represents rows. The inner array represent cells within each row.',
+      description: 'The outer array represents rows. The inner array represents cells within each row. Cells can be strings, numbers, booleans, null or undefined. null renders an empty table.',
       table: {
         category: 'Core Data Props',
         type: {
-          summary: 'string[][] | null'
+          summary: 'readonly (readonly CellValue[])[] | null',
+          detail: 'export type CellValue = string | number | boolean | null | undefined;'
         }
       }
     },
@@ -73,7 +74,7 @@ const meta = {
     },
     hasTabs: {
       control: 'boolean',
-      description: 'Optional flag to add tabs as additional padding between column pipes.',
+      description: 'Optional flag to put a tab on each side of the cell content, in place of the padding space.',
       table: {
         category: 'Configuration Props',
         type: {
@@ -105,7 +106,7 @@ const meta = {
       control: {
         type: 'number'
       },
-      description: 'Controls the padding-top (in pixels) of the pre element display.',
+      description: 'Space in pixels above the first line of the table.',
       table: {
         category: 'Visual/UI Props',
         type: {
@@ -114,13 +115,13 @@ const meta = {
       }
     },
     theme: {
-      options: ['light', 'dark'],
+      options: ['light', 'dark', 'auto'],
       control: { type: 'select' },
-      description: 'Switch between light and dark mode.',
+      description: "Light or dark colours, or auto to follow the reader's colour scheme.",
       table: {
         category: 'Visual/UI Props',
         type: {
-          summary: "'light' | 'dark'"
+          summary: "'light' | 'dark' | 'auto'"
         },
         defaultValue: { summary: 'light' }
       }
@@ -151,7 +152,7 @@ const meta = {
       control: {
         type: 'number'
       },
-      description: 'Optional minimum width in pixels for the table container.',
+      description: 'Optional minimum width in pixels for the pre element.',
       table: {
         category: 'Visual/UI Props',
         type: {
@@ -170,8 +171,18 @@ const meta = {
         defaultValue: { summary: 'true' }
       }
     },
+    nonce: {
+      control: 'text',
+      description: "Optional nonce for the component's style tag, for pages whose Content-Security-Policy blocks inline styles.",
+      table: {
+        category: 'Visual/UI Props',
+        type: {
+          summary: 'string'
+        }
+      }
+    },
     onGenerate: {
-      description: 'Callback that receives the generated Markdown table string, plus a MarkdownTableError when inputData is invalid.',
+      description: 'Callback that receives the generated Markdown table string, plus a MarkdownTableError when inputData is invalid. Receives an empty string when inputData is null.',
       table: {
         category: 'Callbacks',
         type: {
@@ -209,4 +220,17 @@ export const Default: Story = {
     preStyle: {borderRadius: '8px'},
     minWidth: 450
   }
+}
+
+export const NarrowContainer: Story = {
+  args: {
+    inputData: sampleData
+  },
+  decorators: [
+    Story => (
+      <div style={{ width: 320 }}>
+        <Story />
+      </div>
+    )
+  ]
 }
