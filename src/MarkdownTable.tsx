@@ -181,6 +181,7 @@ export function MarkdownTable({
   // Defer all inputs together so a render never pairs old data with new options
   const tableInputs = useMemo(
     () => ({ inputData, hasHeader, columnAlignments, isCompact, hasTabs, convertLineBreaks, hasPadding }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- columnAlignmentsKey stands in for columnAlignments
     [inputData, hasHeader, columnAlignmentsKey, isCompact, hasTabs, convertLineBreaks, hasPadding]
   );
   const deferredTableInputs = useDeferredValue(tableInputs);

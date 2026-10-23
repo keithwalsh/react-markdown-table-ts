@@ -658,6 +658,7 @@ describe('generateMarkdownTableString', () => {
 
       try {
         jest.isolateModules(() => {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports -- isolateModules needs a synchronous fresh load
           const { generateMarkdownTableString: generate } = require('../utils') as typeof import('../utils');
           const inputData: InputData = {
             inputDataHeader: ['Name'],
