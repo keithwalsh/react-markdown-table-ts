@@ -271,18 +271,6 @@ describe('MarkdownTable', () => {
   });
 
   describe('theme prop', () => {
-    it('should apply light theme by default', () => {
-      const { container } = render(<MarkdownTable inputData={testData.twoColumn} />);
-      
-      expectPreNotToHaveClasses(container, ['dark-theme']);
-    });
-
-    it('should apply dark theme when specified', () => {
-      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
-      
-      expectPreClasses(container, ['dark-theme']);
-    });
-
     it('should mark the wrapper with the light theme class by default', () => {
       const { container } = render(<MarkdownTable inputData={testData.twoColumn} />);
 
@@ -295,20 +283,24 @@ describe('MarkdownTable', () => {
       expect(getWrapperDiv(container)?.className).toBe('rmt rmt-dark');
     });
 
+    it('should leave the theme off the pre element', () => {
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
+
+      expect(getPreElement(container)?.className).toBe('rmt-pre rmt-has-line-numbers');
+    });
+
     it('should fall back to the light theme for an unknown theme value', () => {
       const { container } = render(
         <MarkdownTable inputData={testData.twoColumn} theme={'Light' as MarkdownTableProps['theme']} />
       );
 
       expect(getWrapperDiv(container)?.className).toBe('rmt rmt-light');
-      expectPreNotToHaveClasses(container, ['dark-theme']);
     });
 
     it('should mark the wrapper with the auto theme class', () => {
       const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="auto" />);
 
       expect(getWrapperDiv(container)?.className).toBe('rmt rmt-auto');
-      expectPreNotToHaveClasses(container, ['dark-theme']);
     });
 
     it('should define each theme in the stylesheet', () => {

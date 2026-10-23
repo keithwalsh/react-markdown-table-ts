@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable, MarkdownTableError } from '../index';
-import { testData, getStyleElement, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectUniformColumnCount } from './test-utils';
+import { testData, getStyleElement, getWrapperDiv, expectCodeToContainAll, expectUniformColumnCount } from './test-utils';
 
 describe('Integration Tests', () => {
   describe('complete data flow', () => {
@@ -168,15 +168,15 @@ describe('Integration Tests', () => {
         <MarkdownTable inputData={testData.simple} theme="light" />
       );
 
-      expectPreNotToHaveClasses(container, ['dark-theme']);
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-light');
 
       rerender(<MarkdownTable inputData={testData.simple} theme="dark" />);
 
-      expectPreClasses(container, ['dark-theme']);
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-dark');
 
       rerender(<MarkdownTable inputData={testData.simple} theme="light" />);
 
-      expectPreNotToHaveClasses(container, ['dark-theme']);
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-light');
     });
   });
 

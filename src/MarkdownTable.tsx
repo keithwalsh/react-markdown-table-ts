@@ -95,7 +95,7 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
         {...preAttributes}
         preRef={ref}
         showLineNumbers={showLineNumbers}
-        className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
+        className={className}
         topPadding={topPadding}
         style={{
           ...(minWidth !== undefined ? { minWidth: `${minWidth}px` } : {}),
