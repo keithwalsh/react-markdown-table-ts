@@ -184,6 +184,7 @@ const markdown = generateMarkdownTable(
 3. **Cell Content**:
 - Pipes (`|`) are escaped as `\|`; already-escaped pipes are left unchanged
 - A trailing backslash is doubled so it cannot escape the closing pipe
+- Tabs become spaces, since a tab's width depends on where it starts
 - Non-string values are converted with `String()`; `null` and `undefined` become empty cells
 
 4. **Error Handling**:

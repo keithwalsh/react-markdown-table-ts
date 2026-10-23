@@ -330,6 +330,22 @@ describe('generateMarkdownTableString', () => {
     });
   });
 
+  describe('tabs in cells', () => {
+    it('should convert tabs to spaces so the columns stay aligned', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Key', 'Value'],
+        inputDataBody: [['a\tb', 'one\t\ttwo'], ['abc', 'x']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| Key | Value    |\n' +
+        '| --- | -------- |\n' +
+        '| a b | one  two |\n' +
+        '| abc | x        |'
+      );
+    });
+  });
+
   describe('padding option', () => {
     it('should add padding when enabled', () => {
       const inputData: InputData = {

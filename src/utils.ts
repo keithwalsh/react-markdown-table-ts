@@ -17,6 +17,7 @@ interface RawTableData {
 const PIPE_PATTERN = /(\\*)\|/g;
 const TRAILING_BACKSLASHES_PATTERN = /\\+$/;
 const LINE_BREAK_PATTERN = /\r\n|\r|\n/g;
+const TAB_PATTERN = /\t/g;
 const PRINTABLE_ASCII_PATTERN = /^[\x20-\x7e]*$/;
 
 /**
@@ -75,7 +76,7 @@ const isOdd = (backslashes: string) => backslashes.length % 2 === 1;
  * Converts a cell to a single-line string that cannot break the table: pipes
  * are escaped unless an odd number of backslashes already escapes them, a
  * trailing unescaped backslash is doubled so it cannot escape the closing pipe,
- * and line breaks become `<br>` tags or spaces.
+ * tabs become spaces, and line breaks become `<br>` tags or spaces.
  */
 function normaliseCell(cell: unknown, replaceNewlines: boolean): string {
   let text = cell == null ? '' : String(cell);
@@ -85,6 +86,10 @@ function normaliseCell(cell: unknown, replaceNewlines: boolean): string {
   }
   if (text.endsWith('\\')) {
     text = text.replace(TRAILING_BACKSLASHES_PATTERN, backslashes => (isOdd(backslashes) ? `${backslashes}\\` : backslashes));
+  }
+  if (text.includes('\t')) {
+    // A tab's width depends on the column it starts in, so it can't be padded for; HTML shows it as a space anyway
+    text = text.replace(TAB_PATTERN, ' ');
   }
   return text.replace(LINE_BREAK_PATTERN, replaceNewlines ? '<br>' : ' ');
 }
