@@ -179,7 +179,7 @@ const markdown = generateMarkdownTable(
 - Default: Adjusts columns to fit content with 'none' alignment
 - `isCompact={true}`: Minimizes column widths
 - Maintains minimum width of 3 characters for alignment indicators
-- Measures display width, so CJK characters and emoji count as two columns
+- Measures display width, so CJK characters and emoji count as two columns, and zero-width characters such as U+200B as none
 
 3. **Cell Content**:
 - Pipes (`|`) are escaped as `\|`; already-escaped pipes are left unchanged

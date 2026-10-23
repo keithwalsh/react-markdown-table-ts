@@ -38,11 +38,22 @@ const WIDE_CHARS_PATTERN = new RegExp(WIDE_CHAR_PATTERN.source, 'gu');
 const CLUSTER_JOINING_PATTERN =
   /[\p{M}\p{Grapheme_Extend}\p{Cf}\p{Emoji_Modifier}\p{Regional_Indicator}\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FF\u0D4E\u0E33\u0EB3\u{111C2}\u{111C3}\u{1193F}\u{11941}\u{11A3A}\u{11A84}-\u{11A89}\u{11D46}\u{11F02}]/u;
 
+/** Format characters, such as U+200B ZERO WIDTH SPACE, that form a cluster on their own and take no space */
+const ZERO_WIDTH_CLUSTER_PATTERN = /^\p{Cf}+$/u;
+
 const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter() : undefined;
+
+function getClusterWidth(cluster: string): number {
+  if (ZERO_WIDTH_CLUSTER_PATTERN.test(cluster)) {
+    return 0;
+  }
+  return WIDE_CHAR_PATTERN.test(cluster) ? 2 : 1;
+}
 
 /**
  * Returns the number of monospace columns the text occupies, counting each
- * grapheme cluster as one column, or two if it is a wide character.
+ * grapheme cluster as one column, two if it is a wide character, or none if
+ * it is a zero-width format character.
  */
 function getDisplayWidth(text: string): number {
   if (PRINTABLE_ASCII_PATTERN.test(text)) {
@@ -55,7 +66,7 @@ function getDisplayWidth(text: string): number {
   const clusters = graphemeSegmenter
     ? Array.from(graphemeSegmenter.segment(text), ({ segment }) => segment)
     : Array.from(text);
-  return clusters.reduce((width, cluster) => width + (WIDE_CHAR_PATTERN.test(cluster) ? 2 : 1), 0);
+  return clusters.reduce((width, cluster) => width + getClusterWidth(cluster), 0);
 }
 
 const isOdd = (backslashes: string) => backslashes.length % 2 === 1;

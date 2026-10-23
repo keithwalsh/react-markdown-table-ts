@@ -640,6 +640,22 @@ describe('generateMarkdownTableString', () => {
       );
     });
 
+    it('should count zero-width format characters as no columns', () => {
+      const inputData: InputData = {
+        inputDataHeader: ['Name'],
+        // Zero width space, then soft hyphen, word joiner and byte order mark
+        inputDataBody: [['ab\u200Bcd'], ['x\u00ADy\u2060z\uFEFF'], ['abcde']],
+      };
+
+      expect(generateMarkdownTableString(inputData, [])).toBe(
+        '| Name  |\n' +
+        '| ----- |\n' +
+        '| ab\u200Bcd  |\n' +
+        '| x\u00ADy\u2060z\uFEFF   |\n' +
+        '| abcde |'
+      );
+    });
+
     it('should pad wide characters correctly for right and center alignment', () => {
       const inputData: InputData = {
         inputDataHeader: ['Right', 'Center'],
