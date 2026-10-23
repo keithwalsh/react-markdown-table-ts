@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable, MarkdownTableError } from '../index';
-import { testData, getStyleElement, getWrapperDiv, expectCodeToContainAll, expectUniformColumnCount } from './test-utils';
+import { testData, getStyleElement, getWrapperDiv } from './test-utils';
 
 describe('Integration Tests', () => {
   describe('complete data flow', () => {
@@ -31,24 +31,14 @@ describe('Integration Tests', () => {
 
       expect(onGenerate).toHaveBeenCalledTimes(1);
       
-      const generatedMarkdown = onGenerate.mock.calls[0][0];
-      
-      // Verify structure
-      const lines = generatedMarkdown.split('\n');
-      expect(lines.length).toBe(5); // Header + alignment + 3 data rows
-      
-      // Verify header
-      expect(lines[0]).toContain('Product');
-      expect(lines[0]).toContain('Price');
-      expect(lines[0]).toContain('Quantity');
-      
-      // Verify alignment row
-      expect(lines[1]).toContain(':'); // Has alignment indicators
-      
-      // Verify data rows
-      expect(lines[2]).toContain('Apple');
-      expect(lines[3]).toContain('Banana');
-      expect(lines[4]).toContain('Orange');
+      expect(onGenerate).toHaveBeenCalledWith(
+        '| Product | Price | Quantity |\n' +
+        '| :------ | ----: | :------: |\n' +
+        '| Apple   | $1.50 |    10    |\n' +
+        '| Banana  | $0.75 |    15    |\n' +
+        '| Orange  | $2.00 |    8     |',
+        null
+      );
     });
 
     it('should handle real-world scenario with mixed content', () => {
@@ -59,7 +49,7 @@ describe('Integration Tests', () => {
         ['Testing', '✗', 'Not started'],
       ];
 
-      const { container } = render(
+      render(
         <MarkdownTable
           inputData={inputData}
           columnAlignments={['left', 'center', 'left']}
@@ -67,7 +57,13 @@ describe('Integration Tests', () => {
         />
       );
 
-      expectCodeToContainAll(container, 'Authentication', '✓', 'OAuth', '⚠', '✗');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Feature         | Status | Notes               |\n' +
+        '| :-------------- | :----: | :------------------ |\n' +
+        '| Authentication  |   ✓    | Complete with OAuth |\n' +
+        '| API Integration |   ⚠    | In progress         |\n' +
+        '| Testing         |   ✗    | Not started         |'
+      );
     });
   });
 
@@ -80,19 +76,18 @@ describe('Integration Tests', () => {
       );
 
       // Verify error is displayed
-      let codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).toContain('Error:');
-      expect(onGenerate).toHaveBeenCalledWith(expect.stringContaining('Error:'), expect.any(MarkdownTableError));
+      const error = "Error: The 'inputData' array must contain at least one row.";
+      expect(screen.getByRole('code').textContent).toBe(error);
+      expect(onGenerate).toHaveBeenCalledWith(error, expect.any(MarkdownTableError));
 
       // Now provide valid data
       const validData = [['A'], ['1']];
       rerender(<MarkdownTable inputData={validData} onGenerate={onGenerate} />);
 
       // Should recover and display valid data
-      codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).not.toContain('Error:');
-      expect(codeElement.textContent).toContain('A');
-      expect(onGenerate).toHaveBeenLastCalledWith(expect.not.stringContaining('Error:'), null);
+      const table = '| A   |\n| --- |\n| 1   |';
+      expect(screen.getByRole('code').textContent).toBe(table);
+      expect(onGenerate).toHaveBeenLastCalledWith(table, null);
     });
   });
 
@@ -115,15 +110,13 @@ describe('Integration Tests', () => {
         <MarkdownTable inputData={initialData} onGenerate={onGenerate} />
       );
 
-      let codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).toContain('Alice');
-      expect(codeElement.textContent).not.toContain('Bob');
+      expect(screen.getByRole('code').textContent).toBe('| Name  | Age |\n| ----- | --- |\n| Alice | 25  |');
 
       rerender(<MarkdownTable inputData={updatedData} onGenerate={onGenerate} />);
 
-      codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).toContain('Alice');
-      expect(codeElement.textContent).toContain('Bob');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Name  | Age |\n| ----- | --- |\n| Alice | 25  |\n| Bob   | 30  |'
+      );
       expect(onGenerate).toHaveBeenCalledTimes(2);
     });
 
@@ -134,15 +127,11 @@ describe('Integration Tests', () => {
         <MarkdownTable inputData={data} columnAlignments={['left']} />
       );
 
-      let codeElement = screen.getByRole('code');
-      let content = codeElement.textContent || '';
-      expect(content).toMatch(/:-+/);
+      expect(screen.getByRole('code').textContent).toBe('| A   | B   |\n| :-- | --- |\n| 1   | 2   |');
 
       rerender(<MarkdownTable inputData={data} columnAlignments={['right']} />);
 
-      codeElement = screen.getByRole('code');
-      content = codeElement.textContent || '';
-      expect(content).toMatch(/-+:/);
+      expect(screen.getByRole('code').textContent).toBe('|   A | B   |\n| --: | --- |\n|   1 | 2   |');
     });
 
     it('should update when formatting options change', () => {
@@ -152,13 +141,15 @@ describe('Integration Tests', () => {
         <MarkdownTable inputData={data} convertLineBreaks={false} />
       );
 
-      let codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).not.toContain('<br>');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Header        |\n| ------------- |\n| Value1 Value2 |'
+      );
 
       rerender(<MarkdownTable inputData={data} convertLineBreaks={true} />);
 
-      codeElement = screen.getByRole('code');
-      expect(codeElement.textContent).toContain('<br>');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Header           |\n| ---------------- |\n| Value1<br>Value2 |'
+      );
     });
   });
 
@@ -190,9 +181,16 @@ describe('Integration Tests', () => {
         ['7', '8', '9', '10'],
       ];
 
-      const { container } = render(<MarkdownTable inputData={inputData} />);
+      render(<MarkdownTable inputData={inputData} />);
 
-      expectUniformColumnCount(container);
+      expect(screen.getByRole('code').textContent).toBe(
+        '| A   | B   | C   | D   |\n' +
+        '| --- | --- | --- | --- |\n' +
+        '| 1   |     |     |     |\n' +
+        '| 2   | 3   |     |     |\n' +
+        '| 4   | 5   | 6   |     |\n' +
+        '| 7   | 8   | 9   | 10  |'
+      );
     });
 
     it('should handle markdown syntax in cell content', () => {
@@ -204,9 +202,16 @@ describe('Integration Tests', () => {
         ['Link', '[link](url)'],
       ];
 
-      const { container } = render(<MarkdownTable inputData={inputData} />);
+      render(<MarkdownTable inputData={inputData} />);
 
-      expectCodeToContainAll(container, '**text**', '*text*', '`code`', '[link](url)');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Type   | Example     |\n' +
+        '| ------ | ----------- |\n' +
+        '| Bold   | **text**    |\n' +
+        '| Italic | *text*      |\n' +
+        '| Code   | `code`      |\n' +
+        '| Link   | [link](url) |'
+      );
     });
 
     it('should handle multiline content with line break conversion', () => {
@@ -218,10 +223,12 @@ describe('Integration Tests', () => {
 
       render(<MarkdownTable inputData={inputData} convertLineBreaks={true} />);
 
-      const codeElement = screen.getByRole('code');
-      
-      expect(codeElement.textContent).toContain('123 Main St<br>Apt 4B<br>New York, NY 10001');
-      expect(codeElement.textContent).toContain('Single line address');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Name       | Address                                     |\n' +
+        '| ---------- | ------------------------------------------- |\n' +
+        '| John Doe   | 123 Main St<br>Apt 4B<br>New York, NY 10001 |\n' +
+        '| Jane Smith | Single line address                         |'
+      );
     });
 
     it('should handle special characters and escaping', () => {
@@ -235,14 +242,15 @@ describe('Integration Tests', () => {
 
       render(<MarkdownTable inputData={inputData} />);
 
-      const codeElement = screen.getByRole('code');
-      const content = codeElement.textContent || '';
-      
-      expect(content).toContain('This \\| That');
-      expect(content).toContain('Path\\To\\File');
-      expect(content).toContain('<div>content</div>');
-      expect(content).toContain('"double"');
-      expect(content).toContain('\'single\'');
+      // Only the pipe is escaped
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Character | Example               |\n' +
+        '| --------- | --------------------- |\n' +
+        '| Pipe      | This \\| That          |\n' +
+        '| Backslash | Path\\To\\File          |\n' +
+        '| HTML      | <div>content</div>    |\n' +
+        '| Quotes    | "double" and \'single\' |'
+      );
     });
 
     it('should handle empty table with headers only', () => {
@@ -250,14 +258,10 @@ describe('Integration Tests', () => {
 
       render(<MarkdownTable inputData={inputData} hasHeader={true} />);
 
-      const codeElement = screen.getByRole('code');
-      const lines = (codeElement.textContent || '').split('\n').filter(l => l.trim());
-      
       // Should have header and alignment row only
-      expect(lines.length).toBe(2);
-      expect(lines[0]).toContain('Column1');
-      expect(lines[0]).toContain('Column2');
-      expect(lines[0]).toContain('Column3');
+      expect(screen.getByRole('code').textContent).toBe(
+        '| Column1 | Column2 | Column3 |\n| ------- | ------- | ------- |'
+      );
     });
   });
 
@@ -279,8 +283,12 @@ describe('Integration Tests', () => {
       const endTime = performance.now();
       const renderTime = endTime - startTime;
 
-      const codeElement = screen.getByRole('code');
-      expect(codeElement).toBeInTheDocument();
+      const lines = screen.getByRole('code').textContent!.split('\n');
+      expect(lines).toHaveLength(rowCount + 1);
+      expect(lines[1]).toBe(`|${' ----- |'.repeat(columnCount)}`);
+      expect(lines[rowCount]).toBe(
+        '| R99C0 | R99C1 | R99C2 | R99C3 | R99C4 | R99C5 | R99C6 | R99C7 | R99C8 | R99C9 |'
+      );
       
       // Should render within reasonable time (adjust threshold as needed)
       expect(renderTime).toBeLessThan(1000); // 1 second
@@ -296,8 +304,8 @@ describe('Integration Tests', () => {
         rerender(<MarkdownTable inputData={data} hasPadding={i % 2 === 0} />);
       }
 
-      const codeElement = screen.getByRole('code');
-      expect(codeElement).toBeInTheDocument();
+      // The last change turned padding off
+      expect(screen.getByRole('code').textContent).toBe('|A  |\n|---|\n|1  |');
     });
   });
 
