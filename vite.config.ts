@@ -8,19 +8,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'ReactMarkdownTableTS',
       formats: ['es', 'cjs'],
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`
     },
     rollupOptions: {
       // Regexes so subpaths like react/jsx-runtime stay external too
-      external: [/^react($|\/)/, /^react-dom($|\/)/],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM'
-        }
-      }
+      external: [/^react($|\/)/, /^react-dom($|\/)/]
     },
     // tsc writes declarations to dist first; the clean script empties it before each build
     emptyOutDir: false,
