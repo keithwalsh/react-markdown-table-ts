@@ -4,10 +4,10 @@
  */
 
 import { useEffect, useDeferredValue, useId, useMemo, useRef } from 'react';
+import { generateMarkdownTable } from './generateMarkdownTable.js';
 import { LineNumbers } from './LineNumbers.js';
-import type { Alignment, MarkdownTableProps } from './types.js';
-import { generateMarkdownTableString, generateAlphabetHeaders } from './utils.js';
-import { validateInputData, validateColumnAlignments, MarkdownTableError } from './validation.js';
+import type { Alignment, MarkdownTableOptions, MarkdownTableProps } from './types.js';
+import { MarkdownTableError } from './validation.js';
 
 
 interface ThemeColors {
@@ -100,24 +100,8 @@ function generateThemeCSS(theme: 'light' | 'dark', scopeId: string): string {
 `.trim();
 }
 
-function getLongestRowLength(rows: readonly (readonly unknown[])[]): number {
-  return rows.reduce((length, row) => Math.max(length, row.length), 0);
-}
-
-function getTableData(inputData: readonly (readonly unknown[])[], hasHeader: boolean) {
-  return hasHeader
-    ? { inputDataHeader: inputData[0], inputDataBody: inputData.slice(1) }
-    : { inputDataHeader: generateAlphabetHeaders(getLongestRowLength(inputData)), inputDataBody: inputData };
-}
-
-interface TableInputs {
+interface TableInputs extends Required<MarkdownTableOptions> {
   inputData: MarkdownTableProps['inputData'];
-  hasHeader: boolean;
-  columnAlignments: readonly Alignment[];
-  isCompact: boolean;
-  hasTabs: boolean;
-  convertLineBreaks: boolean;
-  hasPadding: boolean;
 }
 
 interface TableSyntaxResult {
@@ -127,33 +111,13 @@ interface TableSyntaxResult {
 
 const DEFAULT_COLUMN_ALIGNMENTS: readonly Alignment[] = [];
 
-function generateTableSyntax({
-  inputData,
-  hasHeader,
-  columnAlignments,
-  isCompact,
-  hasTabs,
-  convertLineBreaks,
-  hasPadding,
-}: TableInputs): TableSyntaxResult {
+function generateTableSyntax({ inputData, ...options }: TableInputs): TableSyntaxResult {
   // null is the default, so a table still loading renders empty rather than as an error
   if (inputData == null) {
     return { markdown: '', error: null };
   }
   try {
-    validateInputData(inputData);
-    validateColumnAlignments(columnAlignments);
-    const { inputDataHeader, inputDataBody } = getTableData(inputData, hasHeader);
-
-    const markdown = generateMarkdownTableString(
-      { inputDataHeader, inputDataBody },
-      columnAlignments,
-      !isCompact,
-      hasTabs,
-      convertLineBreaks,
-      hasPadding
-    );
-    return { markdown, error: null };
+    return { markdown: generateMarkdownTable(inputData, options), error: null };
   } catch (error) {
     if (error instanceof MarkdownTableError) {
       return { markdown: `Error: ${error.message}`, error };

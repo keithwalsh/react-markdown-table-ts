@@ -17,16 +17,11 @@ export interface InputData {
   inputDataBody: readonly string[][];
 }
 
-export interface MarkdownTableProps {
-  /**
-   * The entire table data as a two-dimensional array.
-   * If `hasHeader` is true, the first row is treated as the header.
-   * Readonly arrays, such as `as const` data, are accepted.
-   * `null` and `undefined` render an empty table, for example while data loads.
-   * @default null
-   */
-  inputData?: readonly (readonly CellValue[])[] | null;
-
+/**
+ * Options that control the generated Markdown, shared by the `MarkdownTable`
+ * props and `generateMarkdownTable`.
+ */
+export interface MarkdownTableOptions {
   /**
    * Optional array specifying the alignment for each column.
    * Acceptable values are 'left', 'center', 'right', or 'none'.
@@ -53,6 +48,7 @@ export interface MarkdownTableProps {
    * @default false
    */
   hasTabs?: boolean;
+
   /**
    * Indicates whether the first row of `inputData` is a header.
    * @default true
@@ -65,6 +61,17 @@ export interface MarkdownTableProps {
    * @default false
    */
   convertLineBreaks?: boolean;
+}
+
+export interface MarkdownTableProps extends MarkdownTableOptions {
+  /**
+   * The entire table data as a two-dimensional array.
+   * If `hasHeader` is true, the first row is treated as the header.
+   * Readonly arrays, such as `as const` data, are accepted.
+   * `null` and `undefined` render an empty table, for example while data loads.
+   * @default null
+   */
+  inputData?: readonly (readonly CellValue[])[] | null;
 
   /**
    * Optional theme for the Markdown table.
