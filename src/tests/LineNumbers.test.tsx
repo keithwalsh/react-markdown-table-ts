@@ -106,43 +106,17 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.pointerEvents).toBe('none');
       expect(lineNumbersSpan?.getAttribute('aria-hidden')).toBe('true');
     });
 
-    it('should position line numbers absolutely', () => {
+    it('should leave the line number layout to the stylesheet', () => {
       const { container } = render(
-        <LineNumbers showLineNumbers={true}>code</LineNumbers>
+        <LineNumbers showLineNumbers={true}>{'line1\nline2'}</LineNumbers>
       );
-      
-      const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.position).toBe('absolute');
-    });
 
-    it('should apply correct line number styling', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true}>line1</LineNumbers>
-      );
-      
       const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.fontSize).toBe('100%');
-      expect(lineNumbersSpan?.style.userSelect).toBe('none');
-      expect(lineNumbersSpan?.style.borderRight).toBe('1px solid #999');
-    });
-
-    it('should display line numbers with correct alignment', () => {
-      const code = 'line1\nline2';
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} startLine={1}>
-          {code}
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      const firstNumber = lineNumbersSpan?.children[0] as HTMLSpanElement;
-      
-      expect(firstNumber?.style.textAlign).toBe('right');
-      expect(firstNumber?.style.display).toBe('block');
+      expect(lineNumbersSpan.getAttribute('style')).toBeNull();
+      expect(Array.from(lineNumbersSpan.children, number => number.getAttribute('style'))).toEqual([null, null]);
     });
 
     it('should leave the line number colour to the theme CSS', () => {
@@ -268,23 +242,22 @@ describe('LineNumbers', () => {
       expect(pre?.style.fontSize).toBe('14px');
     });
 
-    it('should merge custom style with default styles', () => {
+    it('should put only the custom style inline', () => {
       const { container } = render(
         <LineNumbers style={{ maxWidth: '500px' }}>code</LineNumbers>
       );
       
       const pre = container.querySelector('pre') as HTMLPreElement;
-      expect(pre?.style.position).toBe('relative');
-      expect(pre?.style.maxWidth).toBe('500px');
+      expect(pre?.getAttribute('style')).toBe('max-width: 500px;');
     });
 
-    it('should add paddingLeft when showLineNumbers is true', () => {
+    it('should leave the line number padding to the stylesheet', () => {
       const { container } = render(
         <LineNumbers showLineNumbers={true}>code</LineNumbers>
       );
       
       const pre = container.querySelector('pre') as HTMLPreElement;
-      expect(pre?.style.paddingLeft).toBe('1em');
+      expect(pre?.style.paddingLeft).toBe('');
     });
 
     it('should not add paddingLeft when showLineNumbers is false', () => {
@@ -309,13 +282,14 @@ describe('LineNumbers', () => {
       expect(lineNumbersSpan?.style.top).toBe('32px');
     });
 
-    it('should use default topPadding of 16px', () => {
+    it('should leave the default topPadding of 16px to the stylesheet', () => {
       const { container } = render(
         <LineNumbers showLineNumbers={true}>line1</LineNumbers>
       );
       
       const lineNumbersSpan = container.querySelector('.line-numbers-rows') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('16px');
+      expect(lineNumbersSpan?.style.top).toBe('');
+      expect(container.querySelector('code')?.style.paddingTop).toBe('');
     });
 
     it('should handle topPadding of 0', () => {

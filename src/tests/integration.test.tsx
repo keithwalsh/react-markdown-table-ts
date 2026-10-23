@@ -330,7 +330,7 @@ describe('Integration Tests', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
       const preElement = container.querySelector('pre');
-      expect(preElement?.style.isolation).toBe('isolate');
+      expect(getComputedStyle(preElement!).isolation).toBe('isolate');
     });
 
     it('should inject the shared stylesheet', () => {

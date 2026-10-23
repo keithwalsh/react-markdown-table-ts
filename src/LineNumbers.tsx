@@ -4,6 +4,7 @@
  */
 
 import type { CSSProperties, ReactNode } from 'react';
+import { DEFAULT_TOP_PADDING } from './styles.js';
 
 /**
  * Line numbers component props with style support
@@ -28,40 +29,20 @@ export function LineNumbers({
   startLine = 1,
   className = '',
   style = {},
-  topPadding = 16,
+  topPadding = DEFAULT_TOP_PADDING,
   codeStyle = {}
 }: LineNumbersComponentProps) {
   const code = typeof children === 'string' ? children : '';
   const lines = code.split('\n');
   const lineNumbers = lines.map((_, index) => startLine + index);
 
+  // The stylesheet covers the defaults, so only add inline styles for values that differ
   const preStyle: CSSProperties = {
-    position: 'relative',
-    counterReset: `linenumber ${startLine - 1}`,
-    paddingTop: 0,
-    ...(showLineNumbers ? { paddingLeft: '1em' } : {}),
+    ...(startLine !== 1 ? { counterReset: `linenumber ${startLine - 1}` } : {}),
     ...style
   };
-
-  const codeStyleFinal: CSSProperties = {
-    display: 'block',
-    paddingTop: `${topPadding}px`,
-    paddingLeft: showLineNumbers ? '3em' : '0.3em',
-    ...codeStyle
-  };
-
-  const lineNumbersStyle: CSSProperties = {
-    position: 'absolute',
-    pointerEvents: 'none',
-    top: `${topPadding}px`,
-    fontSize: '100%',
-    left: '0em',
-    width: '2.5em',
-    letterSpacing: '-1px',
-    borderRight: '1px solid #999',
-    userSelect: 'none',
-    lineHeight: '1.5'
-  };
+  const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};
+  const lineNumbersTopStyle = topPadding !== DEFAULT_TOP_PADDING ? { top: `${topPadding}px` } : {};
 
   return (
     <pre
@@ -69,23 +50,13 @@ export function LineNumbers({
       data-start={startLine}
       style={preStyle}
     >
-      <code className="language-markdown" style={codeStyleFinal}>
+      <code className="language-markdown" style={{ ...topPaddingStyle, ...codeStyle }}>
         {children}
       </code>
       {showLineNumbers && (
-        <span className="line-numbers-rows" aria-hidden="true" style={lineNumbersStyle}>
+        <span className="line-numbers-rows" aria-hidden="true" style={lineNumbersTopStyle}>
           {lineNumbers.map((number, index) => (
-            <span
-              key={index}
-              style={{
-                display: 'block',
-                textAlign: 'right',
-                paddingRight: '0.8em',
-                lineHeight: '1.5'
-              }}
-            >
-              {number}
-            </span>
+            <span key={index}>{number}</span>
           ))}
         </span>
       )}

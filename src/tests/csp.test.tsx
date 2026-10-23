@@ -14,4 +14,23 @@ describe('Content-Security-Policy support', () => {
 
     expect(getStyleElement()?.getAttribute('nonce')).toBe('r4nd0m');
   });
+
+  it('should need no inline styles with the default props', () => {
+    // A strict policy blocks style attributes in server-rendered HTML
+    const { container } = render(<MarkdownTable inputData={testData.withHeader} />);
+
+    expect(container.querySelectorAll('[style]')).toHaveLength(0);
+  });
+
+  it('should lay out the line numbers from the stylesheet', () => {
+    const { container } = render(<MarkdownTable inputData={testData.withHeader} />);
+
+    const lineNumbers = getComputedStyle(container.querySelector('.line-numbers-rows')!);
+    expect(lineNumbers.position).toBe('absolute');
+    expect(lineNumbers.pointerEvents).toBe('none');
+    expect(lineNumbers.userSelect).toBe('none');
+    expect(getComputedStyle(container.querySelector('.line-numbers-rows > span')!).textAlign).toBe('right');
+    expect(getComputedStyle(container.querySelector('pre')!).paddingLeft).toBe('1em');
+    expect(getComputedStyle(container.querySelector('code')!).paddingLeft).toBe('3em');
+  });
 });

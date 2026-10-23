@@ -1,11 +1,17 @@
 /**
  * @fileoverview The stylesheet that every MarkdownTable shares. Its rules are
  * scoped by class rather than by element id, so they hold under any
- * identifierPrefix and across separately rendered React roots.
+ * identifierPrefix and across separately rendered React roots. It holds every
+ * fixed style, so the elements only need inline styles for props that differ
+ * from the defaults, which a strict Content-Security-Policy would block on
+ * server-rendered pages.
  */
 
 /** Identifies the stylesheet, so React 19 hoists a single copy into the document head */
 export const STYLESHEET_HREF = 'react-markdown-table-ts';
+
+/** The default topPadding in pixels, which the stylesheet applies without an inline style */
+export const DEFAULT_TOP_PADDING = 16;
 
 /** The class on each table's wrapper element for its theme */
 export const THEME_CLASSES = {
@@ -72,17 +78,48 @@ export const STYLESHEET = `
   }
 }
 .rmt pre[class*=language-] {
-  padding-right: 1em;
-  padding-bottom: 1em;
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  width: fit-content;
+  min-width: min-content;
+  margin: 0;
+  padding: 0 1em 1em 0;
   overflow: visible;
   background: var(--rmt-background);
   border-radius: var(--rmt-border-radius);
 }
+.rmt pre[class*=language-].line-numbers {
+  padding-left: 1em;
+}
+.rmt pre[class*=language-] > code {
+  display: block;
+  padding-top: ${DEFAULT_TOP_PADDING}px;
+  padding-left: .3em;
+}
 .rmt pre[class*=language-].line-numbers > code {
   position: relative;
   white-space: inherit;
+  padding-left: 3em;
 }
-.rmt .line-numbers-rows {
+.rmt pre[class*=language-] > .line-numbers-rows {
+  position: absolute;
+  top: ${DEFAULT_TOP_PADDING}px;
+  left: 0;
+  width: 2.5em;
+  font-size: 100%;
+  line-height: 1.5;
+  letter-spacing: -1px;
   color: var(--rmt-line-number-color);
+  border-right: 1px solid #999;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.rmt pre[class*=language-] > .line-numbers-rows > span {
+  display: block;
+  padding-right: .8em;
+  text-align: right;
+  line-height: 1.5;
 }
 `.trim();

@@ -313,7 +313,9 @@ describe('MarkdownTable', () => {
       const css = getStyleElement()?.textContent;
       expect(getCssRule(css, '.rmt-light')).toContain('--rmt-line-number-color: #6e6e6e;');
       expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-line-number-color: #999;');
-      expect(getCssRule(css, '.rmt .line-numbers-rows')).toBe('  color: var(--rmt-line-number-color);\n');
+      expect(getCssRule(css, '.rmt pre[class*=language-] > .line-numbers-rows')).toContain(
+        'color: var(--rmt-line-number-color);'
+      );
     });
   });
 
@@ -429,7 +431,8 @@ describe('MarkdownTable', () => {
         <MarkdownTable inputData={testData.simple} preStyle={{ maxHeight: '500px' }} />
       );
       
-      expectPreStyle(container, { maxHeight: '500px', margin: '0px' });
+      expectPreStyle(container, { maxHeight: '500px' });
+      expect(getComputedStyle(getPreElement(container)!).marginTop).toBe('0px');
     });
 
     it('should not use !important so preStyle can override any padding', () => {
@@ -446,8 +449,8 @@ describe('MarkdownTable', () => {
     it('should pad the code and line numbers by 16px by default', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
-      expect(getCodeElement(container)?.style.paddingTop).toBe('16px');
-      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('16px');
+      expect(getComputedStyle(getCodeElement(container)!).paddingTop).toBe('16px');
+      expect(getComputedStyle(container.querySelector('.line-numbers-rows')!).top).toBe('16px');
     });
 
     it('should apply a custom top padding to the code and line numbers', () => {
@@ -475,7 +478,7 @@ describe('MarkdownTable', () => {
     it('should use min-content when minWidth is not specified', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      expectPreStyle(container, { minWidth: 'min-content' });
+      expect(getComputedStyle(getPreElement(container)!).minWidth).toBe('min-content');
     });
   });
 
@@ -633,11 +636,10 @@ describe('MarkdownTable', () => {
     it('should render with correct pre element structure', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
       
-      const preElement = getPreElement(container);
-      expect(preElement).toBeInTheDocument();
-      expect(preElement?.style.position).toBe('relative');
-      expect(preElement?.style.isolation).toBe('isolate');
-      expect(preElement?.style.display).toBe('inline-block');
+      const preStyle = getComputedStyle(getPreElement(container)!);
+      expect(preStyle.position).toBe('relative');
+      expect(preStyle.isolation).toBe('isolate');
+      expect(preStyle.display).toBe('inline-block');
     });
 
     it('should render pre element', () => {
