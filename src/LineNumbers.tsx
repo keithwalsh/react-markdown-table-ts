@@ -45,7 +45,7 @@ export function LineNumbers({
       tabIndex={0}
       {...preAttributes}
       ref={preRef}
-      className={`rmt-pre ${showLineNumbers ? 'rmt-has-line-numbers' : ''} ${className}`.trim()}
+      className={['rmt-pre', showLineNumbers && 'rmt-has-line-numbers', className].filter(Boolean).join(' ')}
       style={style}
     >
       <code className="rmt-code" style={topPaddingStyle}>

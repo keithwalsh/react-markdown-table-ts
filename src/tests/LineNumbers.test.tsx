@@ -154,7 +154,7 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre');
-      expect(pre?.className).toContain('custom-class');
+      expect(pre?.className).toBe('rmt-pre custom-class');
     });
 
     it('should handle className trimming correctly', () => {

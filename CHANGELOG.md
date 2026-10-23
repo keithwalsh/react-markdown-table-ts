@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- With line numbers off and a `className`, the `<pre>` element's class attribute no longer has a double space.
+
 ## [2.0.0] - 2026-10-23
 
 Tables look the same. The breaking changes are to class names and exported types:
@@ -87,7 +93,8 @@ Tables look the same. The breaking changes are to class names and exported types
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...main
+[Unreleased]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...main
+[2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...4c5d91c
 [1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...667a2bc
 [1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...4901149
 [1.5.2]: https://github.com/keithwalsh/react-markdown-table-ts/compare/27b3b8f...ff06d3b
