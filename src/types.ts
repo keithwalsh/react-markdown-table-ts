@@ -175,6 +175,5 @@ export interface TableConfig {
   columnAlignments: readonly Alignment[];
   columnWidths?: readonly number[];
   useTabs: boolean;
-  replaceNewlines: boolean;
   hasPadding: boolean;
 }

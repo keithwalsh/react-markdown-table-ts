@@ -243,7 +243,6 @@ export function generateMarkdownTableString(
     columnAlignments,
     columnWidths,
     useTabs,
-    replaceNewlines,
     hasPadding
   };
 
