@@ -44,10 +44,8 @@
     "url": "https://github.com/keithwalsh/react-markdown-table-ts/issues"
   },
   "scripts": {
-    "dev": "vite",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/emit-cjs-types.mjs && vite build",
-    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test": "jest",
