@@ -118,6 +118,17 @@ Other props, such as `id`, `aria-label`, `data-*` attributes and event handlers,
     theme="auto" // Light or dark, matching the reader's system setting
 />
 ```
+7. **Updating Data**:
+```typescript
+// Build the rows when people changes, not on every render
+const inputData = useMemo(
+    () => [['Name', 'Age'], ...people.map(person => [person.name, person.age])],
+    [people]
+);
+
+<MarkdownTable inputData={inputData} />
+```
+The table is cached on the `inputData` array itself. A new array on every render regenerates it every time, and changing the same array in place leaves the old table on screen. Memoise data you build during render, and pass a new array rather than mutating the old one.
 
 ## Generating Markdown Without Rendering
 
