@@ -6,9 +6,6 @@
 import { render } from '@testing-library/react';
 import { getPreElement, getCodeElement, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
 
-// Unmock LineNumbers since we want to test the real implementation
-jest.unmock('../LineNumbers');
-
 import { LineNumbers } from '../LineNumbers';
 
 describe('LineNumbers', () => {

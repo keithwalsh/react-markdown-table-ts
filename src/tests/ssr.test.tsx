@@ -12,9 +12,6 @@ import { renderToString } from 'react-dom/server';
 import { MarkdownTable } from '../index';
 import { testData, getStyleElement } from './test-utils';
 
-// Unmock LineNumbers so the server and client render the real markup
-jest.unmock('../LineNumbers');
-
 function renderOnServer(element: React.ReactElement): HTMLDivElement {
   const container = document.createElement('div');
   container.innerHTML = renderToString(element);

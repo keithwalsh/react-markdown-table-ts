@@ -370,26 +370,25 @@ describe('MarkdownTable', () => {
   });
 
   describe('topPadding prop', () => {
-    it('should render with default top padding', () => {
+    it('should pad the code and line numbers by 16px by default', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
-      
-      const codeElement = getCodeElement(container);
-      expect(codeElement).toBeTruthy();
-      expect(codeElement?.className).toContain('language-markdown');
+
+      expect(getCodeElement(container)?.style.paddingTop).toBe('16px');
+      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('16px');
     });
 
-    it('should render with custom top padding', () => {
+    it('should apply a custom top padding to the code and line numbers', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
-      
-      const codeElement = getCodeElement(container);
-      expect(codeElement).toBeTruthy();
+
+      expect(getCodeElement(container)?.style.paddingTop).toBe('32px');
+      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('32px');
     });
 
-    it('should render with zero top padding', () => {
-      const { container} = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
-      
-      const codeElement = getCodeElement(container);
-      expect(codeElement).toBeTruthy();
+    it('should allow zero top padding', () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
+
+      expect(getCodeElement(container)?.style.paddingTop).toBe('0px');
+      expect(container.querySelector<HTMLElement>('.line-numbers-rows')?.style.top).toBe('0px');
     });
   });
 

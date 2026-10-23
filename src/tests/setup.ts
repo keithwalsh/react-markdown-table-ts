@@ -1,24 +1,9 @@
 /**
- * @fileoverview Jest setup configuration including mocks for React components and
- * testing library extensions.
+ * @fileoverview Jest setup configuration including testing library extensions
+ * and a requestAnimationFrame mock.
  */
 
-import React from 'react';
 import '@testing-library/jest-dom';
-
-// Mock React components from LineNumbers.tsx
-jest.mock('../LineNumbers', () => ({
-  LineNumbers: ({ children, showLineNumbers, className, style }: any) => 
-    React.createElement('pre', { 
-      className: `language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className || ''}`.trim(),
-      style 
-    }, 
-      React.createElement('code', { 
-        className: 'language-markdown',
-        role: 'code'
-      }, children)
-    )
-}));
 
 // Mock requestAnimationFrame
 global.requestAnimationFrame = (callback: FrameRequestCallback): number => {

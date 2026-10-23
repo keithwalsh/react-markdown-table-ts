@@ -301,14 +301,14 @@ describe('Integration Tests', () => {
   });
 
   describe('accessibility', () => {
-    it('should have accessible role attribute', () => {
+    it('should expose the markdown through the implicit code role', () => {
       const data = [['A'], ['1']];
 
       render(<MarkdownTable inputData={data} />);
 
       const codeElement = screen.getByRole('code');
-      expect(codeElement).toBeInTheDocument();
-      expect(codeElement.getAttribute('role')).toBe('code');
+      expect(codeElement.tagName).toBe('CODE');
+      expect(codeElement.textContent).toBe('| A   |\n| --- |\n| 1   |');
     });
 
     it('should maintain semantic HTML structure', () => {
