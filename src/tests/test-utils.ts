@@ -97,19 +97,6 @@ export function expectPreStyle(
   });
 }
 
-/**
- * Helper to verify multiple text content expectations
- */
-export function expectCodeToContainAll(
-  container: HTMLElement,
-  ...values: string[]
-): void {
-  const codeElement = getCodeElement(container);
-  const content = codeElement?.textContent || '';
-  values.forEach(value => {
-    expect(content).toContain(value);
-  });
-}
 
 /**
  * Helper to verify class names on pre element
@@ -136,29 +123,3 @@ export function expectPreNotToHaveClasses(
     expect(hasClass(preElement, className)).toBe(false);
   });
 }
-
-/**
- * Helper to get markdown table lines from rendered output
- */
-export function getMarkdownLines(container: HTMLElement): string[] {
-  const codeElement = getCodeElement(container);
-  return (codeElement?.textContent || '').split('\n').filter(line => line.trim());
-}
-
-/**
- * Helper to count columns in a markdown table line
- */
-export function getColumnCount(line: string): number {
-  return (line.match(/\|/g) || []).length - 1;
-}
-
-/**
- * Helper to verify all lines have same column count
- */
-export function expectUniformColumnCount(container: HTMLElement): void {
-  const lines = getMarkdownLines(container);
-  const columnCounts = lines.map(getColumnCount);
-  const uniqueCounts = new Set(columnCounts);
-  expect(uniqueCounts.size).toBe(1);
-}
-
