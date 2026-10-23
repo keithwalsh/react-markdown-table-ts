@@ -3,6 +3,7 @@
  * markdown table generation.
  */
 
+import { describe, expect, it, vi } from 'vitest';
 import { generateMarkdownTableString, generateAlphabetHeaders } from '../utils';
 import type { InputData, Alignment } from '../types';
 
@@ -683,25 +684,24 @@ describe('generateMarkdownTableString', () => {
       expect(lines[2]).toBe('|  日本 |   中   |');
     });
 
-    it('should fall back to code points when Intl.Segmenter is unavailable', () => {
+    it('should fall back to code points when Intl.Segmenter is unavailable', async () => {
       const writableIntl = Intl as { Segmenter?: unknown };
       const originalSegmenter = writableIntl.Segmenter;
       writableIntl.Segmenter = undefined;
 
       try {
-        jest.isolateModules(() => {
-          // eslint-disable-next-line @typescript-eslint/no-require-imports -- isolateModules needs a synchronous fresh load
-          const { generateMarkdownTableString: generate } = require('../utils') as typeof import('../utils');
-          const inputData: InputData = {
-            inputDataHeader: ['Name'],
-            inputDataBody: [['東京'], ['e\u0301']],
-          };
+        // utils.ts checks for Intl.Segmenter when it loads, so import a fresh copy
+        vi.resetModules();
+        const { generateMarkdownTableString: generate } = await import('../utils');
+        const inputData: InputData = {
+          inputDataHeader: ['Name'],
+          inputDataBody: [['東京'], ['e\u0301']],
+        };
 
-          const lines = generate(inputData, []).split('\n');
-          expect(lines[2]).toBe('| 東京 |');
-          // Without a segmenter the combining accent counts as its own column
-          expect(lines[3]).toBe('| e\u0301   |');
-        });
+        const lines = generate(inputData, []).split('\n');
+        expect(lines[2]).toBe('| 東京 |');
+        // Without a segmenter the combining accent counts as its own column
+        expect(lines[3]).toBe('| e\u0301   |');
       } finally {
         writableIntl.Segmenter = originalSegmenter;
       }

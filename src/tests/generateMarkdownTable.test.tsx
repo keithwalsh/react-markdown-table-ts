@@ -3,6 +3,7 @@
  * returns a Markdown table without rendering the component.
  */
 
+import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { generateMarkdownTable, MarkdownTable, MarkdownTableError } from '../index';
 

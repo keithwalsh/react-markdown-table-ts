@@ -4,6 +4,7 @@
  * tests live in their own file to render it first.
  */
 
+import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { MarkdownTable } from '../index';
 import { getStyleElement, testData } from './test-utils';
@@ -31,7 +32,8 @@ describe('Content-Security-Policy support', () => {
     expect(lineNumbers.userSelect).toBe('none');
     expect(lineNumbers.textAlign).toBe('right');
     expect(lineNumbers.whiteSpace).toBe('pre');
-    expect(getComputedStyle(container.querySelector('pre')!).paddingLeft).toBe('1em');
-    expect(getComputedStyle(container.querySelector('code')!).paddingLeft).toBe('3em');
+    // jsdom resolves the stylesheet's 1em and 3em against its 16px default font size
+    expect(getComputedStyle(container.querySelector('pre')!).paddingLeft).toBe('16px');
+    expect(getComputedStyle(container.querySelector('code')!).paddingLeft).toBe('48px');
   });
 });

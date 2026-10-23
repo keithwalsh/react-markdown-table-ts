@@ -3,6 +3,7 @@
  * including rendering, props handling, and callback functionality.
  */
 
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component, createRef, version, type ReactNode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
@@ -28,7 +29,7 @@ class ErrorBoundary extends Component<{ children: ReactNode; onError: (error: Er
 
 describe('MarkdownTable', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('basic rendering', () => {
@@ -71,7 +72,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should render an empty table without an error for null inputData', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(<MarkdownTable inputData={null} onGenerate={onGenerate} />);
 
@@ -80,7 +81,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should render an empty table without an error when inputData is left out', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(<MarkdownTable onGenerate={onGenerate} />);
 
@@ -113,7 +114,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should render an error message for a row that is not an array', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(<MarkdownTable inputData={[['A'], null as any]} onGenerate={onGenerate} />);
 
@@ -136,11 +137,14 @@ describe('MarkdownTable', () => {
     });
 
     it('should re-throw non-MarkdownTableError exceptions to the nearest error boundary', () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      const spy = jest.spyOn(utils, 'generateMarkdownTableString').mockImplementation(() => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // React 18 also rethrows the error on window in development; handling it there stops jsdom printing it
+      const handleWindowError = (event: ErrorEvent) => event.preventDefault();
+      window.addEventListener('error', handleWindowError);
+      const spy = vi.spyOn(utils, 'generateMarkdownTableString').mockImplementation(() => {
         throw new Error('Unexpected internal error');
       });
-      const onError = jest.fn();
+      const onError = vi.fn();
 
       render(
         <ErrorBoundary onError={onError}>
@@ -150,6 +154,7 @@ describe('MarkdownTable', () => {
 
       expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Unexpected internal error' }));
       spy.mockRestore();
+      window.removeEventListener('error', handleWindowError);
       consoleErrorSpy.mockRestore();
     });
   });
@@ -354,8 +359,8 @@ describe('MarkdownTable', () => {
         root.render(<MarkdownTable inputData={testData.simple} />);
       });
 
-      // jsdom applies the stylesheet's padding, so this fails if its selectors stop matching
-      expect(getComputedStyle(getPreElement(container)!).paddingRight).toBe('1em');
+      // jsdom applies the stylesheet's 1em padding, so this fails if its selectors stop matching
+      expect(getComputedStyle(getPreElement(container)!).paddingRight).toBe('16px');
       act(() => root.unmount());
       container.remove();
     });
@@ -451,7 +456,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should pass event handlers through to the pre element', () => {
-      const onCopy = jest.fn();
+      const onCopy = vi.fn();
       const { container } = render(<MarkdownTable inputData={testData.simple} onCopy={onCopy} />);
 
       fireEvent.copy(getPreElement(container)!);
@@ -593,7 +598,7 @@ describe('MarkdownTable', () => {
 
   describe('onGenerate callback', () => {
     it('should call onGenerate with generated markdown', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(<MarkdownTable inputData={testData.withHeader} onGenerate={onGenerate} />);
       
@@ -603,7 +608,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should call onGenerate when data changes', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       const { rerender } = render(
         <MarkdownTable inputData={testData.simple} onGenerate={onGenerate} />
@@ -617,7 +622,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should call onGenerate with error message and error on invalid data', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(<MarkdownTable inputData={[]} onGenerate={onGenerate} />);
 
@@ -626,8 +631,8 @@ describe('MarkdownTable', () => {
     });
 
     it('should not call onGenerate again when only the callback changes', () => {
-      const firstCallback = jest.fn();
-      const secondCallback = jest.fn();
+      const firstCallback = vi.fn();
+      const secondCallback = vi.fn();
 
       const { rerender } = render(<MarkdownTable inputData={testData.simple} onGenerate={firstCallback} />);
       rerender(<MarkdownTable inputData={testData.simple} onGenerate={secondCallback} />);
@@ -637,8 +642,8 @@ describe('MarkdownTable', () => {
     });
 
     it('should call the latest onGenerate when the table changes', () => {
-      const firstCallback = jest.fn();
-      const secondCallback = jest.fn();
+      const firstCallback = vi.fn();
+      const secondCallback = vi.fn();
 
       const { rerender } = render(<MarkdownTable inputData={testData.simple} onGenerate={firstCallback} />);
       rerender(<MarkdownTable inputData={testData.twoColumn} onGenerate={secondCallback} />);
@@ -688,7 +693,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should not regenerate the table when re-rendered with equal props', () => {
-      const spy = jest.spyOn(utils, 'generateMarkdownTableString');
+      const spy = vi.spyOn(utils, 'generateMarkdownTableString');
 
       const { rerender } = render(
         <MarkdownTable inputData={testData.twoColumn} columnAlignments={['left', 'right']} />
@@ -702,7 +707,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should regenerate the table when column alignments change', () => {
-      const spy = jest.spyOn(utils, 'generateMarkdownTableString');
+      const spy = vi.spyOn(utils, 'generateMarkdownTableString');
 
       const { rerender } = render(<MarkdownTable inputData={testData.twoColumn} columnAlignments={['left']} />);
       rerender(<MarkdownTable inputData={testData.twoColumn} columnAlignments={['right']} />);
@@ -713,7 +718,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should not pair old data with new options when both change together', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       const { rerender } = render(<MarkdownTable inputData={testData.twoColumn} onGenerate={onGenerate} />);
       rerender(
@@ -847,7 +852,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should handle maximum customisation', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(
         <MarkdownTable

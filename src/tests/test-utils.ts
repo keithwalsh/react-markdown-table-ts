@@ -3,6 +3,8 @@
  * testing MarkdownTable and LineNumbers components.
  */
 
+import { expect } from 'vitest';
+
 /**
  * Common test data fixtures for reuse across test files
  */

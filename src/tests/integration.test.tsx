@@ -3,6 +3,7 @@
  * input through markdown generation to component rendering.
  */
 
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MarkdownTable, MarkdownTableError } from '../index';
 import { testData, getStyleElement, expectCodeToContainAll, expectPreClasses, expectPreNotToHaveClasses, expectUniformColumnCount } from './test-utils';
@@ -17,7 +18,7 @@ describe('Integration Tests', () => {
         ['Orange', '$2.00', '8'],
       ];
 
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       render(
         <MarkdownTable
@@ -72,7 +73,7 @@ describe('Integration Tests', () => {
 
   describe('error recovery', () => {
     it('should display error message and continue to render for invalid data', () => {
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       const { rerender } = render(
         <MarkdownTable inputData={[]} onGenerate={onGenerate} />
@@ -108,7 +109,7 @@ describe('Integration Tests', () => {
         ['Bob', '30'],
       ];
 
-      const onGenerate = jest.fn();
+      const onGenerate = vi.fn();
 
       const { rerender } = render(
         <MarkdownTable inputData={initialData} onGenerate={onGenerate} />

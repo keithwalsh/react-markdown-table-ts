@@ -20,7 +20,7 @@ export default defineConfig([
   },
   {
     files: ['src/tests/**'],
-    languageOptions: { globals: { ...globals.jest, ...globals.node } },
+    languageOptions: { globals: globals.node },
     rules: {
       // Tests pass deliberately invalid props to check validation and fallbacks
       '@typescript-eslint/no-explicit-any': 'off',

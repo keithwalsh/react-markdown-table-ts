@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react-swc'
 import { resolve } from 'path'
 
@@ -19,5 +19,22 @@ export default defineConfig({
     emptyOutDir: false,
     // public/ holds README screenshots, which don't belong in the npm package
     copyPublicDir: false
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['src/tests/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.d.ts', 'src/stories/**', 'src/tests/**'],
+      reporter: ['text', 'lcov', 'clover', 'json'],
+      thresholds: {
+        branches: 95,
+        functions: 95,
+        lines: 95,
+        statements: 95
+      }
+    }
   }
 })

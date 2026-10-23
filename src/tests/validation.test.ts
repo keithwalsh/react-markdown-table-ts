@@ -3,6 +3,7 @@
  * class.
  */
 
+import { describe, expect, it } from 'vitest';
 import { validateInputData, validateColumnAlignments, MarkdownTableError } from '../validation';
 
 describe('MarkdownTableError', () => {

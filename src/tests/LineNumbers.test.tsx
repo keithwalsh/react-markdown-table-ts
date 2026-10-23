@@ -3,6 +3,7 @@
  * rendering, props handling, styling, and edge cases.
  */
 
+import { describe, expect, it } from 'vitest';
 import { createRef } from 'react';
 import { render } from '@testing-library/react';
 import { getPreElement, getCodeElement, getLineNumbers, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';

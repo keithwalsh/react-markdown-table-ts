@@ -1,11 +1,9 @@
 /**
  * @fileoverview Server rendering tests that check the theme CSS survives
  * renderToString and that the server HTML hydrates without mismatches.
- * The node export condition loads react-dom's Node server build, since the
- * browser build needs TextEncoder and MessageChannel, which jsdom lacks.
- * @jest-environment-options {"customExportConditions": ["node"]}
  */
 
+import { describe, expect, it, vi } from 'vitest';
 import { act } from '@testing-library/react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
@@ -42,7 +40,7 @@ describe('server rendering', () => {
   it('should hydrate the server HTML without recoverable errors', async () => {
     const element = <MarkdownTable inputData={testData.withHeader} theme="dark" />;
     const container = renderOnServer(element);
-    const onRecoverableError = jest.fn();
+    const onRecoverableError = vi.fn();
 
     await act(async () => {
       hydrateRoot(container, element, { onRecoverableError });
