@@ -5,7 +5,7 @@
 
 import { createRef } from 'react';
 import { render } from '@testing-library/react';
-import { getPreElement, getCodeElement, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
+import { getPreElement, getCodeElement, getLineNumbers, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
 
 import { LineNumbers } from '../LineNumbers';
 
@@ -76,9 +76,8 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{code}</LineNumbers>
       );
       
-      const lineNumbersSpan = getLineNumbersSpan(container);
-      expect(lineNumbersSpan).toBeInTheDocument();
-      expect(lineNumbersSpan?.children.length).toBe(3);
+      expect(getLineNumbersSpan(container)).toBeInTheDocument();
+      expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
     });
 
     it('should not render line numbers spans when showLineNumbers is false', () => {
@@ -97,8 +96,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{code}</LineNumbers>
       );
       
-      const lineNumbersSpan = getLineNumbersSpan(container);
-      expect(lineNumbersSpan?.children.length).toBe(4);
+      expect(getLineNumbers(container)).toHaveLength(4);
     });
 
     it('should set line numbers as non-interactive', () => {
@@ -117,7 +115,6 @@ describe('LineNumbers', () => {
 
       const lineNumbersSpan = getLineNumbersSpan(container) as HTMLSpanElement;
       expect(lineNumbersSpan.getAttribute('style')).toBeNull();
-      expect(Array.from(lineNumbersSpan.children, number => number.getAttribute('style'))).toEqual([null, null]);
     });
 
     it('should leave the line number colour to the theme CSS', () => {
@@ -125,8 +122,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>line1</LineNumbers>
       );
 
-      const firstNumber = getLineNumbersSpan(container)?.children[0] as HTMLSpanElement;
-      expect(firstNumber?.style.color).toBe('');
+      expect(getLineNumbersSpan(container)?.style.color).toBe('');
     });
   });
 
@@ -136,8 +132,17 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{'line1\nline2\nline3'}</LineNumbers>
       );
 
-      const numbers = Array.from(getLineNumbersSpan(container)!.children, number => number.textContent);
-      expect(numbers).toEqual(['1', '2', '3']);
+      expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
+    });
+
+    it('should render the line numbers as one text node', () => {
+      const { container } = render(
+        <LineNumbers showLineNumbers={true}>{'line1\nline2\nline3'}</LineNumbers>
+      );
+
+      const lineNumbersSpan = getLineNumbersSpan(container)!;
+      expect(lineNumbersSpan.children).toHaveLength(0);
+      expect(lineNumbersSpan.textContent).toBe('1\n2\n3');
     });
   });
 
@@ -293,8 +298,7 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>{'\n\n\n'}</LineNumbers>
       );
       
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      expect(lineNumbersSpan?.children.length).toBe(4); // Empty lines + 1
+      expect(getLineNumbers(container)).toHaveLength(4); // Empty lines + 1
     });
 
     it('should handle very long single line', () => {
@@ -345,12 +349,11 @@ describe('LineNumbers', () => {
       );
       
       const pre = container.querySelector('pre') as HTMLPreElement;
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
       
       expect(pre?.className).toContain('line-numbers');
       expect(pre?.className).toContain('custom-code');
       expect(pre?.style.backgroundColor).toBe('blue');
-      expect(lineNumbersSpan?.children.length).toBe(3);
+      expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
     });
 
     it('should handle minimal props', () => {
@@ -380,16 +383,14 @@ describe('LineNumbers', () => {
         <LineNumbers showLineNumbers={true}>line1</LineNumbers>
       );
       
-      let lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      expect(lineNumbersSpan?.children.length).toBe(1);
+      expect(getLineNumbers(container)).toEqual(['1']);
       
       const newCode = 'line1\nline2\nline3';
       rerender(
         <LineNumbers showLineNumbers={true}>{newCode}</LineNumbers>
       );
       
-      lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      expect(lineNumbersSpan?.children.length).toBeGreaterThan(1);
+      expect(getLineNumbers(container)).toEqual(['1', '2', '3']);
     });
   });
 });

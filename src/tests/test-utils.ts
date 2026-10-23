@@ -44,6 +44,13 @@ export function getLineNumbersSpan(container: HTMLElement): HTMLSpanElement | nu
 }
 
 /**
+ * Helper function to get the line numbers shown, one per line
+ */
+export function getLineNumbers(container: HTMLElement): string[] | undefined {
+  return getLineNumbersSpan(container)?.textContent?.split('\n');
+}
+
+/**
  * Helper function to get the shared stylesheet. React 19 hoists it into the
  * document head, so search the whole document unless given a detached root.
  */

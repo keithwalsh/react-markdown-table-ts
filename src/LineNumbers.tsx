@@ -32,8 +32,8 @@ export function LineNumbers({
   ...preAttributes
 }: LineNumbersComponentProps) {
   const code = typeof children === 'string' ? children : '';
-  const lines = code.split('\n');
-  const lineNumbers = lines.map((_, index) => index + 1);
+  // One text node rather than an element per line, which adds up for long tables
+  const lineNumbers = code.split('\n').map((_, index) => index + 1).join('\n');
 
   // The stylesheet covers the defaults, so only add inline styles for values that differ
   const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};
@@ -53,9 +53,7 @@ export function LineNumbers({
       </code>
       {showLineNumbers && (
         <span className="line-numbers-rows" aria-hidden="true" style={lineNumbersTopStyle}>
-          {lineNumbers.map((number, index) => (
-            <span key={index}>{number}</span>
-          ))}
+          {lineNumbers}
         </span>
       )}
     </pre>

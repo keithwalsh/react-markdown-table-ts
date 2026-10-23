@@ -117,20 +117,17 @@ export const STYLESHEET = `
   position: absolute;
   top: ${DEFAULT_TOP_PADDING}px;
   left: 0;
-  width: 2.5em;
+  width: 1.7em;
+  padding-right: .8em;
   font-size: 100%;
   line-height: 1.5;
   letter-spacing: -1px;
+  text-align: right;
+  white-space: pre;
   color: var(--rmt-line-number-color);
   border-right: 1px solid #999;
   pointer-events: none;
   -webkit-user-select: none;
   user-select: none;
-}
-.rmt pre[class*=language-] > .line-numbers-rows > span {
-  display: block;
-  padding-right: .8em;
-  text-align: right;
-  line-height: 1.5;
 }
 `.trim();

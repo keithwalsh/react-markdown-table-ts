@@ -29,7 +29,8 @@ describe('Content-Security-Policy support', () => {
     expect(lineNumbers.position).toBe('absolute');
     expect(lineNumbers.pointerEvents).toBe('none');
     expect(lineNumbers.userSelect).toBe('none');
-    expect(getComputedStyle(container.querySelector('.line-numbers-rows > span')!).textAlign).toBe('right');
+    expect(lineNumbers.textAlign).toBe('right');
+    expect(lineNumbers.whiteSpace).toBe('pre');
     expect(getComputedStyle(container.querySelector('pre')!).paddingLeft).toBe('1em');
     expect(getComputedStyle(container.querySelector('code')!).paddingLeft).toBe('3em');
   });
