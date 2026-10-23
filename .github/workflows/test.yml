@@ -34,6 +34,10 @@ jobs:
       if: matrix.react != '18'
       run: npm install --no-save react@${{ matrix.react }} react-dom@${{ matrix.react }}
 
+    - name: Lint
+      if: matrix.react == '18'
+      run: npm run lint
+
     - name: Typecheck
       run: npm run typecheck
 
