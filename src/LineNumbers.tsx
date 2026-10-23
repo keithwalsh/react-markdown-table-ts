@@ -3,14 +3,13 @@
  * styled pre/code block.
  */
 
-import type { CSSProperties } from 'react';
-import React from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 /**
  * Line numbers component props with style support
  */
 export interface LineNumbersComponentProps {
-  children: React.ReactNode;
+  children: ReactNode;
   showLineNumbers?: boolean;
   startLine?: number;
   className?: string;

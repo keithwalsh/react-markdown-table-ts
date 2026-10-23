@@ -3,6 +3,7 @@
  * alignment options, and table configuration.
  */
 
+import type { CSSProperties } from 'react';
 import type { MarkdownTableError } from './validation.js';
 
 export interface InputData {
@@ -91,7 +92,7 @@ export interface MarkdownTableProps {
    *   }}
    * />
    */
-  preStyle?: React.CSSProperties;
+  preStyle?: CSSProperties;
 
   /**
    * Optional callback that receives the generated Markdown table string whenever it changes.
