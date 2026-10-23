@@ -151,6 +151,13 @@ export interface MarkdownTableProps extends MarkdownTableOptions {
    */
   showLineNumbers?: boolean;
 
+  /**
+   * Optional nonce for the style tag that holds the component's CSS, for pages whose
+   * Content-Security-Policy blocks inline styles. With React 19 server rendering, use the
+   * same value as the style nonce in React's render options, or React leaves the CSS out.
+   * @default undefined
+   */
+  nonce?: string;
 }
 
 export type Alignment = 'left' | 'right' | 'center' | 'none';
