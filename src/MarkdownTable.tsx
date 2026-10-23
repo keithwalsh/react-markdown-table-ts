@@ -79,8 +79,8 @@ export function MarkdownTable({
     onGenerateRef.current?.(result.markdown, result.error);
   }, [result]);
 
-  // Anything but 'dark' gets the default light theme, so a stray value from JavaScript can't flip it
-  const themeClass = theme === 'dark' ? THEME_CLASSES.dark : THEME_CLASSES.light;
+  // Any other value gets the default light theme, so a stray value from JavaScript can't flip it
+  const themeClass = theme === 'dark' || theme === 'auto' ? THEME_CLASSES[theme] : THEME_CLASSES.light;
 
   return (
     <div className={`rmt ${themeClass}`}>

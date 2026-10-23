@@ -17,7 +17,24 @@ export const DEFAULT_TOP_PADDING = 16;
 export const THEME_CLASSES = {
   light: 'rmt-light',
   dark: 'rmt-dark',
+  auto: 'rmt-auto',
 } as const;
+
+const LIGHT_THEME = `
+  --rmt-color: #000;
+  --rmt-text-shadow: 0 1px #fff;
+  --rmt-background: #f5f2f0;
+  --rmt-selection-background: #b3d4fc;
+  --rmt-line-number-color: #6e6e6e;
+  --rmt-border-radius: 0;`;
+
+const DARK_THEME = `
+  --rmt-color: #f8f8f2;
+  --rmt-text-shadow: 0 1px rgba(0,0,0,.3);
+  --rmt-background: #282a36;
+  --rmt-selection-background: #44475a;
+  --rmt-line-number-color: #999;
+  --rmt-border-radius: .3em;`;
 
 const TEXT_STYLES = `
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -37,21 +54,13 @@ const TEXT_STYLES = `
   hyphens: none;`;
 
 export const STYLESHEET = `
-.${THEME_CLASSES.light} {
-  --rmt-color: #000;
-  --rmt-text-shadow: 0 1px #fff;
-  --rmt-background: #f5f2f0;
-  --rmt-selection-background: #b3d4fc;
-  --rmt-line-number-color: #6e6e6e;
-  --rmt-border-radius: 0;
+.${THEME_CLASSES.light}, .${THEME_CLASSES.auto} {${LIGHT_THEME}
 }
-.${THEME_CLASSES.dark} {
-  --rmt-color: #f8f8f2;
-  --rmt-text-shadow: 0 1px rgba(0,0,0,.3);
-  --rmt-background: #282a36;
-  --rmt-selection-background: #44475a;
-  --rmt-line-number-color: #999;
-  --rmt-border-radius: .3em;
+.${THEME_CLASSES.dark} {${DARK_THEME}
+}
+@media (prefers-color-scheme: dark) {
+  .${THEME_CLASSES.auto} {${DARK_THEME.replace(/\n/g, '\n  ')}
+  }
 }
 .rmt code[class*=language-], .rmt pre[class*=language-] {
   color: var(--rmt-color);

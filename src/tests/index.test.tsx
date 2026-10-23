@@ -299,13 +299,30 @@ describe('MarkdownTable', () => {
       expectPreNotToHaveClasses(container, ['dark-theme']);
     });
 
-    it('should define both themes in the stylesheet', () => {
+    it('should mark the wrapper with the auto theme class', () => {
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="auto" />);
+
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-auto');
+      expectPreNotToHaveClasses(container, ['dark-theme']);
+    });
+
+    it('should define each theme in the stylesheet', () => {
       render(<MarkdownTable inputData={testData.twoColumn} />);
 
       const css = getStyleElement()?.textContent;
-      expect(getCssRule(css, '.rmt-light')).toContain('--rmt-background: #f5f2f0;');
+      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-background: #f5f2f0;');
       expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-background: #282a36;');
       expect(css).toContain('.rmt code[class*=language-], .rmt pre[class*=language-] {');
+    });
+
+    it('should switch the auto theme to dark when the reader prefers a dark colour scheme', () => {
+      render(<MarkdownTable inputData={testData.twoColumn} theme="auto" />);
+
+      const css = getStyleElement()?.textContent;
+      const darkAutoRule = css?.split('@media (prefers-color-scheme: dark) {\n  .rmt-auto {')[1]?.split('}')[0];
+      const declarations = (rule?: string) => rule?.trim().split(/\s*\n\s*/);
+      expect(declarations(darkAutoRule)).toEqual(declarations(getCssRule(css, '.rmt-dark')));
+      expect(declarations(darkAutoRule)).toContain('--rmt-background: #282a36;');
     });
 
     it('should use a dark selection background so selected dark theme text stays readable', () => {
@@ -320,7 +337,7 @@ describe('MarkdownTable', () => {
       render(<MarkdownTable inputData={testData.twoColumn} />);
 
       const css = getStyleElement()?.textContent;
-      expect(getCssRule(css, '.rmt-light')).toContain('--rmt-line-number-color: #6e6e6e;');
+      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-line-number-color: #6e6e6e;');
       expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-line-number-color: #999;');
       expect(getCssRule(css, '.rmt pre[class*=language-] > .line-numbers-rows')).toContain(
         'color: var(--rmt-line-number-color);'
