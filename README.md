@@ -130,6 +130,26 @@ const inputData = useMemo(
 ```
 The table is cached on the `inputData` array itself. A new array on every render regenerates it every time, and changing the same array in place leaves the old table on screen. Memoise data you build during render, and pass a new array rather than mutating the old one.
 
+8. **Copying the Markdown**:
+```typescript
+function CopyableTable({ data }: { data: string[][] }) {
+    const [markdown, setMarkdown] = useState('');
+
+    return (
+        <>
+            <MarkdownTable
+                inputData={data}
+                onGenerate={(table, error) => setMarkdown(error ? '' : table)}
+            />
+            <button disabled={!markdown} onClick={() => navigator.clipboard.writeText(markdown)}>
+                Copy as Markdown
+            </button>
+        </>
+    );
+}
+```
+`onGenerate` receives the table exactly as displayed. To copy a table without showing it, call `generateMarkdownTable(data)` in the click handler instead.
+
 ## Generating Markdown Without Rendering
 
 `generateMarkdownTable` takes the same data and options as the component and returns the Markdown string. It throws a `MarkdownTableError` when the input is invalid.
