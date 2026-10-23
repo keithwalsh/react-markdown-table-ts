@@ -68,5 +68,6 @@ jobs:
         files: ./coverage/clover.xml,./coverage/lcov.info
         flags: unittests
         name: codecov-umbrella
-        fail_ci_if_error: true
+        # A Codecov outage shouldn't fail CI; the Jest coverage threshold still applies
+        fail_ci_if_error: false
         verbose: true
