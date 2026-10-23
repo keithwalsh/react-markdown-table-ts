@@ -53,6 +53,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:bundle": "node scripts/test-bundle.mjs",
+    "check:package": "publint && attw --pack .",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prepublishOnly": "npm run build"
@@ -62,6 +63,7 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
     "@storybook/react-vite": "^9.1.10",
     "@testing-library/jest-dom": "^6.6.3",
@@ -76,6 +78,7 @@
     "globals": "^17.13.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "publint": "^0.3.25",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "storybook": "^9.1.10",
