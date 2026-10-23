@@ -1,9 +1,11 @@
 node_modules
 dist
-.*
-!.github
-!.storybook
-!.gitignore
 coverage/
 *storybook.log
 storybook-static
+.eslintcache
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
