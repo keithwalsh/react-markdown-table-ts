@@ -4,6 +4,7 @@
     "noEmit": false,
     "declaration": true,
     "emitDeclarationOnly": true,
+    "rootDir": "src",
     "outDir": "dist",
     // Library code runs in browsers, so typecheck it without Node or Vite's client types
     "types": []
