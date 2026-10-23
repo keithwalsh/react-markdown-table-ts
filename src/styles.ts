@@ -81,11 +81,13 @@ export const STYLESHEET = `
   position: relative;
   isolation: isolate;
   display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
   width: fit-content;
-  min-width: min-content;
+  max-width: 100%;
   margin: 0;
   padding: 0 1em 1em 0;
-  overflow: visible;
+  overflow-x: auto;
   background: var(--rmt-background);
   border-radius: var(--rmt-border-radius);
 }

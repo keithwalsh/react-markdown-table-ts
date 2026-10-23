@@ -355,6 +355,33 @@ describe('MarkdownTable', () => {
     });
   });
 
+  describe('wide tables', () => {
+    it('should scroll horizontally rather than overflow the container', () => {
+      const { container } = render(<MarkdownTable inputData={testData.multiRow} />);
+
+      const preStyle = getComputedStyle(getPreElement(container)!);
+      expect(preStyle.maxWidth).toBe('100%');
+      expect(preStyle.boxSizing).toBe('border-box');
+      expect(preStyle.overflowX).toBe('auto');
+    });
+
+    it('should let keyboard users focus the table to scroll it', () => {
+      const { container } = render(<MarkdownTable inputData={testData.multiRow} />);
+
+      expect(getPreElement(container)?.tabIndex).toBe(0);
+    });
+
+    it('should let preStyle restore the overflow', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.multiRow} preStyle={{ maxWidth: 'none', overflowX: 'visible' }} />
+      );
+
+      const preStyle = getComputedStyle(getPreElement(container)!);
+      expect(preStyle.maxWidth).toBe('none');
+      expect(preStyle.overflowX).toBe('visible');
+    });
+  });
+
   describe('className prop', () => {
     it('should apply custom className', () => {
       const { container } = render(
@@ -475,10 +502,11 @@ describe('MarkdownTable', () => {
       expectPreStyle(container, { minWidth: '400px' });
     });
 
-    it('should use min-content when minWidth is not specified', () => {
+    it('should set no minimum width when minWidth is not specified', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
-      
-      expect(getComputedStyle(getPreElement(container)!).minWidth).toBe('min-content');
+
+      expect(getPreElement(container)?.style.minWidth).toBe('');
+      expect(getStyleElement()?.textContent).not.toContain('min-width');
     });
   });
 

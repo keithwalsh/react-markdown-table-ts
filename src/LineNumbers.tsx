@@ -49,6 +49,8 @@ export function LineNumbers({
       className={`language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className}`.trim()}
       data-start={startLine}
       style={preStyle}
+      // Focusable, so keyboard users can scroll a table wider than its container
+      tabIndex={0}
     >
       <code className="language-markdown" style={{ ...topPaddingStyle, ...codeStyle }}>
         {children}
