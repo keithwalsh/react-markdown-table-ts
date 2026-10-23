@@ -239,3 +239,7 @@ If you experience styling issues when importing this component into your project
 3. **Custom styling**: Use the `className` and `preStyle` props to add custom styles or override defaults as needed.
 
 4. **Line numbers**: If line numbers aren't displaying, verify that `showLineNumbers` is set to `true` (default).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
