@@ -3,6 +3,7 @@
  * rendering, props handling, styling, and edge cases.
  */
 
+import { createRef } from 'react';
 import { render } from '@testing-library/react';
 import { getPreElement, getCodeElement, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
 
@@ -280,6 +281,13 @@ describe('LineNumbers', () => {
       expect(pre?.id).toBe('code');
       expect(pre?.getAttribute('aria-label')).toBe('Code');
       expect(pre?.dataset.testid).toBe('code-block');
+    });
+
+    it('should pass preRef to the pre element', () => {
+      const preRef = createRef<HTMLPreElement>();
+      const { container } = render(<LineNumbers preRef={preRef}>code</LineNumbers>);
+
+      expect(preRef.current).toBe(getPreElement(container));
     });
 
     it('should be focusable unless tabIndex says otherwise', () => {

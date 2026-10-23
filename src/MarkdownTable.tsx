@@ -3,7 +3,7 @@
  * markdown table syntax with optional line numbers and theme support.
  */
 
-import { useEffect, useDeferredValue, useMemo, useRef } from 'react';
+import { forwardRef, useEffect, useDeferredValue, useMemo, useRef } from 'react';
 import { generateMarkdownTable } from './generateMarkdownTable.js';
 import { LineNumbers } from './LineNumbers.js';
 import { DEFAULT_TOP_PADDING, STYLESHEET, STYLESHEET_HREF, THEME_CLASSES } from './styles.js';
@@ -39,24 +39,28 @@ function generateTableSyntax({ inputData, ...options }: TableInputs): TableSynta
   }
 }
 
-export function MarkdownTable({
-  inputData = null,
-  hasHeader = true,
-  columnAlignments = DEFAULT_COLUMN_ALIGNMENTS,
-  isCompact = false,
-  hasTabs = false,
-  hasPadding = true,
-  convertLineBreaks = false,
-  className,
-  onGenerate,
-  theme = 'light',
-  preStyle,
-  topPadding = DEFAULT_TOP_PADDING,
-  minWidth,
-  showLineNumbers = true,
-  nonce,
-  ...preAttributes
-}: MarkdownTableProps) {
+// forwardRef rather than a ref prop, which React 18 doesn't pass to function components
+export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(function MarkdownTable(
+  {
+    inputData = null,
+    hasHeader = true,
+    columnAlignments = DEFAULT_COLUMN_ALIGNMENTS,
+    isCompact = false,
+    hasTabs = false,
+    hasPadding = true,
+    convertLineBreaks = false,
+    className,
+    onGenerate,
+    theme = 'light',
+    preStyle,
+    topPadding = DEFAULT_TOP_PADDING,
+    minWidth,
+    showLineNumbers = true,
+    nonce,
+    ...preAttributes
+  },
+  ref
+) {
   // Inline alignment arrays are new on every render, so memoise on their contents.
   // String() rather than join() so a non-array from JavaScript reaches validation instead of throwing here
   const columnAlignmentsKey = String(columnAlignments);
@@ -89,6 +93,7 @@ export function MarkdownTable({
       <style {...STYLESHEET_PROPS} nonce={nonce} dangerouslySetInnerHTML={{ __html: STYLESHEET }} />
       <LineNumbers
         {...preAttributes}
+        preRef={ref}
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
         topPadding={topPadding}
@@ -101,4 +106,6 @@ export function MarkdownTable({
       </LineNumbers>
     </div>
   );
-}
+});
+
+MarkdownTable.displayName = 'MarkdownTable';

@@ -3,7 +3,7 @@
  * including rendering, props handling, and callback functionality.
  */
 
-import { Component, version, type ReactNode } from 'react';
+import { Component, createRef, version, type ReactNode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
 import { MarkdownTable, MarkdownTableError, type MarkdownTableProps } from '../index';
@@ -463,6 +463,17 @@ describe('MarkdownTable', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} tabIndex={-1} />);
 
       expect(getPreElement(container)?.tabIndex).toBe(-1);
+    });
+
+    it('should forward a ref to the pre element', () => {
+      const ref = createRef<HTMLPreElement>();
+      const { container } = render(<MarkdownTable inputData={testData.simple} ref={ref} />);
+
+      expect(ref.current).toBe(getPreElement(container));
+    });
+
+    it('should name the component for React DevTools and warnings', () => {
+      expect(MarkdownTable.displayName).toBe('MarkdownTable');
     });
 
     it('should keep the built-in classes and styles alongside other attributes', () => {

@@ -3,7 +3,7 @@
  * styled pre/code block.
  */
 
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from 'react';
 import { DEFAULT_TOP_PADDING } from './styles.js';
 
 /**
@@ -17,6 +17,7 @@ export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreEl
   style?: CSSProperties;
   topPadding?: number;
   codeStyle?: CSSProperties;
+  preRef?: Ref<HTMLPreElement>;
 }
 
 /**
@@ -31,6 +32,7 @@ export function LineNumbers({
   style = {},
   topPadding = DEFAULT_TOP_PADDING,
   codeStyle = {},
+  preRef,
   ...preAttributes
 }: LineNumbersComponentProps) {
   const code = typeof children === 'string' ? children : '';
@@ -50,6 +52,7 @@ export function LineNumbers({
       // Focusable, so keyboard users can scroll a table wider than its container
       tabIndex={0}
       {...preAttributes}
+      ref={preRef}
       className={`language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className}`.trim()}
       data-start={startLine}
       style={preStyle}
