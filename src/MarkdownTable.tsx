@@ -88,7 +88,7 @@ export function MarkdownTable({
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
         topPadding={topPadding}
         style={{
-          ...(minWidth ? { minWidth: `${minWidth}px` } : {}),
+          ...(minWidth !== undefined ? { minWidth: `${minWidth}px` } : {}),
           ...preStyle
         }}
       >

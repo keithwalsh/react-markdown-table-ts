@@ -502,6 +502,12 @@ describe('MarkdownTable', () => {
       expectPreStyle(container, { minWidth: '400px' });
     });
 
+    it('should apply a minWidth of zero', () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} minWidth={0} />);
+
+      expectPreStyle(container, { minWidth: '0px' });
+    });
+
     it('should set no minimum width when minWidth is not specified', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
