@@ -4,7 +4,7 @@
  */
 
 import { Component, version, type ReactNode } from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
 import { MarkdownTable, MarkdownTableError, type MarkdownTableProps } from '../index';
 import * as utils from '../utils';
@@ -435,6 +435,44 @@ describe('MarkdownTable', () => {
       expectPreClasses(container, ['line-numbers']);
       const codeElement = getCodeElement(container);
       expect(hasClass(codeElement, 'language-markdown')).toBe(true);
+    });
+  });
+
+  describe('HTML attributes', () => {
+    it('should pass other attributes through to the pre element', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.simple} id="table" aria-label="Markdown table" data-testid="markdown-table" />
+      );
+
+      const preElement = getPreElement(container);
+      expect(preElement?.id).toBe('table');
+      expect(preElement?.getAttribute('aria-label')).toBe('Markdown table');
+      expect(screen.getByTestId('markdown-table')).toBe(preElement);
+    });
+
+    it('should pass event handlers through to the pre element', () => {
+      const onCopy = jest.fn();
+      const { container } = render(<MarkdownTable inputData={testData.simple} onCopy={onCopy} />);
+
+      fireEvent.copy(getPreElement(container)!);
+
+      expect(onCopy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should let tabIndex take the table out of the tab order', () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} tabIndex={-1} />);
+
+      expect(getPreElement(container)?.tabIndex).toBe(-1);
+    });
+
+    it('should keep the built-in classes and styles alongside other attributes', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.simple} id="table" className="custom-class" minWidth={400} />
+      );
+
+      expectPreClasses(container, ['language-markdown', 'line-numbers', 'custom-class']);
+      expectPreStyle(container, { minWidth: '400px' });
+      expect(getPreElement(container)?.dataset.start).toBe('1');
     });
   });
 

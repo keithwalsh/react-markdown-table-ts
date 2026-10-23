@@ -270,6 +270,27 @@ describe('LineNumbers', () => {
     });
   });
 
+  describe('pre attributes', () => {
+    it('should pass other attributes through to the pre element', () => {
+      const { container } = render(
+        <LineNumbers id="code" aria-label="Code" data-testid="code-block">code</LineNumbers>
+      );
+
+      const pre = getPreElement(container);
+      expect(pre?.id).toBe('code');
+      expect(pre?.getAttribute('aria-label')).toBe('Code');
+      expect(pre?.dataset.testid).toBe('code-block');
+    });
+
+    it('should be focusable unless tabIndex says otherwise', () => {
+      const { container: focusable } = render(<LineNumbers>code</LineNumbers>);
+      const { container: unfocusable } = render(<LineNumbers tabIndex={-1}>code</LineNumbers>);
+
+      expect(getPreElement(focusable)?.tabIndex).toBe(0);
+      expect(getPreElement(unfocusable)?.tabIndex).toBe(-1);
+    });
+  });
+
   describe('topPadding prop', () => {
     it('should apply topPadding to line numbers', () => {
       const { container } = render(

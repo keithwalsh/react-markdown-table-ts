@@ -3,13 +3,13 @@
  * styled pre/code block.
  */
 
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { DEFAULT_TOP_PADDING } from './styles.js';
 
 /**
- * Line numbers component props with style support
+ * Line numbers component props with style support. Other attributes go on the pre element.
  */
-export interface LineNumbersComponentProps {
+export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'className' | 'style'> {
   children: ReactNode;
   showLineNumbers?: boolean;
   startLine?: number;
@@ -30,7 +30,8 @@ export function LineNumbers({
   className = '',
   style = {},
   topPadding = DEFAULT_TOP_PADDING,
-  codeStyle = {}
+  codeStyle = {},
+  ...preAttributes
 }: LineNumbersComponentProps) {
   const code = typeof children === 'string' ? children : '';
   const lines = code.split('\n');
@@ -46,11 +47,12 @@ export function LineNumbers({
 
   return (
     <pre
+      // Focusable, so keyboard users can scroll a table wider than its container
+      tabIndex={0}
+      {...preAttributes}
       className={`language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className}`.trim()}
       data-start={startLine}
       style={preStyle}
-      // Focusable, so keyboard users can scroll a table wider than its container
-      tabIndex={0}
     >
       <code className="language-markdown" style={{ ...topPaddingStyle, ...codeStyle }}>
         {children}

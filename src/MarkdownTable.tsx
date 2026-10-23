@@ -55,6 +55,7 @@ export function MarkdownTable({
   minWidth,
   showLineNumbers = true,
   nonce,
+  ...preAttributes
 }: MarkdownTableProps) {
   // Inline alignment arrays are new on every render, so memoise on their contents.
   // String() rather than join() so a non-array from JavaScript reaches validation instead of throwing here
@@ -87,6 +88,7 @@ export function MarkdownTable({
       {/* React 18's server renderer HTML-escapes <style> children, which breaks the CSS and hydration */}
       <style {...STYLESHEET_PROPS} nonce={nonce} dangerouslySetInnerHTML={{ __html: STYLESHEET }} />
       <LineNumbers
+        {...preAttributes}
         showLineNumbers={showLineNumbers}
         className={`${theme === 'dark' ? 'dark-theme' : ''} ${className || ''}`.trim()}
         topPadding={topPadding}

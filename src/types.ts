@@ -3,7 +3,7 @@
  * alignment options, and table configuration.
  */
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, HTMLAttributes } from 'react';
 import type { MarkdownTableError } from './validation.js';
 
 /**
@@ -63,7 +63,14 @@ export interface MarkdownTableOptions {
   convertLineBreaks?: boolean;
 }
 
-export interface MarkdownTableProps extends MarkdownTableOptions {
+/**
+ * Attributes passed through to the pre element that holds the table, such as
+ * `id`, `aria-label`, `data-*` attributes and event handlers. Its style is set
+ * with `preStyle`.
+ */
+type PreAttributes = Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'dangerouslySetInnerHTML' | 'nonce' | 'style'>;
+
+export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes {
   /**
    * The entire table data as a two-dimensional array.
    * If `hasHeader` is true, the first row is treated as the header.
