@@ -10,7 +10,8 @@ import type { Alignment } from './types.js';
  * Supports ES2022 error chaining via the optional `cause` property.
  */
 export class MarkdownTableError extends Error {
-  constructor(message: string, options?: ErrorOptions) {
+  // Inline rather than ErrorOptions, which needs consumers to use TypeScript's ES2022 lib
+  constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
     this.name = 'MarkdownTableError';
     Object.setPrototypeOf(this, MarkdownTableError.prototype);
