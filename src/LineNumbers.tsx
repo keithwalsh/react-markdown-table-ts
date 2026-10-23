@@ -12,11 +12,9 @@ import { DEFAULT_TOP_PADDING } from './styles.js';
 export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'className' | 'style'> {
   children: ReactNode;
   showLineNumbers?: boolean;
-  startLine?: number;
   className?: string;
   style?: CSSProperties;
   topPadding?: number;
-  codeStyle?: CSSProperties;
   preRef?: Ref<HTMLPreElement>;
 }
 
@@ -27,23 +25,17 @@ export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreEl
 export function LineNumbers({
   children,
   showLineNumbers = false,
-  startLine = 1,
   className = '',
   style = {},
   topPadding = DEFAULT_TOP_PADDING,
-  codeStyle = {},
   preRef,
   ...preAttributes
 }: LineNumbersComponentProps) {
   const code = typeof children === 'string' ? children : '';
   const lines = code.split('\n');
-  const lineNumbers = lines.map((_, index) => startLine + index);
+  const lineNumbers = lines.map((_, index) => index + 1);
 
   // The stylesheet covers the defaults, so only add inline styles for values that differ
-  const preStyle: CSSProperties = {
-    ...(startLine !== 1 ? { counterReset: `linenumber ${startLine - 1}` } : {}),
-    ...style
-  };
   const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};
   const lineNumbersTopStyle = topPadding !== DEFAULT_TOP_PADDING ? { top: `${topPadding}px` } : {};
 
@@ -54,10 +46,9 @@ export function LineNumbers({
       {...preAttributes}
       ref={preRef}
       className={`language-markdown ${showLineNumbers ? 'line-numbers' : ''} ${className}`.trim()}
-      data-start={startLine}
-      style={preStyle}
+      style={style}
     >
-      <code className="language-markdown" style={{ ...topPaddingStyle, ...codeStyle }}>
+      <code className="language-markdown" style={topPaddingStyle}>
         {children}
       </code>
       {showLineNumbers && (

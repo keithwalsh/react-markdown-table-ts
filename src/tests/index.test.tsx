@@ -483,7 +483,7 @@ describe('MarkdownTable', () => {
 
       expectPreClasses(container, ['language-markdown', 'line-numbers', 'custom-class']);
       expectPreStyle(container, { minWidth: '400px' });
-      expect(getPreElement(container)?.dataset.start).toBe('1');
+      expect(getPreElement(container)?.id).toBe('table');
     });
   });
 

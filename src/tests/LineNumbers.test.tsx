@@ -130,71 +130,14 @@ describe('LineNumbers', () => {
     });
   });
 
-  describe('startLine prop', () => {
-    it('should set data-start attribute with custom startLine', () => {
+  describe('numbering', () => {
+    it('should number lines from 1', () => {
       const { container } = render(
-        <LineNumbers startLine={10}>code</LineNumbers>
+        <LineNumbers showLineNumbers={true}>{'line1\nline2\nline3'}</LineNumbers>
       );
-      
-      const pre = container.querySelector('pre');
-      expect(pre?.getAttribute('data-start')).toBe('10');
-    });
 
-    it('should default startLine to 1', () => {
-      const { container } = render(<LineNumbers>code</LineNumbers>);
-      
-      const pre = container.querySelector('pre');
-      expect(pre?.getAttribute('data-start')).toBe('1');
-    });
-
-    it('should set counter-reset style', () => {
-      const { container } = render(
-        <LineNumbers startLine={5}>code</LineNumbers>
-      );
-      
-      const pre = container.querySelector('pre') as HTMLPreElement;
-      expect(pre?.style.counterReset).toBe('linenumber 4');
-    });
-
-    it('should handle zero as startLine', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} startLine={0}>
-          line1
-        </LineNumbers>
-      );
-      
-      const pre = container.querySelector('pre');
-      expect(pre?.getAttribute('data-start')).toBe('0');
-    });
-
-    it('should handle negative startLine', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} startLine={-5}>
-          line1
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      const firstNumber = lineNumbersSpan?.children[0];
-      expect(firstNumber?.textContent).toBe('-5');
-    });
-
-    it('should display correct line numbers for custom startLine', () => {
-      const code = 'line1\nline2\nline3';
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} startLine={10}>
-          {code}
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.line-numbers-rows');
-      const firstNumber = lineNumbersSpan?.children[0];
-      const secondNumber = lineNumbersSpan?.children[1];
-      const thirdNumber = lineNumbersSpan?.children[2];
-      
-      expect(firstNumber?.textContent).toBe('10');
-      expect(secondNumber?.textContent).toBe('11');
-      expect(thirdNumber?.textContent).toBe('12');
+      const numbers = Array.from(getLineNumbersSpan(container)!.children, number => number.textContent);
+      expect(numbers).toEqual(['1', '2', '3']);
     });
   });
 
@@ -393,7 +336,6 @@ describe('LineNumbers', () => {
       const { container } = render(
         <LineNumbers
           showLineNumbers={true}
-          startLine={10}
           className="custom-code"
           style={customStyle}
           topPadding={24}
@@ -407,7 +349,6 @@ describe('LineNumbers', () => {
       
       expect(pre?.className).toContain('line-numbers');
       expect(pre?.className).toContain('custom-code');
-      expect(pre?.getAttribute('data-start')).toBe('10');
       expect(pre?.style.backgroundColor).toBe('blue');
       expect(lineNumbersSpan?.children.length).toBe(3);
     });
