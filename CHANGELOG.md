@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.0.1] - 2026-10-24
 
 ### Fixed
 
@@ -93,7 +93,7 @@ Tables look the same. The breaking changes are to class names and exported types
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[Unreleased]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...main
+[2.0.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...main
 [2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...4c5d91c
 [1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...667a2bc
 [1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...4901149
