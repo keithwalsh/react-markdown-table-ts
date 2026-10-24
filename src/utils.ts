@@ -3,7 +3,7 @@
  * table strings with alignment, padding, and column width adjustments.
  */
 
-import type { InputData, Alignment, TableConfig } from './types.js';
+import type { Alignment, InputData } from './types.js';
 
 type TableRow = readonly string[];
 
@@ -102,101 +102,45 @@ function normaliseInputData(inputData: RawTableData, replaceNewlines: boolean): 
   };
 }
 
-function calculatePadding(config: TableConfig): string {
-  let padding: string;
-  if (config.useTabs) {
-    padding = '\t';
-  } else if (config.hasPadding) {
-    padding = ' ';
-  } else {
-    padding = '';
-  }
-  return padding;
+/** One alignment per column, the cell padding, and the column widths unless the table is compact */
+interface TableLayout {
+  alignments: readonly Alignment[];
+  padding: string;
+  columnWidths?: readonly number[];
 }
 
-class CellFormatter {
-  private readonly padding: string;
+const ALIGNMENT_INDICATORS: Record<Alignment, (width: number) => string> = {
+  left: width => `:${'-'.repeat(width - 1)}`,
+  right: width => `${'-'.repeat(width - 1)}:`,
+  center: width => `:${'-'.repeat(width - 2)}:`,
+  none: width => '-'.repeat(width),
+};
 
-  constructor(config: TableConfig) {
-    this.padding = calculatePadding(config);
-  }
-
-  formatCell(content: string, alignment: Alignment, totalPadding: number): string {
-    switch (alignment) {
-      case 'right':
-        return `${this.padding}${' '.repeat(totalPadding)}${content}${this.padding}`;
-      case 'center': {
-        const paddingLeft = Math.floor(totalPadding / 2);
-        const paddingRight = totalPadding - paddingLeft;
-        return `${this.padding}${' '.repeat(paddingLeft)}${content}${' '.repeat(paddingRight)}${this.padding}`;
-      }
-      default: // left or none
-        return `${this.padding}${content}${' '.repeat(totalPadding)}${this.padding}`;
+function formatCell(content: string, alignment: Alignment, totalPadding: number, padding: string): string {
+  switch (alignment) {
+    case 'right':
+      return `${padding}${' '.repeat(totalPadding)}${content}${padding}`;
+    case 'center': {
+      const paddingLeft = Math.floor(totalPadding / 2);
+      return `${padding}${' '.repeat(paddingLeft)}${content}${' '.repeat(totalPadding - paddingLeft)}${padding}`;
     }
+    default: // left or none
+      return `${padding}${content}${' '.repeat(totalPadding)}${padding}`;
   }
 }
 
-class AlignmentFormatter {
-  private static readonly indicators = {
-    left: (width: number) => `:${'-'.repeat(width - 1)}`,
-    right: (width: number) => `${'-'.repeat(width - 1)}:`,
-    center: (width: number) => `:${'-'.repeat(width - 2)}:`,
-    none: (width: number) => '-'.repeat(width)
-  };
-
-  static formatIndicator(alignment: Alignment, width: number): string {
-    return this.indicators[alignment](width);
-  }
+function formatRow(row: TableRow, { alignments, padding, columnWidths }: TableLayout, cellWidths?: readonly number[]): string {
+  const cells = alignments.map((alignment, i) => {
+    // Without column widths the table is compact, so cells get no extra padding
+    const totalPadding = columnWidths ? Math.max(0, columnWidths[i] - (cellWidths?.[i] ?? 0)) : 0;
+    return formatCell(row[i] ?? '', alignment, totalPadding, padding);
+  });
+  return `|${cells.join('|')}|`;
 }
 
-class TableFormatter {
-  private readonly config: TableConfig;
-  private readonly cellFormatter: CellFormatter;
-  private readonly adjustedAlignments: Alignment[];
-
-  constructor(config: TableConfig) {
-    this.config = config;
-    this.cellFormatter = new CellFormatter(config);
-    this.adjustedAlignments = this.getAdjustedAlignments();
-  }
-
-  private getAdjustedAlignments(): Alignment[] {
-    const defaultAlignment: Alignment = 'none';
-
-    return this.config.columnAlignments.length < this.config.columnCount
-      ? [
-          ...Array.from(this.config.columnAlignments),
-          ...Array(this.config.columnCount - this.config.columnAlignments.length).fill(defaultAlignment),
-        ]
-      : Array.from(this.config.columnAlignments);
-  }
-
-  formatRow(row: TableRow, cellWidths?: readonly number[]): string {
-    const formattedCells = Array.from({ length: this.config.columnCount }, (_, i) => {
-      const cell = row[i] ?? '';
-      const alignment = this.adjustedAlignments[i];
-      // Without column widths the table is compact, so cells get no extra padding
-      const totalPadding = this.config.columnWidths
-        ? Math.max(0, this.config.columnWidths[i] - (cellWidths?.[i] ?? 0))
-        : 0;
-
-      return this.cellFormatter.formatCell(cell, alignment, totalPadding);
-    });
-
-    return `|${formattedCells.join('|')}|`;
-  }
-
-  formatAlignmentRow(): string {
-    const padding = calculatePadding(this.config);
-    const formattedColumns = Array.from({ length: this.config.columnCount }, (_, i) => {
-      const alignment = this.adjustedAlignments[i];
-      const width = this.config.columnWidths ? this.config.columnWidths[i] : 3;
-      const indicator = AlignmentFormatter.formatIndicator(alignment, width);
-      return `${padding}${indicator}${padding}`;
-    });
-
-    return `|${formattedColumns.join('|')}|`;
-  }
+function formatAlignmentRow({ alignments, padding, columnWidths }: TableLayout): string {
+  const cells = alignments.map((alignment, i) => `${padding}${ALIGNMENT_INDICATORS[alignment](columnWidths?.[i] ?? 3)}${padding}`);
+  return `|${cells.join('|')}|`;
 }
 
 function calculateColumnWidths(
@@ -238,20 +182,16 @@ export function generateMarkdownTableString(
     : undefined;
   const columnWidths = cellWidths && calculateColumnWidths(cellWidths, maxColumnCount);
 
-  const config: TableConfig = {
-    columnCount: maxColumnCount,
-    columnAlignments,
+  const layout: TableLayout = {
+    alignments: Array.from({ length: maxColumnCount }, (_, i) => columnAlignments[i] ?? 'none'),
+    padding: useTabs ? '\t' : hasPadding ? ' ' : '',
     columnWidths,
-    useTabs,
-    hasPadding
   };
 
-  const tableFormatter = new TableFormatter(config);
-
-  const headerRow = tableFormatter.formatRow(tableData.inputDataHeader, cellWidths?.[0]);
-  const alignmentRow = tableFormatter.formatAlignmentRow();
+  const headerRow = formatRow(tableData.inputDataHeader, layout, cellWidths?.[0]);
+  const alignmentRow = formatAlignmentRow(layout);
   const bodyRows = tableData.inputDataBody
-    .map((row, i) => tableFormatter.formatRow(row, cellWidths?.[i + 1]))
+    .map((row, i) => formatRow(row, layout, cellWidths?.[i + 1]))
     .join('\n');
 
   return `${headerRow}\n${alignmentRow}\n${bodyRows}`.trimEnd();

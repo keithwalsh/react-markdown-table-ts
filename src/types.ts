@@ -169,11 +169,3 @@ export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes 
 }
 
 export type Alignment = 'left' | 'right' | 'center' | 'none';
-
-export interface TableConfig {
-  columnCount: number;
-  columnAlignments: readonly Alignment[];
-  columnWidths?: readonly number[];
-  useTabs: boolean;
-  hasPadding: boolean;
-}
