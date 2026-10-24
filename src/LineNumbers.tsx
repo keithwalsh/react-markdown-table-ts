@@ -3,14 +3,14 @@
  * styled pre/code block.
  */
 
-import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from 'react';
+import type { CSSProperties, HTMLAttributes, Ref } from 'react';
 import { DEFAULT_TOP_PADDING } from './styles.js';
 
 /**
  * Line numbers component props with style support. Other attributes go on the pre element.
  */
 export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'className' | 'style'> {
-  children: ReactNode;
+  children: string;
   showLineNumbers?: boolean;
   className?: string;
   style?: CSSProperties;
@@ -31,9 +31,8 @@ export function LineNumbers({
   preRef,
   ...preAttributes
 }: LineNumbersComponentProps) {
-  const code = typeof children === 'string' ? children : '';
   // One text node rather than an element per line, which adds up for long tables
-  const lineNumbers = code.split('\n').map((_, index) => index + 1).join('\n');
+  const lineNumbers = children.split('\n').map((_, index) => index + 1).join('\n');
 
   // The stylesheet covers the defaults, so only add inline styles for values that differ
   const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};

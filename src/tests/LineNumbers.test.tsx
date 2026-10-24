@@ -43,15 +43,6 @@ describe('LineNumbers', () => {
       expect(code).toBeInTheDocument();
       expect(code?.textContent).toBe('');
     });
-
-    it('should handle non-string children', () => {
-      const { container } = render(
-        <LineNumbers>{123 as any}</LineNumbers>
-      );
-      
-      const code = container.querySelector('code');
-      expect(code?.textContent).toBe('123');
-    });
   });
 
   describe('Line numbers display', () => {
