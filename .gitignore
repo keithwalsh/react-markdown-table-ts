@@ -7,5 +7,6 @@ storybook-static
 .env
 .env.*
 .DS_Store
+.cursor/
 .idea/
 .vscode/
