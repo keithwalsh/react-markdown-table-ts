@@ -9,7 +9,7 @@ import { DEFAULT_TOP_PADDING } from './styles.js';
 /**
  * Line numbers component props with style support. Other attributes go on the pre element.
  */
-export interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'className' | 'style'> {
+interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>, 'children' | 'className' | 'style'> {
   children: string;
   showLineNumbers?: boolean;
   className?: string;
@@ -26,7 +26,7 @@ export function LineNumbers({
   children,
   showLineNumbers = false,
   className = '',
-  style = {},
+  style,
   topPadding = DEFAULT_TOP_PADDING,
   preRef,
   ...preAttributes
