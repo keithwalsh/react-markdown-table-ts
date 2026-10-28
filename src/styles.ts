@@ -20,21 +20,26 @@ export const THEME_CLASSES = {
   auto: 'rmt-auto',
 } as const;
 
+// The themes set --rmt-theme-* rather than the --rmt-* variables the page sets, so a
+// page's value wins wherever it's set, whatever its selector, cascade layer or order
 const LIGHT_THEME = `
-  --rmt-color: #000;
-  --rmt-text-shadow: 0 1px #fff;
-  --rmt-background: #f5f2f0;
-  --rmt-selection-background: #b3d4fc;
-  --rmt-line-number-color: #6e6e6e;
-  --rmt-border-radius: 0;`;
+  --rmt-theme-color: #000;
+  --rmt-theme-text-shadow: 0 1px #fff;
+  --rmt-theme-background: #f5f2f0;
+  --rmt-theme-selection-background: #b3d4fc;
+  --rmt-theme-line-number-color: #6e6e6e;
+  --rmt-theme-border-radius: 0;`;
 
 const DARK_THEME = `
-  --rmt-color: #f8f8f2;
-  --rmt-text-shadow: 0 1px rgba(0,0,0,.3);
-  --rmt-background: #282a36;
-  --rmt-selection-background: #44475a;
-  --rmt-line-number-color: #999;
-  --rmt-border-radius: .3em;`;
+  --rmt-theme-color: #f8f8f2;
+  --rmt-theme-text-shadow: 0 1px rgba(0,0,0,.3);
+  --rmt-theme-background: #282a36;
+  --rmt-theme-selection-background: #44475a;
+  --rmt-theme-line-number-color: #999;
+  --rmt-theme-border-radius: .3em;`;
+
+/** The page's value for an --rmt-* variable, or the theme's when the page doesn't set one */
+const themed = (name: string) => `var(--rmt-${name}, var(--rmt-theme-${name}))`;
 
 const TEXT_STYLES = `
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -61,23 +66,23 @@ export const STYLESHEET = `
   }
 }
 .rmt code.rmt-code, .rmt pre.rmt-pre {
-  color: var(--rmt-color);
+  color: ${themed('color')};
   background: 0 0;
-  text-shadow: var(--rmt-text-shadow);${TEXT_STYLES}
+  text-shadow: ${themed('text-shadow')};${TEXT_STYLES}
 }
 .rmt code.rmt-code ::-moz-selection,
 .rmt code.rmt-code::-moz-selection,
 .rmt pre.rmt-pre ::-moz-selection,
 .rmt pre.rmt-pre::-moz-selection {
   text-shadow: none;
-  background: var(--rmt-selection-background);
+  background: ${themed('selection-background')};
 }
 .rmt code.rmt-code ::selection,
 .rmt code.rmt-code::selection,
 .rmt pre.rmt-pre ::selection,
 .rmt pre.rmt-pre::selection {
   text-shadow: none;
-  background: var(--rmt-selection-background);
+  background: ${themed('selection-background')};
 }
 @media print {
   .rmt code.rmt-code, .rmt pre.rmt-pre {
@@ -95,8 +100,8 @@ export const STYLESHEET = `
   margin: 0;
   padding: 0 1em 1em 0;
   overflow-x: auto;
-  background: var(--rmt-background);
-  border-radius: var(--rmt-border-radius);
+  background: ${themed('background')};
+  border-radius: ${themed('border-radius')};
 }
 .rmt pre.rmt-pre.rmt-has-line-numbers {
   padding-left: 1em;
@@ -122,7 +127,7 @@ export const STYLESHEET = `
   letter-spacing: -1px;
   text-align: right;
   white-space: pre;
-  color: var(--rmt-line-number-color);
+  color: ${themed('line-number-color')};
   border-right: 1px solid #999;
   pointer-events: none;
   -webkit-user-select: none;

@@ -317,9 +317,21 @@ describe('MarkdownTable', () => {
       render(<MarkdownTable inputData={testData.twoColumn} />);
 
       const css = getStyleElement()?.textContent;
-      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-background: #f5f2f0;');
-      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-background: #282a36;');
+      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-theme-background: #f5f2f0;');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-theme-background: #282a36;');
       expect(css).toContain('.rmt code.rmt-code, .rmt pre.rmt-pre {');
+    });
+
+    it("should leave the --rmt-* variables to the page, so its values win wherever they're set", () => {
+      render(<MarkdownTable inputData={testData.twoColumn} />);
+
+      const css = getStyleElement()?.textContent ?? '';
+      const declaredVariables = css.match(/--rmt-[\w-]+(?=:)/g);
+      const themeReads = css.match(/var\(--rmt-theme-[\w-]+\)/g);
+      const pageFirstReads = css.match(/var\(--rmt-([\w-]+), var\(--rmt-theme-\1\)\)/g);
+      expect(declaredVariables?.every(variable => variable.startsWith('--rmt-theme-'))).toBe(true);
+      expect(pageFirstReads).toHaveLength(themeReads?.length ?? 0);
+      expect(getCssRule(css, '.rmt pre.rmt-pre')).toContain('background: var(--rmt-background, var(--rmt-theme-background));');
     });
 
     it('should switch the auto theme to dark when the reader prefers a dark colour scheme', () => {
@@ -329,25 +341,27 @@ describe('MarkdownTable', () => {
       const darkAutoRule = css?.split('@media (prefers-color-scheme: dark) {\n  .rmt-auto {')[1]?.split('}')[0];
       const declarations = (rule?: string) => rule?.trim().split(/\s*\n\s*/);
       expect(declarations(darkAutoRule)).toEqual(declarations(getCssRule(css, '.rmt-dark')));
-      expect(declarations(darkAutoRule)).toContain('--rmt-background: #282a36;');
+      expect(declarations(darkAutoRule)).toContain('--rmt-theme-background: #282a36;');
     });
 
     it('should use a dark selection background so selected dark theme text stays readable', () => {
       render(<MarkdownTable inputData={testData.twoColumn} theme="dark" />);
 
       const css = getStyleElement()?.textContent;
-      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-selection-background: #44475a;');
-      expect(css).toContain('::selection {\n  text-shadow: none;\n  background: var(--rmt-selection-background);\n}');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-theme-selection-background: #44475a;');
+      expect(css).toContain(
+        '::selection {\n  text-shadow: none;\n  background: var(--rmt-selection-background, var(--rmt-theme-selection-background));\n}'
+      );
     });
 
     it('should colour line numbers for at least 4.5:1 contrast in each theme', () => {
       render(<MarkdownTable inputData={testData.twoColumn} />);
 
       const css = getStyleElement()?.textContent;
-      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-line-number-color: #6e6e6e;');
-      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-line-number-color: #999;');
+      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-theme-line-number-color: #6e6e6e;');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-theme-line-number-color: #999;');
       expect(getCssRule(css, '.rmt pre.rmt-pre > .rmt-line-numbers')).toContain(
-        'color: var(--rmt-line-number-color);'
+        'color: var(--rmt-line-number-color, var(--rmt-theme-line-number-color));'
       );
     });
   });
