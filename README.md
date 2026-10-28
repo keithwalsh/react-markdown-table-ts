@@ -203,9 +203,15 @@ const markdown = generateMarkdownTable(
 
 5. **Styling**:
 - Includes built-in light and dark themes, and an auto theme that follows the reader's colour scheme
-- A table wider than its container scrolls horizontally, and can be focused so keyboard users can scroll it
+- A table wider than its container scrolls horizontally
 - Custom styles via the `className` and `preStyle` props, or the CSS variables and classes listed under [Custom Styles](#custom-styles)
 - Optional line numbers for better readability
+
+6. **Keyboard and Screen Readers**:
+- A table that scrolls, because it's wider than its container or taller than a `maxHeight` set with `preStyle`, is in the tab order, so keyboard users can focus it and scroll it with the arrow keys. A table that fits isn't, since there's nothing to scroll
+- Whether it scrolls is measured in the browser, so a server-rendered table joins the tab order once the page hydrates
+- A `tabIndex` prop replaces this: `tabIndex={0}` keeps the table focusable, for example to focus it through a `ref`, and `tabIndex={-1}` keeps it out of the tab order
+- ARIA doesn't allow `aria-label` on an element with no role, such as a \<pre\>, so not every screen reader announces it. To name a table, pass `role="region"` as well, which also lists the table among the page's landmarks
 
 ## Common Transformations
 
