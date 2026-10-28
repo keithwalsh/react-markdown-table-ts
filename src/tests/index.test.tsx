@@ -381,6 +381,14 @@ describe('MarkdownTable', () => {
       container.remove();
     });
 
+    it('should take the font from --rmt-font-family, falling back to a monospace stack', () => {
+      render(<MarkdownTable inputData={testData.simple} />);
+
+      expect(getCssRule(getStyleElement()?.textContent, '.rmt code.rmt-code, .rmt pre.rmt-pre')).toContain(
+        "font-family: var(--rmt-font-family, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace);"
+      );
+    });
+
     it('should not give the wrapper an id', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 

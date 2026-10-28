@@ -42,7 +42,7 @@ const DARK_THEME = `
 const themed = (name: string) => `var(--rmt-${name}, var(--rmt-theme-${name}))`;
 
 const TEXT_STYLES = `
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-family: var(--rmt-font-family, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace);
   font-size: 1em;
   text-align: left;
   white-space: pre;
