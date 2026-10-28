@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] - 2026-10-28
+
+### Added
+
+- The colours, corners and font come from `--rmt-*` CSS variables, which the README's Colours and Font section lists. A value the page sets wins over the theme's wherever it's set, such as on `:root`, on a parent element or in a cascade layer. Before, the variables weren't documented, and a value set anywhere but the `className` element could lose to the theme.
+- `--rmt-font-family` sets the font.
+- `getColumnName(index)` returns the A, B, C… header the table gives a column when `hasHeader` is false, so an editor can label its columns to match.
+
+### Changed
+
+- The `<pre>` element is only in the tab order while the table scrolls, so tables that fit are no longer tab stops. Pass `tabIndex={0}` to keep a table focusable, for example to focus it through a `ref`.
+- The themes set `--rmt-theme-*` variables rather than `--rmt-*` ones. Tables look the same, but CSS that reads a variable such as `var(--rmt-background)` without setting it no longer gets the theme's value.
+
 ## [2.0.1] - 2026-10-24
 
 ### Fixed
@@ -93,7 +106,8 @@ Tables look the same. The breaking changes are to class names and exported types
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[2.0.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...main
+[2.1.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/f54689a...main
+[2.0.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...f54689a
 [2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...4c5d91c
 [1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...667a2bc
 [1.6.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/ff06d3b...4901149
