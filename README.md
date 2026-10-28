@@ -51,6 +51,8 @@ function generateMarkdownTable(
     inputData: readonly (readonly CellValue[])[],
     options?: MarkdownTableOptions
 ): string;
+
+function getColumnName(index: number): string;
 ```
 | Prop                 | Type                                    | Default     | Description                                                                        |
 |----------------------|-----------------------------------------|-------------|------------------------------------------------------------------------------------|
@@ -96,6 +98,13 @@ Other props, such as `id`, `aria-label`, `data-*` attributes and event handlers,
     inputData={data}
     hasHeader={false} // Will generate A, B, C... headers
 />
+```
+`getColumnName(index)` returns the header for a column, counting from 0, so an editor can label its columns to match:
+```typescript
+import { getColumnName } from 'react-markdown-table-ts';
+
+getColumnName(0);  // 'A'
+getColumnName(26); // 'AA'
 ```
 4. **Setting Minimum Width**:
 ```typescript
