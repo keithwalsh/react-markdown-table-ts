@@ -195,7 +195,7 @@ const markdown = generateMarkdownTable(
 5. **Styling**:
 - Includes built-in light and dark themes, and an auto theme that follows the reader's colour scheme
 - A table wider than its container scrolls horizontally, and can be focused so keyboard users can scroll it
-- Custom styles via the `className` and `preStyle` props, or the classes listed under [Custom Styles](#custom-styles)
+- Custom styles via the `className` and `preStyle` props, or the CSS variables and classes listed under [Custom Styles](#custom-styles)
 - Optional line numbers for better readability
 
 ## Common Transformations
@@ -222,7 +222,32 @@ Add your own class to the \<pre\> element with `className`, or inline styles wit
 | `rmt-code`                           | The \<code\> element that holds the table        |
 | `rmt-line-numbers`                   | The line numbers                                 |
 
-A selector like `.rmt-dark .rmt-pre` works for properties the built-in CSS doesn't set, so `.rmt-dark .rmt-pre:focus-visible { outline: 2px solid #8be9fd; }` outlines a focused dark table. To change a property it does set, such as `padding`, use `preStyle`, or a selector with three classes, such as `.rmt .rmt-pre.my-table { padding: 0; }` with `className="my-table"`, since the built-in rules use selectors like `.rmt pre.rmt-pre`.
+### Colours and Font
+
+The colours, corners and font come from CSS variables. Set them on `:root`, on any element around the table, or on the class you pass as `className`. Your value wins over the theme's wherever you set it, whatever its selector, its place in the page or its cascade layer:
+
+```css
+:root {
+  --rmt-background: #fafafa;
+  --rmt-font-family: 'JetBrains Mono', monospace;
+}
+```
+
+| Variable                     | Light                  | Dark                     | Sets                            |
+|------------------------------|------------------------|--------------------------|---------------------------------|
+| `--rmt-background`           | `#f5f2f0`              | `#282a36`                | The background                  |
+| `--rmt-color`                | `#000`                 | `#f8f8f2`                | The table's text                |
+| `--rmt-line-number-color`    | `#6e6e6e`              | `#999`                   | The line numbers                |
+| `--rmt-selection-background` | `#b3d4fc`              | `#44475a`                | The background of selected text |
+| `--rmt-text-shadow`          | `0 1px #fff`           | `0 1px rgba(0,0,0,.3)`   | The text shadow                 |
+| `--rmt-border-radius`        | `0`                    | `.3em`                   | The corners                     |
+| `--rmt-font-family`          | `Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace` | The same | The font. Keep it monospace, or the columns won't line up |
+
+A variable set this way applies in every theme. To set one for a single theme, use the theme's class, such as `.rmt-dark { --rmt-background: #1e1e1e; }`.
+
+### Other Properties
+
+A selector like `.rmt-dark .rmt-pre` works for properties the built-in CSS doesn't set, so `.rmt-dark .rmt-pre:focus-visible { outline: 2px solid #8be9fd; }` outlines a focused dark table. To change a property it does set, such as `padding`, use `preStyle`, or a selector with three classes, such as `.rmt .rmt-pre.my-table { padding: 0; }` with `className="my-table"`, since the built-in rules use selectors like `.rmt pre.rmt-pre`. Those selectors stop a page's own `pre` and `code` styles, such as Bootstrap's or Tailwind Typography's, from changing the table's layout.
 
 None of the classes start with `language-`, so a page that runs Prism doesn't restyle the table.
 
@@ -254,7 +279,7 @@ If you experience styling issues when importing this component into your project
 
 2. **Verify theme prop**: Make sure you're using the correct `theme` prop value (`'light'`, `'dark'` or `'auto'`) for your application.
 
-3. **Custom styling**: Use the `className` and `preStyle` props to add custom styles or override defaults as needed.
+3. **Custom styling**: Set the CSS variables under [Colours and Font](#colours-and-font), or use the `className` and `preStyle` props to add custom styles or override defaults as needed.
 
 4. **Line numbers**: If line numbers aren't displaying, verify that `showLineNumbers` is set to `true` (default).
 
