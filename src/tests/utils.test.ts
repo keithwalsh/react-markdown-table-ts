@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest';
-import { generateMarkdownTableString, generateAlphabetHeaders } from '../utils';
+import { generateMarkdownTableString, generateAlphabetHeaders, getColumnName } from '../utils';
 import type { InputData, Alignment } from '../types';
 
 describe('generateAlphabetHeaders', () => {
@@ -54,6 +54,24 @@ describe('generateAlphabetHeaders', () => {
 
   it('should handle negative numbers gracefully', () => {
     expect(generateAlphabetHeaders(-1)).toEqual([]);
+  });
+});
+
+describe('getColumnName', () => {
+  it('should count from A at index 0 to Z, then AA', () => {
+    expect(getColumnName(0)).toBe('A');
+    expect(getColumnName(25)).toBe('Z');
+    expect(getColumnName(26)).toBe('AA');
+    expect(getColumnName(701)).toBe('ZZ');
+    expect(getColumnName(702)).toBe('AAA');
+  });
+
+  it.each([-1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])('should throw a RangeError for %s', index => {
+    expect(() => getColumnName(index)).toThrow(RangeError);
+  });
+
+  it('should say what the index was', () => {
+    expect(() => getColumnName(-1)).toThrow('The column index must be a whole number of 0 or more, but it is -1.');
   });
 });
 

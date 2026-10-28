@@ -197,7 +197,21 @@ export function generateMarkdownTableString(
   return `${headerRow}\n${alignmentRow}\n${bodyRows}`.trimEnd();
 }
 
-function getColumnName(index: number): string {
+/**
+ * Returns the label the table gives a column when `hasHeader` is false: A to Z,
+ * then AA, AB and so on, as in a spreadsheet.
+ * @param index - The column's position, counting from 0
+ * @returns The column's label
+ * @throws {RangeError} If `index` is not a whole number of 0 or more
+ * @example
+ * getColumnName(0); // 'A'
+ * getColumnName(27); // 'AB'
+ */
+export function getColumnName(index: number): string {
+  // A fraction has no column, and Infinity would loop forever
+  if (!Number.isSafeInteger(index) || index < 0) {
+    throw new RangeError(`The column index must be a whole number of 0 or more, but it is ${String(index)}.`);
+  }
   let columnName = '';
   let currentIndex = index;
   while (currentIndex >= 0) {

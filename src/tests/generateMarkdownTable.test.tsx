@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { generateMarkdownTable, MarkdownTable, MarkdownTableError } from '../index';
+import { generateMarkdownTable, getColumnName, MarkdownTable, MarkdownTableError } from '../index';
 
 const data = [['Name', 'Age'], ['Ann', 30]] as const;
 
@@ -36,6 +36,13 @@ describe('generateMarkdownTable', () => {
 
   it('should label columns A, B, C... without a header row', () => {
     expect(generateMarkdownTable([['Ann', 30]], { hasHeader: false })).toBe('| A   | B   |\n| --- | --- |\n| Ann | 30  |');
+  });
+
+  it('should export the labels it gives columns without a header row', () => {
+    const [headerRow] = generateMarkdownTable([Array(28).fill('x')], { hasHeader: false, isCompact: true }).split('\n');
+
+    expect(headerRow).toBe(`| ${Array.from({ length: 28 }, (_, i) => getColumnName(i)).join(' | ')} |`);
+    expect(headerRow.endsWith('| Z | AA | AB |')).toBe(true);
   });
 
   it('should convert line breaks to br tags', () => {
