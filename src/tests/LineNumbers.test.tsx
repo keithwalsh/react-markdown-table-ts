@@ -3,10 +3,10 @@
  * rendering, props handling, styling, and edge cases.
  */
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRef } from 'react';
 import { render } from '@testing-library/react';
-import { getPreElement, getCodeElement, getLineNumbers, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses } from './test-utils';
+import { getPreElement, getCodeElement, getLineNumbers, getLineNumbersSpan, hasClass, expectPreClasses, expectPreNotToHaveClasses, stubLayout } from './test-utils';
 
 import { LineNumbers } from '../LineNumbers';
 
@@ -230,12 +230,64 @@ describe('LineNumbers', () => {
       expect(preRef.current).toBe(getPreElement(container));
     });
 
-    it('should be focusable unless tabIndex says otherwise', () => {
-      const { container: focusable } = render(<LineNumbers>code</LineNumbers>);
-      const { container: unfocusable } = render(<LineNumbers tabIndex={-1}>code</LineNumbers>);
+  });
 
-      expect(getPreElement(focusable)?.tabIndex).toBe(0);
+  describe('focus', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
+    it('should stay out of the tab order while the table fits', () => {
+      stubLayout(false);
+      const { container } = render(<LineNumbers>code</LineNumbers>);
+
+      expect(getPreElement(container)?.hasAttribute('tabindex')).toBe(false);
+    });
+
+    it('should be focusable while the table scrolls, so keyboard users can scroll it', () => {
+      stubLayout(true);
+      const { container } = render(<LineNumbers>code</LineNumbers>);
+
+      expect(getPreElement(container)?.tabIndex).toBe(0);
+    });
+
+    it('should follow the table as it starts and stops scrolling', () => {
+      const setOverflows = stubLayout(false);
+      const { container } = render(<LineNumbers>code</LineNumbers>);
+
+      setOverflows(true);
+      expect(getPreElement(container)?.tabIndex).toBe(0);
+
+      setOverflows(false);
+      expect(getPreElement(container)?.hasAttribute('tabindex')).toBe(false);
+    });
+
+    it('should measure again when the content changes', () => {
+      const setOverflows = stubLayout(false);
+      const { container, rerender } = render(<LineNumbers>code</LineNumbers>);
+
+      // A pre with a fixed width doesn't resize when its content outgrows it
+      setOverflows(true, false);
+      rerender(<LineNumbers>{'a much wider line of code'}</LineNumbers>);
+
+      expect(getPreElement(container)?.tabIndex).toBe(0);
+    });
+
+    it('should leave focus to the tabIndex prop', () => {
+      stubLayout(true);
+      const { container: unfocusable } = render(<LineNumbers tabIndex={-1}>code</LineNumbers>);
+      stubLayout(false);
+      const { container: focusable } = render(<LineNumbers tabIndex={0}>code</LineNumbers>);
+
       expect(getPreElement(unfocusable)?.tabIndex).toBe(-1);
+      expect(getPreElement(focusable)?.tabIndex).toBe(0);
+    });
+
+    it('should stay out of the tab order without a ResizeObserver to measure with', () => {
+      const { container } = render(<LineNumbers>code</LineNumbers>);
+
+      expect(getPreElement(container)?.hasAttribute('tabindex')).toBe(false);
     });
   });
 

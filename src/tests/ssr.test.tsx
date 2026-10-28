@@ -3,12 +3,12 @@
  * renderToString and that the server HTML hydrates without mismatches.
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act } from '@testing-library/react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { MarkdownTable } from '../index';
-import { testData, getStyleElement } from './test-utils';
+import { testData, getStyleElement, stubLayout } from './test-utils';
 
 function renderOnServer(element: React.ReactElement): HTMLDivElement {
   const container = document.createElement('div');
@@ -17,6 +17,11 @@ function renderOnServer(element: React.ReactElement): HTMLDivElement {
 }
 
 describe('server rendering', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
   it('should not HTML-escape the theme CSS', () => {
     const container = renderOnServer(<MarkdownTable inputData={testData.simple} />);
 
@@ -46,6 +51,21 @@ describe('server rendering', () => {
       hydrateRoot(container, element, { onRecoverableError });
     });
 
+    expect(onRecoverableError).not.toHaveBeenCalled();
+  });
+
+  it('should leave the tab order to the client, which can measure whether the table scrolls', async () => {
+    stubLayout(true);
+    const element = <MarkdownTable inputData={testData.withHeader} />;
+    const container = renderOnServer(element);
+    const onRecoverableError = vi.fn();
+
+    expect(container.querySelector('pre')?.hasAttribute('tabindex')).toBe(false);
+    await act(async () => {
+      hydrateRoot(container, element, { onRecoverableError });
+    });
+
+    expect(container.querySelector('pre')?.tabIndex).toBe(0);
     expect(onRecoverableError).not.toHaveBeenCalled();
   });
 });

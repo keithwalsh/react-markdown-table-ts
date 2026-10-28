@@ -3,13 +3,13 @@
  * including rendering, props handling, and callback functionality.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component, createRef, version, type ReactNode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
 import { MarkdownTable, MarkdownTableError, type MarkdownTableProps } from '../index';
 import * as utils from '../utils';
-import { testData, getPreElement, getCodeElement, getStyleElement, getCssRule, getWrapperDiv, hasClass, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle } from './test-utils';
+import { testData, getPreElement, getCodeElement, getStyleElement, getCssRule, getWrapperDiv, hasClass, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle, stubLayout } from './test-utils';
 
 class ErrorBoundary extends Component<{ children: ReactNode; onError: (error: Error) => void }, { hasError: boolean }> {
   state = { hasError: false };
@@ -421,6 +421,11 @@ describe('MarkdownTable', () => {
   });
 
   describe('wide tables', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
     it('should scroll horizontally rather than overflow the container', () => {
       const { container } = render(<MarkdownTable inputData={testData.multiRow} />);
 
@@ -431,6 +436,7 @@ describe('MarkdownTable', () => {
     });
 
     it('should let keyboard users focus the table to scroll it', () => {
+      stubLayout(true);
       const { container } = render(<MarkdownTable inputData={testData.multiRow} />);
 
       expect(getPreElement(container)?.tabIndex).toBe(0);

@@ -3,7 +3,8 @@
  * testing MarkdownTable and LineNumbers components.
  */
 
-import { expect } from 'vitest';
+import { act } from '@testing-library/react';
+import { expect, vi } from 'vitest';
 
 /**
  * Common test data fixtures for reuse across test files
@@ -68,6 +69,46 @@ export function getCssRule(css: string | null | undefined, selector: string): st
   const start = lines.indexOf(`\n${selector} {\n`);
   if (start === -1) return undefined;
   return lines.slice(start + selector.length + 4, lines.indexOf('}', start));
+}
+
+/**
+ * Lays every element out as a table that overflows its container or fits it,
+ * and gives jsdom, which has no layout, a ResizeObserver that reports each
+ * element as soon as it's observed. The returned function changes the layout
+ * and, unless told not to, reports it as a resize. Undo with
+ * vi.restoreAllMocks() and vi.unstubAllGlobals().
+ */
+export function stubLayout(overflows: boolean): (overflows: boolean, report?: boolean) => void {
+  let scrollWidth = overflows ? 500 : 300;
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300);
+  vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(() => scrollWidth);
+
+  const reports = new Set<() => void>();
+  vi.stubGlobal('ResizeObserver', class {
+    readonly #report: () => void;
+
+    constructor(callback: ResizeObserverCallback) {
+      this.#report = () => callback([], this as unknown as ResizeObserver);
+    }
+
+    observe() {
+      reports.add(this.#report);
+      this.#report();
+    }
+
+    unobserve() {}
+
+    disconnect() {
+      reports.delete(this.#report);
+    }
+  });
+
+  return (nowOverflows, report = true) => {
+    scrollWidth = nowOverflows ? 500 : 300;
+    if (report) {
+      act(() => reports.forEach(reportResize => reportResize()));
+    }
+  };
 }
 
 /**
