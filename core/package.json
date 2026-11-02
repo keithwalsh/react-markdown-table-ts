@@ -1,0 +1,5 @@
+{
+  "main": "../dist/core.cjs",
+  "module": "../dist/core.mjs",
+  "types": "../dist/core.d.cts"
+}

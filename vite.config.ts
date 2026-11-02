@@ -7,9 +7,12 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(import.meta.dirname, 'src/index.ts'),
+      entry: {
+        index: resolve(import.meta.dirname, 'src/index.ts'),
+        core: resolve(import.meta.dirname, 'src/core.ts')
+      },
       formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'cjs'}`
     },
     rolldownOptions: {
       // Regexes so subpaths like react/jsx-runtime stay external too
