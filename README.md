@@ -37,7 +37,7 @@ interface MarkdownTableOptions {
 // Also accepts the <pre> element's HTML attributes, such as id and aria-label
 interface MarkdownTableProps extends MarkdownTableOptions {
     inputData?: readonly (readonly CellValue[])[] | null;
-    topPadding?: number;
+    topPadding?: number; // Deprecated: set --rmt-padding instead
     theme?: 'light' | 'dark' | 'auto';
     className?: string;
     preStyle?: React.CSSProperties;
@@ -63,7 +63,7 @@ function getColumnName(index: number): string;
 | `hasTabs`            | `boolean`                               | `false`     | Puts a tab on each side of the cell content, in place of the `hasPadding` space.   |
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `inputData` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells. When `false`, newlines become spaces. |
-| `topPadding`         | `number`                                | `16`        | Space in pixels above the first line, set as padding-top on the \<code\> element.  |
+| `topPadding`         | `number`                                | `undefined` | Deprecated. Space in pixels above the first line, in place of the top of [`--rmt-padding`](#size-and-spacing). |
 | `theme`              | `'light' \| 'dark' \| 'auto'`           | `light`     | Controls the colour scheme. `'auto'` follows the reader's `prefers-color-scheme` setting. |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
@@ -253,6 +253,7 @@ The colours, corners and font come from CSS variables. Set them on `:root`, on a
 | `--rmt-background`           | `#f5f2f0`              | `#282a36`                | The background                  |
 | `--rmt-color`                | `#000`                 | `#f8f8f2`                | The table's text                |
 | `--rmt-line-number-color`    | `#6e6e6e`              | `#999`                   | The line numbers                |
+| `--rmt-line-number-border`   | `1px solid #999`       | `1px solid #999`         | The line between the line numbers and the table, as a `border` value, such as `none` |
 | `--rmt-selection-background` | `#b3d4fc`              | `#44475a`                | The background of selected text |
 | `--rmt-text-shadow`          | `0 1px #fff`           | `0 1px rgba(0,0,0,.3)`   | The text shadow                 |
 | `--rmt-border-radius`        | `0`                    | `.3em`                   | The corners                     |
@@ -260,9 +261,32 @@ The colours, corners and font come from CSS variables. Set them on `:root`, on a
 
 A variable set this way applies in every theme. To set one for a single theme, use the theme's class, such as `.rmt-dark { --rmt-background: #1e1e1e; }`.
 
+### Size and Spacing
+
+These variables are the same in every theme, and are set the same way:
+
+| Variable            | Default       | Sets                                                              |
+|---------------------|---------------|-------------------------------------------------------------------|
+| `--rmt-font-size`   | `1em`         | The text size                                                     |
+| `--rmt-line-height` | `1.5`         | The height of each line of the table and its line numbers        |
+| `--rmt-padding`     | `1em`         | The space between the edge and the table, as a `padding` value, such as `.75rem 1rem` |
+| `--rmt-width`       | `fit-content` | The width. `100%` fills the container, and a wider table still scrolls |
+
+For example, a full-width panel with smaller text, like a site's other code blocks:
+
+```css
+.markdown-table {
+  --rmt-width: 100%;
+  --rmt-padding: .75rem 1rem;
+  --rmt-font-size: .875rem;
+}
+```
+
+The space for the line numbers widens to fit them, so long tables keep their numbers clear of the line beside them.
+
 ### Other Properties
 
-A selector like `.rmt-dark .rmt-pre` works for properties the built-in CSS doesn't set, so `.rmt-dark .rmt-pre:focus-visible { outline: 2px solid #8be9fd; }` outlines a focused dark table. To change a property it does set, such as `padding`, use `preStyle`, or a selector with three classes, such as `.rmt .rmt-pre.my-table { padding: 0; }` with `className="my-table"`, since the built-in rules use selectors like `.rmt pre.rmt-pre`. Those selectors stop a page's own `pre` and `code` styles, such as Bootstrap's or Tailwind Typography's, from changing the table's layout.
+A selector like `.rmt-dark .rmt-pre` works for properties the built-in CSS doesn't set, so `.rmt-dark .rmt-pre:focus-visible { outline: 2px solid #8be9fd; }` outlines a focused dark table, and `className` can add a `border`. To change a property it does set that has no variable, such as `margin`, use `preStyle`, or a selector with three classes, such as `.rmt .rmt-pre.my-table { margin: 1em 0; }` with `className="my-table"`, since the built-in rules use selectors like `.rmt pre.rmt-pre`. Those selectors stop a page's own `pre` and `code` styles, such as Bootstrap's or Tailwind Typography's, from changing the table's layout.
 
 None of the classes start with `language-`, so a page that runs Prism doesn't restyle the table.
 
@@ -280,7 +304,7 @@ With React 19 server rendering, React moves the \<style\> tag into the \<head\> 
 renderToPipeableStream(<App />, { nonce: { script: nonce, style: nonce } });
 ```
 
-With the default props the table has no `style` attributes. A `topPadding` other than 16, `minWidth` and `preStyle` each add one, which a strict `style-src` blocks in server-rendered HTML, so use `className` and your own stylesheet instead.
+With the default props the table has no `style` attributes. `topPadding`, `minWidth` and `preStyle` each add one, which a strict `style-src` blocks in server-rendered HTML, so use `className`, the [CSS variables](#custom-styles) and your own stylesheet instead.
 
 ## Troubleshooting
 
@@ -294,7 +318,7 @@ If you experience styling issues when importing this component into your project
 
 2. **Verify theme prop**: Make sure you're using the correct `theme` prop value (`'light'`, `'dark'` or `'auto'`) for your application.
 
-3. **Custom styling**: Set the CSS variables under [Colours and Font](#colours-and-font), or use the `className` and `preStyle` props to add custom styles or override defaults as needed.
+3. **Custom styling**: Set the CSS variables under [Colours and Font](#colours-and-font) and [Size and Spacing](#size-and-spacing), or use the `className` and `preStyle` props to add custom styles or override defaults as needed.
 
 4. **Line numbers**: If line numbers aren't displaying, verify that `showLineNumbers` is set to `true` (default).
 
