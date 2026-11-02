@@ -114,13 +114,13 @@ const meta = {
       }
     },
     theme: {
-      options: ['light', 'dark', 'auto'],
+      options: ['light', 'dark', 'auto', 'inherit'],
       control: { type: 'select' },
-      description: "Light or dark colours, or auto to follow the reader's colour scheme.",
+      description: "Light or dark colours, auto to follow the reader's colour scheme, or inherit to take the page's text colour with no background.",
       table: {
         category: 'Visual/UI Props',
         type: {
-          summary: "'light' | 'dark' | 'auto'"
+          summary: "'light' | 'dark' | 'auto' | 'inherit'"
         },
         defaultValue: { summary: 'light' }
       }
@@ -227,6 +227,20 @@ export const NarrowContainer: Story = {
   decorators: [
     Story => (
       <div style={{ width: 320 }}>
+        <Story />
+      </div>
+    )
+  ]
+}
+
+export const InheritTheme: Story = {
+  args: {
+    inputData: sampleData,
+    theme: 'inherit'
+  },
+  decorators: [
+    Story => (
+      <div style={{ padding: 16, color: '#e2e8f0', background: '#0f172a' }}>
         <Story />
       </div>
     )

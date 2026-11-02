@@ -82,11 +82,13 @@ export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes 
 
   /**
    * Optional theme for the Markdown table.
-   * Acceptable values are 'light', 'dark', or 'auto', which follows the
-   * reader's `prefers-color-scheme` setting.
+   * Acceptable values are 'light', 'dark', 'auto', which follows the
+   * reader's `prefers-color-scheme` setting, or 'inherit', which takes the
+   * text colour from the page and has no background, so the table follows
+   * the page's own light and dark modes.
    * @default 'light'
    */
-  theme?: 'light' | 'dark' | 'auto';
+  theme?: 'light' | 'dark' | 'auto' | 'inherit';
 
   /**
    * Optional CSS class for styling the rendered Markdown table.

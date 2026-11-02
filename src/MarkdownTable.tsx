@@ -85,7 +85,7 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
   }, [result]);
 
   // Any other value gets the default light theme, so a stray value from JavaScript can't flip it
-  const themeClass = theme === 'dark' || theme === 'auto' ? THEME_CLASSES[theme] : THEME_CLASSES.light;
+  const themeClass = THEME_CLASSES[theme === 'dark' || theme === 'auto' || theme === 'inherit' ? theme : 'light'];
 
   return (
     <div className={`rmt ${themeClass}`}>

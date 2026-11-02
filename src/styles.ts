@@ -15,6 +15,7 @@ export const THEME_CLASSES = {
   light: 'rmt-light',
   dark: 'rmt-dark',
   auto: 'rmt-auto',
+  inherit: 'rmt-inherit',
 } as const;
 
 // The themes set --rmt-theme-* rather than the --rmt-* variables the page sets, so a
@@ -36,6 +37,19 @@ const DARK_THEME = `
   --rmt-theme-line-number-color: #999;
   --rmt-theme-line-number-border: 1px solid #999;
   --rmt-theme-border-radius: .3em;`;
+
+// The page's text colour, with no background or text shadow, so the table matches any design.
+// Browsers without color-mix() show the line numbers in the text colour, with no divider.
+const INHERIT_THEME = `
+  --rmt-theme-color: currentColor;
+  --rmt-theme-text-shadow: none;
+  --rmt-theme-background: transparent;
+  --rmt-theme-line-number-color: color-mix(in srgb, currentColor 60%, transparent);
+  --rmt-theme-line-number-border: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+  --rmt-theme-border-radius: 0;`;
+
+// The inherit theme sets no selection colour, so selected text looks like the rest of the page's
+const COLOUR_THEMES = `:is(.${THEME_CLASSES.light}, .${THEME_CLASSES.dark}, .${THEME_CLASSES.auto})`;
 
 /** The page's value for an --rmt-* variable, or the theme's when the page doesn't set one */
 const themed = (name: string) => `var(--rmt-${name}, var(--rmt-theme-${name}))`;
@@ -64,22 +78,24 @@ export const STYLESHEET = `
   .${THEME_CLASSES.auto} {${DARK_THEME.replace(/\n/g, '\n  ')}
   }
 }
+.${THEME_CLASSES.inherit} {${INHERIT_THEME}
+}
 .rmt code.rmt-code, .rmt pre.rmt-pre {
   color: ${themed('color')};
   background: 0 0;
   text-shadow: ${themed('text-shadow')};${TEXT_STYLES}
 }
-.rmt code.rmt-code ::-moz-selection,
-.rmt code.rmt-code::-moz-selection,
-.rmt pre.rmt-pre ::-moz-selection,
-.rmt pre.rmt-pre::-moz-selection {
+${COLOUR_THEMES} code.rmt-code ::-moz-selection,
+${COLOUR_THEMES} code.rmt-code::-moz-selection,
+${COLOUR_THEMES} pre.rmt-pre ::-moz-selection,
+${COLOUR_THEMES} pre.rmt-pre::-moz-selection {
   text-shadow: none;
   background: ${themed('selection-background')};
 }
-.rmt code.rmt-code ::selection,
-.rmt code.rmt-code::selection,
-.rmt pre.rmt-pre ::selection,
-.rmt pre.rmt-pre::selection {
+${COLOUR_THEMES} code.rmt-code ::selection,
+${COLOUR_THEMES} code.rmt-code::selection,
+${COLOUR_THEMES} pre.rmt-pre ::selection,
+${COLOUR_THEMES} pre.rmt-pre::selection {
   text-shadow: none;
   background: ${themed('selection-background')};
 }

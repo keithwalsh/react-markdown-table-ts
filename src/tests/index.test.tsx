@@ -313,6 +313,37 @@ describe('MarkdownTable', () => {
       expect(getWrapperDiv(container)?.className).toBe('rmt rmt-auto');
     });
 
+    it('should mark the wrapper with the inherit theme class', () => {
+      const { container } = render(<MarkdownTable inputData={testData.twoColumn} theme="inherit" />);
+
+      expect(getWrapperDiv(container)?.className).toBe('rmt rmt-inherit');
+    });
+
+    it("should take the inherit theme's colours from the page", () => {
+      render(<MarkdownTable inputData={testData.twoColumn} theme="inherit" />);
+
+      const declarations = getCssRule(getStyleElement()?.textContent, '.rmt-inherit')?.trim().split(/\s*\n\s*/);
+      expect(declarations).toEqual([
+        '--rmt-theme-color: currentColor;',
+        '--rmt-theme-text-shadow: none;',
+        '--rmt-theme-background: transparent;',
+        '--rmt-theme-line-number-color: color-mix(in srgb, currentColor 60%, transparent);',
+        '--rmt-theme-line-number-border: 1px solid color-mix(in srgb, currentColor 50%, transparent);',
+        '--rmt-theme-border-radius: 0;',
+      ]);
+    });
+
+    it("should leave selected text to the page's styles in the inherit theme", () => {
+      render(<MarkdownTable inputData={testData.twoColumn} theme="inherit" />);
+
+      const selectionSelectors = getStyleElement()?.textContent?.match(/^.*::(-moz-)?selection.*$/gm);
+      expect(selectionSelectors).toHaveLength(8);
+      selectionSelectors?.forEach(selector => {
+        // :is() keeps the specificity of the .rmt class it replaces
+        expect(selector).toMatch(/^:is\(\.rmt-light, \.rmt-dark, \.rmt-auto\) (code\.rmt-code|pre\.rmt-pre) ?::/);
+      });
+    });
+
     it('should define each theme in the stylesheet', () => {
       render(<MarkdownTable inputData={testData.twoColumn} />);
 
