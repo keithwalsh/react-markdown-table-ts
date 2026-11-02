@@ -712,6 +712,27 @@ describe('MarkdownTable', () => {
     });
   });
 
+  describe('updating inputData', () => {
+    it('should not call onGenerate again for a new array with the same cells', () => {
+      const onGenerate = vi.fn();
+
+      const { rerender } = render(<MarkdownTable inputData={[['Name'], ['Ann']]} onGenerate={onGenerate} />);
+      rerender(<MarkdownTable inputData={[['Name'], ['Ann']]} onGenerate={onGenerate} />);
+
+      expect(onGenerate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show a cell changed in place when the table next renders', () => {
+      const inputData = [['Name'], ['Ann']];
+      const { rerender } = render(<MarkdownTable inputData={inputData} />);
+
+      inputData[1][0] = 'Bob';
+      rerender(<MarkdownTable inputData={inputData} />);
+
+      expect(screen.getByRole('code').textContent).toBe('| Name |\n| ---- |\n| Bob  |');
+    });
+  });
+
   describe('markdown prop', () => {
     const markdown = '| Name |\n| ---- |\n| Ann  |';
 

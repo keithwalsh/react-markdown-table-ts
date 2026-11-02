@@ -66,6 +66,62 @@ describe('useMarkdownTable', () => {
     expect(result.current.markdown).toBe(generateMarkdownTable(testData.withHeader, { isCompact: true }));
   });
 
+  it('should keep the result for a new array with the same cells', () => {
+    const { result, rerender } = renderHook(({ inputData }) => useMarkdownTable(inputData), {
+      initialProps: { inputData: [['Name'], ['Ann']] },
+    });
+    const firstResult = result.current;
+
+    rerender({ inputData: [['Name'], ['Ann']] });
+
+    expect(result.current).toBe(firstResult);
+  });
+
+  it('should show a cell changed in place the next time it renders', () => {
+    const inputData = [['Name'], ['Ann']];
+    const { result, rerender } = renderHook(() => useMarkdownTable(inputData));
+
+    inputData[1][0] = 'Bob';
+    rerender();
+
+    expect(result.current.markdown).toBe('| Name |\n| ---- |\n| Bob  |');
+  });
+
+  it('should show a row added in place the next time it renders', () => {
+    const inputData = [['Name'], ['Ann']];
+    const { result, rerender } = renderHook(() => useMarkdownTable(inputData));
+
+    inputData.push(['Bob']);
+    rerender();
+
+    expect(result.current.markdown).toBe('| Name |\n| ---- |\n| Ann  |\n| Bob  |');
+  });
+
+  it('should treat a NaN cell as unchanged, rather than generating the table on every render', () => {
+    const { result, rerender } = renderHook(({ inputData }) => useMarkdownTable(inputData), {
+      initialProps: { inputData: [['Value'], [NaN]] },
+    });
+    const firstResult = result.current;
+
+    rerender({ inputData: [['Value'], [NaN]] });
+
+    expect(result.current).toBe(firstResult);
+    expect(firstResult.markdown).toBe('| Value |\n| ----- |\n| NaN   |');
+  });
+
+  it('should compare rows that are not arrays by identity', () => {
+    const { result, rerender } = renderHook(({ inputData }) => useMarkdownTable(inputData as any), {
+      initialProps: { inputData: [['A'], null] as unknown },
+    });
+    const firstResult = result.current;
+
+    rerender({ inputData: [['A'], null] });
+    expect(result.current).toBe(firstResult);
+
+    rerender({ inputData: [['A'], ['1']] });
+    expect(result.current.markdown).toBe('| A   |\n| --- |\n| 1   |');
+  });
+
   it('should match the table MarkdownTable shows', () => {
     const { result } = renderHook(() => useMarkdownTable(testData.withHeader, { columnAlignments: ['center'] }));
 
