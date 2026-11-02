@@ -11,7 +11,7 @@
 | `'light'` theme                          | `'dark'` theme                          |
 
 ## Overview 
-A React component for generating and displaying formatted Markdown tables. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. The output is displayed in a styled `<pre>` element with optional line numbering and supports light, dark and automatic themes. `generateMarkdownTable` returns the same Markdown without rendering anything.
+A React component for generating and displaying formatted Markdown tables. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. The output is displayed in a styled `<pre>` element with optional line numbering and supports light, dark and automatic themes, or the page's own colours. `generateMarkdownTable` returns the same Markdown without rendering anything.
 
 ## Installation
 
@@ -38,7 +38,7 @@ interface MarkdownTableOptions {
 interface MarkdownTableProps extends MarkdownTableOptions {
     inputData?: readonly (readonly CellValue[])[] | null;
     topPadding?: number; // Deprecated: set --rmt-padding instead
-    theme?: 'light' | 'dark' | 'auto';
+    theme?: 'light' | 'dark' | 'auto' | 'inherit';
     className?: string;
     preStyle?: React.CSSProperties;
     minWidth?: number;
@@ -64,7 +64,7 @@ function getColumnName(index: number): string;
 | `hasHeader`          | `boolean`                               | `true`      | Indicates whether the first row of `inputData` is a header.                             |
 | `convertLineBreaks`  | `boolean`                               | `false`     | Replace newlines with <br> tags in table cells. When `false`, newlines become spaces. |
 | `topPadding`         | `number`                                | `undefined` | Deprecated. Space in pixels above the first line, in place of the top of [`--rmt-padding`](#size-and-spacing). |
-| `theme`              | `'light' \| 'dark' \| 'auto'`           | `light`     | Controls the colour scheme. `'auto'` follows the reader's `prefers-color-scheme` setting. |
+| `theme`              | `'light' \| 'dark' \| 'auto' \| 'inherit'` | `light` | Controls the colour scheme. `'auto'` follows the reader's `prefers-color-scheme` setting, and `'inherit'` takes the page's colours. |
 | `className`          | `string`                                | `undefined` | Class will be applied to the \<pre\> element display.                                |
 | `preStyle`           | `React.CSSProperties`                   | `undefined` | Allows direct styling of the display with CSS properties.                          |
 | `minWidth`           | `number`                                | `undefined` | Optional minimum width in pixels for the \<pre\> element.                          |
@@ -127,7 +127,16 @@ getColumnName(26); // 'AA'
     theme="auto" // Light or dark, matching the reader's system setting
 />
 ```
-7. **Updating Data**:
+7. **Following the Page's Colours**:
+```typescript
+<MarkdownTable
+    inputData={data}
+    theme="inherit" // The page's text colour, with no background
+/>
+```
+`'inherit'` suits apps with their own light and dark modes, such as Tailwind or shadcn/ui apps that switch with a `dark` class, since the table follows whatever colour the page gives it. Add a background or border with the [CSS variables](#custom-styles), such as `--rmt-background: var(--muted)`.
+
+8. **Updating Data**:
 ```typescript
 // Build the rows when people changes, not on every render
 const inputData = useMemo(
@@ -139,7 +148,7 @@ const inputData = useMemo(
 ```
 The table is cached on the `inputData` array itself. A new array on every render regenerates it every time, and changing the same array in place leaves the old table on screen. Memoise data you build during render, and pass a new array rather than mutating the old one.
 
-8. **Copying the Markdown**:
+9. **Copying the Markdown**:
 ```typescript
 function CopyableTable({ data }: { data: string[][] }) {
     const [markdown, setMarkdown] = useState('');
@@ -202,7 +211,7 @@ const markdown = generateMarkdownTable(
 - Any other error is not caught, so it reaches the nearest error boundary
 
 5. **Styling**:
-- Includes built-in light and dark themes, and an auto theme that follows the reader's colour scheme
+- Includes built-in light and dark themes, an auto theme that follows the reader's colour scheme, and an inherit theme that takes the page's colours
 - A table wider than its container scrolls horizontally
 - Custom styles via the `className` and `preStyle` props, or the CSS variables and classes listed under [Custom Styles](#custom-styles)
 - Optional line numbers for better readability
@@ -231,7 +240,7 @@ Add your own class to the \<pre\> element with `className`, or inline styles wit
 | Class                                | Element                                          |
 |--------------------------------------|--------------------------------------------------|
 | `rmt`                                | The wrapper \<div\>                              |
-| `rmt-light`, `rmt-dark`, `rmt-auto`  | The wrapper, matching the `theme` prop           |
+| `rmt-light`, `rmt-dark`, `rmt-auto`, `rmt-inherit` | The wrapper, matching the `theme` prop |
 | `rmt-pre`                            | The \<pre\> element                              |
 | `rmt-has-line-numbers`               | The \<pre\> element, when line numbers show      |
 | `rmt-code`                           | The \<code\> element that holds the table        |
@@ -248,18 +257,20 @@ The colours, corners and font come from CSS variables. Set them on `:root`, on a
 }
 ```
 
-| Variable                     | Light                  | Dark                     | Sets                            |
-|------------------------------|------------------------|--------------------------|---------------------------------|
-| `--rmt-background`           | `#f5f2f0`              | `#282a36`                | The background                  |
-| `--rmt-color`                | `#000`                 | `#f8f8f2`                | The table's text                |
-| `--rmt-line-number-color`    | `#6e6e6e`              | `#999`                   | The line numbers                |
-| `--rmt-line-number-border`   | `1px solid #999`       | `1px solid #999`         | The line between the line numbers and the table, as a `border` value, such as `none` |
-| `--rmt-selection-background` | `#b3d4fc`              | `#44475a`                | The background of selected text |
-| `--rmt-text-shadow`          | `0 1px #fff`           | `0 1px rgba(0,0,0,.3)`   | The text shadow                 |
-| `--rmt-border-radius`        | `0`                    | `.3em`                   | The corners                     |
-| `--rmt-font-family`          | `Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace` | The same | The font. Keep it monospace, or the columns won't line up |
+| Variable                     | Light                  | Dark                     | Inherit                    | Sets                            |
+|------------------------------|------------------------|--------------------------|----------------------------|---------------------------------|
+| `--rmt-background`           | `#f5f2f0`              | `#282a36`                | `transparent`              | The background                  |
+| `--rmt-color`                | `#000`                 | `#f8f8f2`                | `currentColor`             | The table's text                |
+| `--rmt-line-number-color`    | `#6e6e6e`              | `#999`                   | The text colour at 60%     | The line numbers                |
+| `--rmt-line-number-border`   | `1px solid #999`       | `1px solid #999`         | The line number colour at 50% | The line between the line numbers and the table, as a `border` value, such as `none` |
+| `--rmt-selection-background` | `#b3d4fc`              | `#44475a`                | Not used                   | The background of selected text |
+| `--rmt-text-shadow`          | `0 1px #fff`           | `0 1px rgba(0,0,0,.3)`   | `none`                     | The text shadow                 |
+| `--rmt-border-radius`        | `0`                    | `.3em`                   | `0`                        | The corners                     |
+| `--rmt-font-family`          | `Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace` | The same | The same | The font. Keep it monospace, or the columns won't line up |
 
 A variable set this way applies in every theme. To set one for a single theme, use the theme's class, such as `.rmt-dark { --rmt-background: #1e1e1e; }`.
+
+The inherit theme leaves selected text to the page's own `::selection` styles, so it looks like selected text anywhere else on the page. Browsers without `color-mix()`, from before 2023, show its line numbers in the text colour with no line beside them.
 
 ### Size and Spacing
 
@@ -316,7 +327,7 @@ If you experience styling issues when importing this component into your project
 
 1. **Check for CSS conflicts**: Ensure no other libraries or global styles are overriding the component's built-in CSS.
 
-2. **Verify theme prop**: Make sure you're using the correct `theme` prop value (`'light'`, `'dark'` or `'auto'`) for your application.
+2. **Verify theme prop**: Make sure you're using the correct `theme` prop value (`'light'`, `'dark'`, `'auto'` or `'inherit'`) for your application.
 
 3. **Custom styling**: Set the CSS variables under [Colours and Font](#colours-and-font) and [Size and Spacing](#size-and-spacing), or use the `className` and `preStyle` props to add custom styles or override defaults as needed.
 
