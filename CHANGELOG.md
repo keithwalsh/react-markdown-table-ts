@@ -2,6 +2,31 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-11-02
+
+### Added
+
+- `theme="inherit"` takes the text colour from the page and has no background or text shadow, so the table follows an app's own light and dark modes, such as a Tailwind `dark` class. Selected text keeps the page's own `::selection` colours.
+- `useMarkdownTable(inputData, options)` returns `{ markdown, error }` for copy buttons, downloads and previews, and keeps working while the table isn't on the page. When `inputData` is invalid, `error` is set and `markdown` is empty, so a page can show its own error or empty state.
+- A `markdown` prop shows a table from `useMarkdownTable` as it is, so the table isn't generated twice.
+- `react-markdown-table-ts/core` exports `generateMarkdownTable`, `getColumnName`, `MarkdownTableError` and the option types without React, for Node scripts, CLIs and other frameworks. React and React DOM are now optional peer dependencies, so npm doesn't install them for those.
+- CSS variables for the size and spacing: `--rmt-padding`, `--rmt-width`, `--rmt-font-size` and `--rmt-line-height`, and `--rmt-line-number-border` for the line beside the line numbers. `--rmt-width: 100%` makes a full-width table.
+
+### Changed
+
+- The padding is the same on every side, `1em` by default, and comes from `--rmt-padding`. Without line numbers, the table has `1em` of space on its left instead of `.3em`. The space above it is `1em` instead of `16px`, which only differs when the table's font size isn't 16px.
+- The line numbers are laid out beside the table instead of positioned over the `<pre>` element's padding, and widen to fit. CSS that sets the `top`, `left` or `width` of `.rmt-line-numbers` no longer works the same way.
+- The table is generated again only when a cell changes, rather than whenever `inputData` is a new array. Rows built during render no longer generate the table on every render, `onGenerate` isn't called again for a new array with the same cells, and a cell changed in place shows the next time the component renders.
+
+### Deprecated
+
+- `topPadding`. Set `--rmt-padding` instead, such as `--rmt-padding: 2em 1em 1em`. `topPadding` now pads the `<pre>` element rather than the `<code>` element, and adds a `style` attribute whenever it's set, including to 16.
+
+### Fixed
+
+- Line numbers of three or more digits no longer crowd or overlap the line beside them, including on pages that make every element `box-sizing: border-box`, as Tailwind does.
+- A page's `padding` on `code` elements no longer adds space to the right of and below the table.
+
 ## [2.1.0] - 2026-10-28
 
 ### Added
@@ -106,7 +131,8 @@ Tables look the same. The breaking changes are to class names and exported types
 - The package is MIT licensed again, with a LICENSE file.
 - Rows that aren't arrays and unknown column alignments show an error instead of crashing.
 
-[2.1.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/f54689a...main
+[2.2.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/c12c6d6...main
+[2.1.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/f54689a...c12c6d6
 [2.0.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4c5d91c...f54689a
 [2.0.0]: https://github.com/keithwalsh/react-markdown-table-ts/compare/667a2bc...4c5d91c
 [1.6.1]: https://github.com/keithwalsh/react-markdown-table-ts/compare/4901149...667a2bc
