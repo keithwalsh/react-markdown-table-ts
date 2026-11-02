@@ -150,15 +150,10 @@ getColumnName(26); // 'AA'
 
 8. **Updating Data**:
 ```typescript
-// Build the rows when people changes, not on every render
-const inputData = useMemo(
-    () => [['Name', 'Age'], ...people.map(person => [person.name, person.age])],
-    [people]
-);
-
-<MarkdownTable inputData={inputData} />
+// A new array on every render is fine
+<MarkdownTable inputData={[['Name', 'Age'], ...people.map(person => [person.name, person.age])]} />
 ```
-The table is cached on the `inputData` array itself. A new array on every render regenerates it every time, and changing the same array in place leaves the old table on screen. Memoise data you build during render, and pass a new array rather than mutating the old one.
+The table is generated again only when a cell changes, so rows built during render don't cost a new table each time, and a cell changed in place shows the next time the component renders. Keep data you change in React state as new arrays, though: setting state to the same array, even after changing it, doesn't render the component again.
 
 ## Using the Markdown Elsewhere on the Page
 
