@@ -11,7 +11,7 @@
 | `'light'` theme                          | `'dark'` theme                          |
 
 ## Overview 
-A React component for generating and displaying formatted Markdown tables. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. The output is displayed in a styled `<pre>` element with optional line numbering and supports light, dark and automatic themes, or the page's own colours. `generateMarkdownTable` returns the same Markdown without rendering anything.
+A React component for generating and displaying formatted Markdown tables. The core component is `MarkdownTable` which converts 2D array data into properly formatted Markdown table syntax. Columns of variable width maintain consistent spacing across all rows, ensuring vertical alignment of delimiters. The output is displayed in a styled `<pre>` element with optional line numbering and supports light, dark and automatic themes, or the page's own colours. `useMarkdownTable` and `generateMarkdownTable` return the same Markdown without rendering anything.
 
 ## Installation
 
@@ -37,6 +37,7 @@ interface MarkdownTableOptions {
 // Also accepts the <pre> element's HTML attributes, such as id and aria-label
 interface MarkdownTableProps extends MarkdownTableOptions {
     inputData?: readonly (readonly CellValue[])[] | null;
+    markdown?: string;
     topPadding?: number; // Deprecated: set --rmt-padding instead
     theme?: 'light' | 'dark' | 'auto' | 'inherit';
     className?: string;
@@ -46,6 +47,16 @@ interface MarkdownTableProps extends MarkdownTableOptions {
     nonce?: string;
     onGenerate?: (markdownTableString: string, error: MarkdownTableError | null) => void;
 }
+
+interface MarkdownTableResult {
+    markdown: string;
+    error: MarkdownTableError | null;
+}
+
+function useMarkdownTable(
+    inputData: readonly (readonly CellValue[])[] | null | undefined,
+    options?: MarkdownTableOptions
+): MarkdownTableResult;
 
 function generateMarkdownTable(
     inputData: readonly (readonly CellValue[])[],
@@ -57,6 +68,7 @@ function getColumnName(index: number): string;
 | Prop                 | Type                                    | Default     | Description                                                                        |
 |----------------------|-----------------------------------------|-------------|------------------------------------------------------------------------------------|
 | `inputData`          | `readonly (readonly CellValue[])[] \| null` | `null`  | The outer array represents rows. The inner array represents cells within each row. `null` renders an empty table. |
+| `markdown`           | `string`                                | `undefined` | A table to show as it is, such as one from [`useMarkdownTable`](#using-the-markdown-elsewhere-on-the-page). When set, `inputData` and the formatting props are ignored. |
 | `columnAlignments`   | `readonly Alignment[]`                  | `[]`	       | Acceptable values are 'left', 'center', 'right', or 'none'. Defaults to 'none' when unspecified. |
 | `isCompact`          | `boolean`                               | `false`     | Disables column width alignment to provide a more compact markdown table string.   |
 | `hasPadding`         | `boolean`                               | `true`      | One space added before and after the content in each cell.                         |
@@ -148,17 +160,23 @@ const inputData = useMemo(
 ```
 The table is cached on the `inputData` array itself. A new array on every render regenerates it every time, and changing the same array in place leaves the old table on screen. Memoise data you build during render, and pass a new array rather than mutating the old one.
 
-9. **Copying the Markdown**:
+## Using the Markdown Elsewhere on the Page
+
+`useMarkdownTable` takes the same data and options as the component and returns `{ markdown, error }`, for a copy button, a download or a preview. Pass its `markdown` to `MarkdownTable` so the table is only generated once:
+
 ```typescript
+import { MarkdownTable, useMarkdownTable } from 'react-markdown-table-ts';
+
 function CopyableTable({ data }: { data: string[][] }) {
-    const [markdown, setMarkdown] = useState('');
+    const { markdown, error } = useMarkdownTable(data, { columnAlignments: ['left', 'right'] });
+
+    if (error) {
+        return <p role="alert">{error.message}</p>;
+    }
 
     return (
         <>
-            <MarkdownTable
-                inputData={data}
-                onGenerate={(table, error) => setMarkdown(error ? '' : table)}
-            />
+            <MarkdownTable markdown={markdown} />
             <button disabled={!markdown} onClick={() => navigator.clipboard.writeText(markdown)}>
                 Copy as Markdown
             </button>
@@ -166,7 +184,13 @@ function CopyableTable({ data }: { data: string[][] }) {
     );
 }
 ```
-`onGenerate` receives the table exactly as displayed. To copy a table without showing it, call `generateMarkdownTable(data)` in the click handler instead.
+
+- `markdown` is the table, or an empty string while `inputData` is `null` or `undefined`, or when it's invalid
+- `error` is the `MarkdownTableError` when `inputData` or `columnAlignments` is invalid, so you can show your own error or empty state instead of the table
+- Like the component, it generates the table at a lower priority than typing, so a big table can be a render behind the data
+- It keeps working while the table isn't shown, such as when a preview tab replaces it
+
+The component's `onGenerate` prop also receives the table, but only while the component is on the page.
 
 ## Generating Markdown Without Rendering
 
@@ -207,6 +231,7 @@ const markdown = generateMarkdownTable(
 
 4. **Error Handling**:
 - Invalid `inputData` or `columnAlignments` show an error message in place of the table, and `onGenerate` receives the `MarkdownTableError`
+- `useMarkdownTable` returns the `MarkdownTableError` as `error`, and an empty `markdown`
 - `generateMarkdownTable` throws the `MarkdownTableError` instead
 - Any other error is not caught, so it reaches the nearest error boundary
 
