@@ -5,7 +5,8 @@
 
 export { generateMarkdownTable } from './generateMarkdownTable.js';
 export { MarkdownTable } from './MarkdownTable.js';
-export type { Alignment, CellValue, MarkdownTableOptions, MarkdownTableProps } from './types.js';
+export type { MarkdownTableProps } from './props.js';
+export type { Alignment, CellValue, MarkdownTableOptions } from './types.js';
 export { useMarkdownTable, type MarkdownTableResult } from './useMarkdownTable.js';
 export { getColumnName } from './utils.js';
 export { MarkdownTableError } from './validation.js';

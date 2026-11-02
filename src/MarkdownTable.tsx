@@ -6,7 +6,7 @@
 import { forwardRef, useEffect, useMemo, useRef } from 'react';
 import { LineNumbers } from './LineNumbers.js';
 import { STYLESHEET, STYLESHEET_HREF, THEME_CLASSES } from './styles.js';
-import type { MarkdownTableProps } from './types.js';
+import type { MarkdownTableProps } from './props.js';
 import { useMarkdownTable, type MarkdownTableResult } from './useMarkdownTable.js';
 
 // A variable, because React 18's types don't yet know the href and precedence attributes
