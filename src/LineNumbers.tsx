@@ -64,9 +64,9 @@ export function LineNumbers({
   // One text node rather than an element per line, which adds up for long tables
   const lineNumbers = children.split('\n').map((_, index) => index + 1).join('\n');
 
-  // The stylesheet covers the defaults, so only add inline styles for values that differ
+  // The stylesheet covers the default, so only add inline styles for a value that differs
   const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};
-  const lineNumbersTopStyle = topPadding !== DEFAULT_TOP_PADDING ? { top: `${topPadding}px` } : {};
+  const lineNumbersTopStyle = topPadding !== DEFAULT_TOP_PADDING ? { marginTop: `${topPadding}px` } : {};
 
   return (
     <pre

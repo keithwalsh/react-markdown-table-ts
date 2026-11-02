@@ -92,7 +92,8 @@ export const STYLESHEET = `
 .rmt pre.rmt-pre {
   position: relative;
   isolation: isolate;
-  display: inline-block;
+  display: inline-flex;
+  align-items: flex-start;
   vertical-align: top;
   box-sizing: border-box;
   width: fit-content;
@@ -103,24 +104,20 @@ export const STYLESHEET = `
   background: ${themed('background')};
   border-radius: ${themed('border-radius')};
 }
-.rmt pre.rmt-pre.rmt-has-line-numbers {
-  padding-left: 1em;
-}
 .rmt pre.rmt-pre > code {
   display: block;
-  padding-top: ${DEFAULT_TOP_PADDING}px;
-  padding-left: .3em;
+  flex: none;
+  padding: ${DEFAULT_TOP_PADDING}px 0 0 .3em;
 }
 .rmt pre.rmt-pre.rmt-has-line-numbers > code {
-  position: relative;
-  white-space: inherit;
-  padding-left: 3em;
+  padding-left: 1.5em;
 }
 .rmt pre.rmt-pre > .rmt-line-numbers {
-  position: absolute;
-  top: ${DEFAULT_TOP_PADDING}px;
-  left: 0;
-  width: 1.7em;
+  order: -1;
+  flex: none;
+  box-sizing: content-box;
+  min-width: 1.7em;
+  margin-top: ${DEFAULT_TOP_PADDING}px;
   padding-right: .8em;
   font-size: 100%;
   line-height: 1.5;

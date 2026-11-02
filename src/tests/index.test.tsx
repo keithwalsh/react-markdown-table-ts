@@ -597,21 +597,21 @@ describe('MarkdownTable', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
       expect(getComputedStyle(getCodeElement(container)!).paddingTop).toBe('16px');
-      expect(getComputedStyle(container.querySelector('.rmt-line-numbers')!).top).toBe('16px');
+      expect(getComputedStyle(container.querySelector('.rmt-line-numbers')!).marginTop).toBe('16px');
     });
 
     it('should apply a custom top padding to the code and line numbers', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
 
       expect(getCodeElement(container)?.style.paddingTop).toBe('32px');
-      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.top).toBe('32px');
+      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.marginTop).toBe('32px');
     });
 
     it('should allow zero top padding', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
 
       expect(getCodeElement(container)?.style.paddingTop).toBe('0px');
-      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.top).toBe('0px');
+      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.marginTop).toBe('0px');
     });
   });
 
@@ -632,7 +632,7 @@ describe('MarkdownTable', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
       expect(getPreElement(container)?.style.minWidth).toBe('');
-      expect(getStyleElement()?.textContent).not.toContain('min-width');
+      expect(getCssRule(getStyleElement()?.textContent, '.rmt pre.rmt-pre')).not.toContain('min-width');
     });
   });
 
@@ -792,7 +792,8 @@ describe('MarkdownTable', () => {
       const preStyle = getComputedStyle(getPreElement(container)!);
       expect(preStyle.position).toBe('relative');
       expect(preStyle.isolation).toBe('isolate');
-      expect(preStyle.display).toBe('inline-block');
+      expect(preStyle.display).toBe('inline-flex');
+      expect(preStyle.alignItems).toBe('flex-start');
     });
 
     it('should render pre element', () => {

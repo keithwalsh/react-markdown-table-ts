@@ -300,7 +300,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('32px');
+      expect(lineNumbersSpan?.style.marginTop).toBe('32px');
     });
 
     it('should leave the default topPadding of 16px to the stylesheet', () => {
@@ -309,7 +309,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('');
+      expect(lineNumbersSpan?.style.marginTop).toBe('');
       expect(container.querySelector('code')?.style.paddingTop).toBe('');
     });
 
@@ -321,7 +321,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('0px');
+      expect(lineNumbersSpan?.style.marginTop).toBe('0px');
     });
 
     it('should handle large topPadding values', () => {
@@ -332,7 +332,7 @@ describe('LineNumbers', () => {
       );
       
       const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.top).toBe('160px');
+      expect(lineNumbersSpan?.style.marginTop).toBe('160px');
     });
   });
 
