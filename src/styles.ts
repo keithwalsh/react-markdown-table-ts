@@ -25,6 +25,7 @@ const LIGHT_THEME = `
   --rmt-theme-background: #f5f2f0;
   --rmt-theme-selection-background: #b3d4fc;
   --rmt-theme-line-number-color: #6e6e6e;
+  --rmt-theme-line-number-border: 1px solid #999;
   --rmt-theme-border-radius: 0;`;
 
 const DARK_THEME = `
@@ -33,6 +34,7 @@ const DARK_THEME = `
   --rmt-theme-background: #282a36;
   --rmt-theme-selection-background: #44475a;
   --rmt-theme-line-number-color: #999;
+  --rmt-theme-line-number-border: 1px solid #999;
   --rmt-theme-border-radius: .3em;`;
 
 /** The page's value for an --rmt-* variable, or the theme's when the page doesn't set one */
@@ -46,7 +48,7 @@ const TEXT_STYLES = `
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
-  line-height: 1.5;
+  line-height: var(--rmt-line-height, 1.5);
   -moz-tab-size: 4;
   tab-size: 4;
   -webkit-hyphens: none;
@@ -97,6 +99,7 @@ export const STYLESHEET = `
   max-width: 100%;
   margin: 0;
   padding: var(--rmt-padding, 1em);
+  font-size: var(--rmt-font-size, 1em);
   overflow-x: auto;
   background: ${themed('background')};
   border-radius: ${themed('border-radius')};
@@ -114,12 +117,12 @@ export const STYLESHEET = `
   margin-right: .8em;
   padding-right: .8em;
   font-size: 100%;
-  line-height: 1.5;
+  line-height: var(--rmt-line-height, 1.5);
   letter-spacing: -1px;
   text-align: right;
   white-space: pre;
   color: ${themed('line-number-color')};
-  border-right: 1px solid #999;
+  border-right: ${themed('line-number-border')};
   pointer-events: none;
   -webkit-user-select: none;
   user-select: none;

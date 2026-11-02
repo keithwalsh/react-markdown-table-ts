@@ -364,6 +364,17 @@ describe('MarkdownTable', () => {
         'color: var(--rmt-line-number-color, var(--rmt-theme-line-number-color));'
       );
     });
+
+    it('should take the line number divider from each theme, so the page can replace it', () => {
+      render(<MarkdownTable inputData={testData.twoColumn} />);
+
+      const css = getStyleElement()?.textContent;
+      expect(getCssRule(css, '.rmt-light, .rmt-auto')).toContain('--rmt-theme-line-number-border: 1px solid #999;');
+      expect(getCssRule(css, '.rmt-dark')).toContain('--rmt-theme-line-number-border: 1px solid #999;');
+      expect(getCssRule(css, '.rmt pre.rmt-pre > .rmt-line-numbers')).toContain(
+        'border-right: var(--rmt-line-number-border, var(--rmt-theme-line-number-border));'
+      );
+    });
   });
 
   describe('shared stylesheet', () => {
@@ -387,6 +398,18 @@ describe('MarkdownTable', () => {
       expect(getCssRule(getStyleElement()?.textContent, '.rmt code.rmt-code, .rmt pre.rmt-pre')).toContain(
         "font-family: var(--rmt-font-family, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace);"
       );
+    });
+
+    it('should take the font size and line height from --rmt-* variables', () => {
+      render(<MarkdownTable inputData={testData.simple} />);
+
+      const css = getStyleElement()?.textContent;
+      expect(getCssRule(css, '.rmt pre.rmt-pre')).toContain('font-size: var(--rmt-font-size, 1em);');
+      // The code inherits the pre's size, so a size in em isn't applied twice
+      expect(getCssRule(css, '.rmt code.rmt-code, .rmt pre.rmt-pre')).toContain('font-size: 1em;');
+      // The line numbers need the same line height as the table, or they drift out of line
+      expect(getCssRule(css, '.rmt code.rmt-code, .rmt pre.rmt-pre')).toContain('line-height: var(--rmt-line-height, 1.5);');
+      expect(getCssRule(css, '.rmt pre.rmt-pre > .rmt-line-numbers')).toContain('line-height: var(--rmt-line-height, 1.5);');
     });
 
     it('should not give the wrapper an id', () => {
