@@ -10,9 +10,6 @@
 /** Identifies the stylesheet, so React 19 hoists a single copy into the document head */
 export const STYLESHEET_HREF = 'react-markdown-table-ts';
 
-/** The default topPadding in pixels, which the stylesheet applies without an inline style */
-export const DEFAULT_TOP_PADDING = 16;
-
 /** The class on each table's wrapper element for its theme */
 export const THEME_CLASSES = {
   light: 'rmt-light',
@@ -99,7 +96,7 @@ export const STYLESHEET = `
   width: fit-content;
   max-width: 100%;
   margin: 0;
-  padding: 0 1em 1em 0;
+  padding: var(--rmt-padding, 1em);
   overflow-x: auto;
   background: ${themed('background')};
   border-radius: ${themed('border-radius')};
@@ -107,17 +104,14 @@ export const STYLESHEET = `
 .rmt pre.rmt-pre > code {
   display: block;
   flex: none;
-  padding: ${DEFAULT_TOP_PADDING}px 0 0 .3em;
-}
-.rmt pre.rmt-pre.rmt-has-line-numbers > code {
-  padding-left: 1.5em;
+  padding: 0;
 }
 .rmt pre.rmt-pre > .rmt-line-numbers {
   order: -1;
   flex: none;
   box-sizing: content-box;
-  min-width: 1.7em;
-  margin-top: ${DEFAULT_TOP_PADDING}px;
+  min-width: 2ch;
+  margin-right: .8em;
   padding-right: .8em;
   font-size: 100%;
   line-height: 1.5;

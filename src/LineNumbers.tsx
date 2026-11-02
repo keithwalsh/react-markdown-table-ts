@@ -4,7 +4,6 @@
  */
 
 import { useEffect, useRef, useState, type CSSProperties, type HTMLAttributes, type Ref, type RefObject } from 'react';
-import { DEFAULT_TOP_PADDING } from './styles.js';
 
 /**
  * Line numbers component props with style support. Other attributes go on the pre element.
@@ -14,7 +13,6 @@ interface LineNumbersComponentProps extends Omit<HTMLAttributes<HTMLPreElement>,
   showLineNumbers?: boolean;
   className?: string;
   style?: CSSProperties;
-  topPadding?: number;
   preRef?: Ref<HTMLPreElement>;
 }
 
@@ -53,7 +51,6 @@ export function LineNumbers({
   showLineNumbers = false,
   className = '',
   style,
-  topPadding = DEFAULT_TOP_PADDING,
   preRef,
   ...preAttributes
 }: LineNumbersComponentProps) {
@@ -64,10 +61,6 @@ export function LineNumbers({
   // One text node rather than an element per line, which adds up for long tables
   const lineNumbers = children.split('\n').map((_, index) => index + 1).join('\n');
 
-  // The stylesheet covers the default, so only add inline styles for a value that differs
-  const topPaddingStyle = topPadding !== DEFAULT_TOP_PADDING ? { paddingTop: `${topPadding}px` } : {};
-  const lineNumbersTopStyle = topPadding !== DEFAULT_TOP_PADDING ? { marginTop: `${topPadding}px` } : {};
-
   return (
     <pre
       // Focusable while it scrolls, so keyboard users can scroll it
@@ -77,11 +70,11 @@ export function LineNumbers({
       className={['rmt-pre', showLineNumbers && 'rmt-has-line-numbers', className].filter(Boolean).join(' ')}
       style={style}
     >
-      <code ref={codeRef} className="rmt-code" style={topPaddingStyle}>
+      <code ref={codeRef} className="rmt-code">
         {children}
       </code>
       {showLineNumbers && (
-        <span className="rmt-line-numbers" aria-hidden="true" style={lineNumbersTopStyle}>
+        <span className="rmt-line-numbers" aria-hidden="true">
           {lineNumbers}
         </span>
       )}

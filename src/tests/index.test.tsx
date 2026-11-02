@@ -375,8 +375,8 @@ describe('MarkdownTable', () => {
         root.render(<MarkdownTable inputData={testData.simple} />);
       });
 
-      // jsdom applies the stylesheet's 1em padding, so this fails if its selectors stop matching
-      expect(getComputedStyle(getPreElement(container)!).paddingRight).toBe('16px');
+      // jsdom applies the stylesheet's display, so this fails if its selectors stop matching
+      expect(getComputedStyle(getPreElement(container)!).display).toBe('inline-flex');
       act(() => root.unmount());
       container.remove();
     });
@@ -593,25 +593,38 @@ describe('MarkdownTable', () => {
   });
 
   describe('topPadding prop', () => {
-    it('should pad the code and line numbers by 16px by default', () => {
+    it('should leave the padding to --rmt-padding by default', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} />);
 
-      expect(getComputedStyle(getCodeElement(container)!).paddingTop).toBe('16px');
-      expect(getComputedStyle(container.querySelector('.rmt-line-numbers')!).marginTop).toBe('16px');
+      expect(getPreElement(container)?.style.paddingTop).toBe('');
+      expect(getCssRule(getStyleElement()?.textContent, '.rmt pre.rmt-pre')).toContain('padding: var(--rmt-padding, 1em);');
     });
 
-    it('should apply a custom top padding to the code and line numbers', () => {
+    it('should pad only the pre, so the code and line numbers line up whatever the padding', () => {
+      const { container } = render(<MarkdownTable inputData={testData.simple} />);
+
+      expect(getComputedStyle(getCodeElement(container)!).paddingTop).toBe('0px');
+      expect(getCssRule(getStyleElement()?.textContent, '.rmt pre.rmt-pre > .rmt-line-numbers')).not.toMatch(/top/);
+    });
+
+    it('should apply a custom top padding to the pre', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={32} />);
 
-      expect(getCodeElement(container)?.style.paddingTop).toBe('32px');
-      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.marginTop).toBe('32px');
+      expect(getPreElement(container)?.style.paddingTop).toBe('32px');
     });
 
     it('should allow zero top padding', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} topPadding={0} />);
 
-      expect(getCodeElement(container)?.style.paddingTop).toBe('0px');
-      expect(container.querySelector<HTMLElement>('.rmt-line-numbers')?.style.marginTop).toBe('0px');
+      expect(getPreElement(container)?.style.paddingTop).toBe('0px');
+    });
+
+    it('should let preStyle override topPadding', () => {
+      const { container } = render(
+        <MarkdownTable inputData={testData.simple} topPadding={32} preStyle={{ paddingTop: 8 }} />
+      );
+
+      expect(getPreElement(container)?.style.paddingTop).toBe('8px');
     });
   });
 

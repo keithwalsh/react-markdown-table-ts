@@ -21,7 +21,6 @@ const meta = {
     hasTabs: false,
     hasHeader: true,
     convertLineBreaks: false,
-    topPadding: 16,
     theme: 'light' as const,
     showLineNumbers: true
   },
@@ -106,7 +105,7 @@ const meta = {
       control: {
         type: 'number'
       },
-      description: 'Space in pixels above the first line of the table.',
+      description: 'Deprecated: set the --rmt-padding CSS variable instead. Space in pixels above the first line of the table.',
       table: {
         category: 'Visual/UI Props',
         type: {
@@ -214,7 +213,6 @@ export const Default: Story = {
     hasTabs: false,
     hasHeader: true,
     convertLineBreaks: false,
-    topPadding: 16,
     theme: "dark",
     className: 'markdown-table-pre',
     preStyle: {borderRadius: '8px'},

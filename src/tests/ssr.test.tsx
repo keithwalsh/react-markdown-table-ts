@@ -27,7 +27,7 @@ describe('server rendering', () => {
 
     const css = getStyleElement(container)?.textContent;
     expect(css).toContain("'Andale Mono'");
-    expect(css).toContain('.rmt-has-line-numbers > code');
+    expect(css).toContain('.rmt pre.rmt-pre > code');
   });
 
   it('should keep each theme when separately rendered roots share a page', () => {

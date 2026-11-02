@@ -291,51 +291,6 @@ describe('LineNumbers', () => {
     });
   });
 
-  describe('topPadding prop', () => {
-    it('should apply topPadding to line numbers', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} topPadding={32}>
-          line1
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.marginTop).toBe('32px');
-    });
-
-    it('should leave the default topPadding of 16px to the stylesheet', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true}>line1</LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.marginTop).toBe('');
-      expect(container.querySelector('code')?.style.paddingTop).toBe('');
-    });
-
-    it('should handle topPadding of 0', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} topPadding={0}>
-          line1
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.marginTop).toBe('0px');
-    });
-
-    it('should handle large topPadding values', () => {
-      const { container } = render(
-        <LineNumbers showLineNumbers={true} topPadding={160}>
-          line1
-        </LineNumbers>
-      );
-      
-      const lineNumbersSpan = container.querySelector('.rmt-line-numbers') as HTMLSpanElement;
-      expect(lineNumbersSpan?.style.marginTop).toBe('160px');
-    });
-  });
-
   describe('Edge cases', () => {
     it('should handle code with only newlines', () => {
       const { container } = render(
@@ -386,7 +341,6 @@ describe('LineNumbers', () => {
           showLineNumbers={true}
           className="custom-code"
           style={customStyle}
-          topPadding={24}
         >
           {code}
         </LineNumbers>

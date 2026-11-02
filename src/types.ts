@@ -131,8 +131,11 @@ export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes 
   onGenerate?: (markdownTableString: string, error: MarkdownTableError | null) => void;
 
   /**
-   * Optional top padding in pixels above the first line of the table.
-   * @default 16
+   * Optional space in pixels above the first line of the table, in place of
+   * the top of the `--rmt-padding` CSS variable.
+   * @default undefined
+   * @deprecated Set the `--rmt-padding` CSS variable instead, such as
+   * `--rmt-padding: 2em 1em 1em` for more space above the table.
    */
   topPadding?: number;
 

@@ -6,7 +6,7 @@
 import { forwardRef, useEffect, useDeferredValue, useMemo, useRef } from 'react';
 import { generateMarkdownTable } from './generateMarkdownTable.js';
 import { LineNumbers } from './LineNumbers.js';
-import { DEFAULT_TOP_PADDING, STYLESHEET, STYLESHEET_HREF, THEME_CLASSES } from './styles.js';
+import { STYLESHEET, STYLESHEET_HREF, THEME_CLASSES } from './styles.js';
 import type { Alignment, MarkdownTableOptions, MarkdownTableProps } from './types.js';
 import { MarkdownTableError } from './validation.js';
 
@@ -53,7 +53,7 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
     onGenerate,
     theme = 'light',
     preStyle,
-    topPadding = DEFAULT_TOP_PADDING,
+    topPadding,
     minWidth,
     showLineNumbers = true,
     nonce,
@@ -96,8 +96,8 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
         preRef={ref}
         showLineNumbers={showLineNumbers}
         className={className}
-        topPadding={topPadding}
         style={{
+          ...(topPadding !== undefined ? { paddingTop: `${topPadding}px` } : {}),
           ...(minWidth !== undefined ? { minWidth: `${minWidth}px` } : {}),
           ...preStyle
         }}
