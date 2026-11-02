@@ -204,6 +204,14 @@ const markdown = generateMarkdownTable(
 // | Bob  |     | false  |
 ```
 
+### Without React
+
+`react-markdown-table-ts/core` exports `generateMarkdownTable`, `getColumnName`, `MarkdownTableError` and the option types without the component, so Node scripts, CLIs and other frameworks can use them without React installed. React is an optional peer dependency, so npm doesn't install it for them.
+
+```typescript
+import { generateMarkdownTable } from 'react-markdown-table-ts/core';
+```
+
 ## Behaviours
 
 1. **Input Validation**:
