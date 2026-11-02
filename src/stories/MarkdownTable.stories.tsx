@@ -38,6 +38,16 @@ const meta = {
         }
       }
     },
+    markdown: {
+      control: 'text',
+      description: 'A Markdown table to show as it is, such as the markdown that useMarkdownTable returns. When it is set, inputData and the formatting options are ignored.',
+      table: {
+        category: 'Core Data Props',
+        type: {
+          summary: 'string'
+        }
+      }
+    },
     columnAlignments: {
       control: {
         type: 'object'

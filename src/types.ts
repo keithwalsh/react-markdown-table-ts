@@ -81,6 +81,17 @@ export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes 
   inputData?: readonly (readonly CellValue[])[] | null;
 
   /**
+   * A Markdown table to show as it is, such as the `markdown` that
+   * `useMarkdownTable` returns. When it's set, `inputData` and the formatting
+   * options are ignored, so the table isn't generated twice.
+   * @default undefined
+   * @example
+   * const { markdown } = useMarkdownTable(data, options);
+   * <MarkdownTable markdown={markdown} />
+   */
+  markdown?: string;
+
+  /**
    * Optional theme for the Markdown table.
    * Acceptable values are 'light', 'dark', 'auto', which follows the
    * reader's `prefers-color-scheme` setting, or 'inherit', which takes the
@@ -123,6 +134,7 @@ export interface MarkdownTableProps extends MarkdownTableOptions, PreAttributes 
    * Optional callback that receives the generated Markdown table string whenever it changes.
    * When `inputData` is invalid, the string is the displayed error message and `error` is set.
    * When `inputData` is `null` or `undefined`, the string is empty and `error` is `null`.
+   * When `markdown` is set, the string is `markdown`.
    * @default undefined
    * @example
    * <MarkdownTable

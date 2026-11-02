@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component, createRef, version, type ReactNode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRoot } from 'react-dom/client';
-import { MarkdownTable, MarkdownTableError, type MarkdownTableProps } from '../index';
+import { MarkdownTable, MarkdownTableError, useMarkdownTable, type MarkdownTableProps } from '../index';
 import * as utils from '../utils';
 import { testData, getPreElement, getCodeElement, getStyleElement, getCssRule, getWrapperDiv, hasClass, expectPreClasses, expectPreNotToHaveClasses, expectPreStyle, stubLayout } from './test-utils';
 
@@ -709,6 +709,62 @@ describe('MarkdownTable', () => {
 
       expect(getPreElement(container)?.style.minWidth).toBe('');
       expect(getCssRule(getStyleElement()?.textContent, '.rmt pre.rmt-pre')).not.toContain('min-width');
+    });
+  });
+
+  describe('markdown prop', () => {
+    const markdown = '| Name |\n| ---- |\n| Ann  |';
+
+    it('should show the markdown as it is, with a line number for each line', () => {
+      const { container } = render(<MarkdownTable markdown={markdown} />);
+
+      expect(screen.getByRole('code').textContent).toBe(markdown);
+      expect(container.querySelector('.rmt-line-numbers')?.textContent).toBe('1\n2\n3');
+    });
+
+    it('should show the markdown instead of generating a table from inputData', () => {
+      const spy = vi.spyOn(utils, 'generateMarkdownTableString');
+
+      render(<MarkdownTable markdown={markdown} inputData={testData.withHeader} isCompact />);
+
+      expect(screen.getByRole('code').textContent).toBe(markdown);
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+
+    it('should show an empty table for an empty string', () => {
+      render(<MarkdownTable markdown="" inputData={testData.withHeader} />);
+
+      expect(screen.getByRole('code').textContent).toBe('');
+    });
+
+    it('should generate the table from inputData when markdown is null from JavaScript', () => {
+      render(<MarkdownTable markdown={null as any} inputData={testData.simple} />);
+
+      expect(screen.getByRole('code').textContent).toBe('| A   |\n| --- |\n| 1   |');
+    });
+
+    it('should pass the markdown to onGenerate', () => {
+      const onGenerate = vi.fn();
+
+      const { rerender } = render(<MarkdownTable markdown={markdown} onGenerate={onGenerate} />);
+      rerender(<MarkdownTable markdown="| A |" onGenerate={onGenerate} />);
+
+      expect(onGenerate.mock.calls).toEqual([[markdown, null], ['| A |', null]]);
+    });
+
+    it('should generate the table once when given the markdown from useMarkdownTable', () => {
+      const spy = vi.spyOn(utils, 'generateMarkdownTableString');
+      function Page() {
+        const { markdown } = useMarkdownTable(testData.withHeader);
+        return <MarkdownTable markdown={markdown} />;
+      }
+
+      render(<Page />);
+
+      expect(screen.getByRole('code').textContent).toBe('| Name | Age |\n| ---- | --- |\n| John | 30  |\n| Jane | 25  |');
+      expect(spy).toHaveBeenCalledTimes(1);
+      spy.mockRestore();
     });
   });
 

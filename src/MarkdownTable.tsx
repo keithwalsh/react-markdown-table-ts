@@ -21,6 +21,7 @@ function getShownTable(table: MarkdownTableResult): MarkdownTableResult {
 export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(function MarkdownTable(
   {
     inputData = null,
+    markdown,
     hasHeader,
     columnAlignments,
     isCompact,
@@ -39,7 +40,10 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
   },
   ref
 ) {
-  const table = useMarkdownTable(inputData, {
+  // == null, so null from JavaScript generates the table too
+  const hasMarkdown = markdown != null;
+  // With markdown, the hook gets no data, so the table isn't generated twice
+  const table = useMarkdownTable(hasMarkdown ? null : inputData, {
     hasHeader,
     columnAlignments,
     isCompact,
@@ -47,7 +51,10 @@ export const MarkdownTable = forwardRef<HTMLPreElement, MarkdownTableProps>(func
     hasPadding,
     convertLineBreaks
   });
-  const result = useMemo(() => getShownTable(table), [table]);
+  const result = useMemo(
+    () => (hasMarkdown ? { markdown: String(markdown), error: null } : getShownTable(table)),
+    [hasMarkdown, markdown, table]
+  );
 
   // Read the latest callback from a ref so a new inline onGenerate doesn't re-fire it
   const onGenerateRef = useRef(onGenerate);
