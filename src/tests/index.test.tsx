@@ -652,6 +652,15 @@ describe('MarkdownTable', () => {
   });
 
   describe('minWidth prop', () => {
+    it('should fit the table by default, and take the width from --rmt-width', () => {
+      render(<MarkdownTable inputData={testData.simple} />);
+
+      const preRule = getCssRule(getStyleElement()?.textContent, '.rmt pre.rmt-pre');
+      expect(preRule).toContain('width: var(--rmt-width, fit-content);');
+      // A width of 100% fills the container, and a table wider than that still scrolls
+      expect(preRule).toContain('max-width: 100%;');
+    });
+
     it('should apply minWidth when specified', () => {
       const { container } = render(<MarkdownTable inputData={testData.simple} minWidth={400} />);
       

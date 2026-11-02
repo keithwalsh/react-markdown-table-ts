@@ -95,7 +95,7 @@ export const STYLESHEET = `
   align-items: flex-start;
   vertical-align: top;
   box-sizing: border-box;
-  width: fit-content;
+  width: var(--rmt-width, fit-content);
   max-width: 100%;
   margin: 0;
   padding: var(--rmt-padding, 1em);
